@@ -1,0 +1,109 @@
+/* 기본 스타일 초기화 */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body {
+	font-family: "Pretendard", sans-serif;
+	background-color: #f4f7f9;
+	color: #333;
+}
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+/* 상단 네비게이션 */
+header {
+	background-color: #fff;
+	border-bottom: 1px solid #ddd;
+	padding: 1rem 2rem;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.logo {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #2c3e50;
+}
+nav ul {
+	display: flex;
+	list-style: none;
+	gap: 20px;
+}
+nav ul li:hover {
+	color: #3498db;
+	cursor: pointer;
+}
+
+/* 메인 컨텐츠 영역 */
+main {
+	max-width: 1200px;
+	margin: 2rem auto;
+	padding: 0 1rem;
+}
+.search-area {
+	text-align: center;
+	margin-bottom: 3rem;
+}
+.search-area input {
+	width: 80%;
+	max-width: 600px;
+	padding: 12px 20px;
+	border: 2px solid #ddd;
+	border-radius: 30px;
+	outline: none;
+}
+
+/* 카드 리스트 레이아웃 */
+.game-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 20px;
+}
+
+/* 게임 카드 스타일 */
+.game-card {
+	background: #fff;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s;
+}
+.game-card:hover {
+	transform: translateY(-5px);
+}
+.thumbnail {
+	width: 100%;
+	height: 160px;
+	background: #ddd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3rem;
+}
+.info {
+	padding: 15px;
+}
+.info h3 {
+	font-size: 1.1rem;
+	margin-bottom: 8px;
+}
+.info p {
+	font-size: 0.9rem;
+	color: #666;
+}
+
+/* 광고 슬롯 (예시) */
+.ad-slot {
+	background: #eee;
+	text-align: center;
+	padding: 20px;
+	margin: 20px 0;
+	border: 1px dashed #bbb;
+}

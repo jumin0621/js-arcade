@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JS-Arcade | 바닐라JS 웹게임 창고</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<header>
+			<div class="logo">🎮 JS-Arcade</div>
+			<nav>
+				<ul>
+					<li>인기게임</li>
+					<li>카테고리</li>
+					<li>커뮤니티</li>
+				</ul>
+			</nav>
+		</header>
+
+		<main>
+			<div class="search-area">
+				<h1>어떤 게임을 즐기고 싶으신가요?</h1>
+				<br />
+				<input type="text" placeholder="게임 제목을 입력하세요..." />
+			</div>
+
+			<div class="ad-slot">광고가 들어갈 자리 (Google AdSense)</div>
+
+			<div class="game-grid" id="game-list">
+				<a href="games/snake/index.html" class="game-card">
+					<div class="thumbnail">🐍</div>
+					<div class="info">
+						<h3>클래식 스네이크</h3>
+						<p>가장 고전적인 뱀 통과하기 게임</p>
+					</div>
+				</a>
+				<a href="#" class="game-card">
+					<div class="thumbnail">🧱</div>
+					<div class="info">
+						<h3>벽돌 깨기</h3>
+						<p>공을 튕겨 모든 벽돌을 제거하세요</p>
+					</div>
+				</a>
+			</div>
+		</main>
+
+		<script src="main.js"></script>
+	</body>
+</html>
