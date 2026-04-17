@@ -6,8 +6,8 @@
 }
 body {
 	font-family: "Pretendard", sans-serif;
-	background-color: #f4f7f9;
-	color: #333;
+	background-color: #121212;
+	color: #e0e0e0;
 }
 a {
 	text-decoration: none;
@@ -16,8 +16,8 @@ a {
 
 /* 상단 네비게이션 */
 header {
-	background-color: #fff;
-	border-bottom: 1px solid #ddd;
+	background-color: #1e1e1e;
+	border-bottom: 1px solid #333;
 	padding: 1rem 2rem;
 	position: sticky;
 	top: 0;
@@ -29,15 +29,46 @@ header {
 .logo {
 	font-size: 1.5rem;
 	font-weight: bold;
-	color: #2c3e50;
+	color: #bb86fc;
+}
+.logo-group {
+	display: flex;
+	align-items: center;
+	gap: 12px; /* 로고와 글자 사이 간격 */
+	text-decoration: none;
+}
+
+.logo-symbol {
+	height: 32px; /* 로고 높이 */
+	width: auto;
+}
+
+.logo-text {
+	font-size: 1.1rem;
+	font-weight: 800;
+	color: #ffffff;
+	letter-spacing: -0.5px;
+	white-space: nowrap;
+	/* 로고의 청록색 느낌을 텍스트에도 살짝 주려면 아래 속성 추가 */
+	background: linear-gradient(to right, #ffffff, #00e5ff);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
 }
 nav ul {
 	display: flex;
 	list-style: none;
-	gap: 20px;
+	gap: 12px;
+}
+nav ul li {
+	color: #b0b0b0;
+	font-size: 0.95rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: color 0.2s;
 }
 nav ul li:hover {
-	color: #3498db;
+	color: #00e5ff;
 	cursor: pointer;
 }
 
@@ -47,41 +78,84 @@ main {
 	margin: 2rem auto;
 	padding: 0 1rem;
 }
+/* 마크업을 위한 숨김 처리 (글자는 안 보이지만 읽기는 가능) */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	border: 0;
+	padding: 0;
+	white-space: nowrap;
+	clip-path: inset(100%);
+	clip: rect(0 0 0 0);
+	overflow: hidden;
+}
 .search-area {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	text-align: center;
-	margin-bottom: 3rem;
+}
+.search-area h1 {
+	color: #ffffff;
 }
 .search-area input {
 	width: 80%;
 	max-width: 600px;
+	background-color: #2c2c2c;
 	padding: 12px 20px;
-	border: 2px solid #ddd;
+	border: 1px solid #444;
 	border-radius: 30px;
 	outline: none;
+}
+.search-area input::placeholder {
+	color: #888;
 }
 
 /* 카드 리스트 레이아웃 */
 .game-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-	gap: 20px;
+	gap: 30px;
+	margin-top: 40px;
+	margin: 40px auto 0; /* 위쪽 40px, 좌우는 중앙 정렬 */
+	max-width: 1200px; /* 전체 사이트 폭과 맞춤 */
+	width: 100%;
 }
 
 /* 게임 카드 스타일 */
 .game-card {
-	background: #fff;
+	background: #1e1e1e;
 	border-radius: 12px;
+	border: 1px solid #333;
 	overflow: hidden;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 	transition: transform 0.2s;
 }
 .game-card:hover {
 	transform: translateY(-5px);
+	border-color: #bb86fc; /* 호버 시 포인트 컬러 */
+	box-shadow: 0 8px 25px rgba(187, 134, 252, 0.2);
+}
+#game-search {
+	width: 100%;
+	max-width: 600px;
+	margin-top: 20px;
+	caret-color: #00e5ff;
+	color: #ffffff;
+}
+#game-search:focus {
+	outline: none;
+	border-color: #bb86fc;
+	box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+	transition: all 0.3s ease;
 }
 .thumbnail {
 	width: 100%;
 	height: 160px;
-	background: #ddd;
+	background: #252525;
+	border-bottom: 1px solid #333;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -93,17 +167,133 @@ main {
 .info h3 {
 	font-size: 1.1rem;
 	margin-bottom: 8px;
+	color: #bb86fc;
 }
 .info p {
 	font-size: 0.9rem;
-	color: #666;
+	color: #b0b0b0;
 }
 
-/* 광고 슬롯 (예시) */
+/* 광고 슬롯 */
 .ad-slot {
-	background: #eee;
+	background: #1a1a1a;
+	color: #666;
 	text-align: center;
 	padding: 20px;
 	margin: 20px 0;
-	border: 1px dashed #bbb;
+	border: 1px dashed #444;
+}
+.ad-banner {
+	display: block;
+	margin: 20px 0;
+	padding: 30px;
+	background-color: #1a1a1a;
+	border: 2px dashed #bb86fc; /* 포인트 컬러 점선 */
+	border-radius: 12px;
+	text-align: center;
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.ad-banner:hover {
+	background-color: #252525;
+	border-style: solid; /* 호버 시 실선으로 변경 */
+	transform: scale(1.01);
+}
+
+.ad-content p {
+	color: #bb86fc;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+/* 푸터 전체 컨테이너 */
+.site-footer {
+	background-color: #1a1a1a;
+	color: #666;
+	padding: 60px 20px 40px;
+	text-align: center;
+	border-top: 1px solid #333;
+	margin-top: 50px;
+}
+
+.footer-content {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* 푸터 로고 이미지 */
+.footer-logo img {
+	width: 40px; /* 로고 크기 최적화 */
+	height: auto;
+	margin-bottom: 15px;
+	filter: grayscale(1) opacity(0.5); /* 평소에는 흑백+반투명 */
+	transition: all 0.3s ease;
+}
+
+.footer-logo img:hover {
+	filter: grayscale(0) opacity(1); /* 마우스 올리면 컬러 복원 */
+	transform: scale(1.1);
+}
+
+/* 푸터 텍스트 스타일 */
+.footer-title {
+	color: #888;
+	font-size: 1.2rem;
+	letter-spacing: 1px;
+	margin-bottom: 10px;
+}
+
+.footer-description {
+	margin-bottom: 25px;
+	font-size: 0.85rem;
+	color: #555;
+}
+
+/* 링크 스타일 */
+.footer-links {
+	margin-bottom: 25px;
+}
+
+.footer-links a {
+	color: #444;
+	margin: 0 15px;
+	text-decoration: none;
+	font-size: 0.8rem;
+	transition: color 0.2s;
+}
+
+.footer-links a:hover {
+	color: #00e5ff; /* 로고 포인트 컬러로 변경 */
+}
+
+/* 카피라이트 */
+.copyright {
+	font-size: 0.75rem;
+	color: #444;
+	letter-spacing: 0.5px;
+}
+
+.copyright strong {
+	color: #666;
+}
+
+/* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
+@media (max-width: 480px) {
+	header {
+		padding: 0.8rem 1rem; /* 좌우 여백 축소 */
+	}
+	.logo-group {
+		gap: 6px;
+	}
+	.logo-symbol {
+		height: 24px; /* 로고 아이콘 크기 축소 */
+	}
+	nav ul li a {
+		font-size: 0.85rem; /* 모바일 대응을 위해 폰트 크기 축소 */
+		white-space: nowrap;
+	}
+	.search-area h1 {
+		font-size: 1.5rem;
+	}
 }

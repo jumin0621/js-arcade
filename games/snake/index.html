@@ -2,14 +2,32 @@
 <html lang="ko">
 	<head>
 		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>JS-Arcade | 스네이크</title>
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
-		<div class="game-container">
-			<a href="../../index.html" class="back-btn">⬅️ 메인으로</a>
-			<div class="score-board">점수: <span id="score">0</span></div>
-			<canvas id="gameCanvas" width="400" height="400"></canvas>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="score-container">SCORE: <span id="score">0</span></div>
+			</div>
+
+			<canvas id="snakeGame" width="400" height="400"></canvas>
+
+			<div class="mobile-controls" id="joystick">
+				<div class="control-row">
+					<button class="btn-up" onclick="setDir('UP')">▲</button>
+				</div>
+				<div class="control-row">
+					<button class="btn-left" onclick="setDir('LEFT')">◀</button>
+					<button class="btn-down" onclick="setDir('DOWN')">▼</button>
+					<button class="btn-right" onclick="setDir('RIGHT')">▶</button>
+				</div>
+			</div>
+
+			<div class="controls-guide">
+				<p>방향키(↑ ↓ ← →)로 조작하세요</p>
+			</div>
 		</div>
 		<script src="snake.js"></script>
 	</body>

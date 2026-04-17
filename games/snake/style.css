@@ -1,0 +1,97 @@
+body {
+	background-color: #121212;
+	color: #fff;
+	font-family: "Pretendard", sans-serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	margin: 0;
+}
+
+.game-wrapper {
+	text-align: center;
+}
+
+.game-header {
+	display: flex;
+	justify-content: flex-end; /* 모든 요소를 오른쪽으로 정렬 */
+	align-items: center;
+	width: 100%;
+	max-width: 400px; /* 캔버스 너비와 맞춤 */
+	margin: 0 auto 10px; /* 중앙 정렬 유지 */
+	padding: 0 5px;
+}
+
+.back-btn {
+	text-decoration: none;
+	color: #00e5ff;
+	font-weight: bold;
+	font-size: 0.8rem;
+}
+
+.score-container {
+	font-size: 1.1rem;
+	font-weight: bold;
+	color: #bb86fc;
+	text-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
+}
+
+/* 캔버스 스타일: 네온 느낌의 테두리 */
+canvas {
+	background-color: #1e1e1e;
+	border: 3px solid #333;
+	border-radius: 8px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.controls-guide {
+	margin-top: 15px;
+	color: #666;
+	font-size: 0.9rem;
+}
+
+/* 기본적으로 조이스틱 숨김 (PC) */
+.mobile-controls {
+	display: none;
+	margin-top: 20px;
+	user-select: none;
+}
+
+/* 모바일 화면 (768px 이하) 대응 */
+@media (max-width: 768px) {
+	.game-header {
+		width: 90vw;
+	}
+	.mobile-controls {
+		display: block;
+	}
+	.controls-guide {
+		display: none;
+	} /* 키보드 안내 숨김 */
+	canvas {
+		width: 90vw;
+		height: 90vw;
+	} /* 캔버스 크기 조절 */
+}
+
+.control-row {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin: 5px 0;
+}
+.mobile-controls button {
+	width: 60px;
+	height: 60px;
+	background: #2c2c2c;
+	border: 2px solid #00e5ff;
+	border-radius: 10px;
+	color: #00e5ff;
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+.mobile-controls button:active {
+	background: #00e5ff;
+	color: #121212;
+}
