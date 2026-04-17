@@ -50,6 +50,12 @@ canvas {
 	box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
 }
 
+.controls-guide {
+	margin-top: 15px;
+	color: #666;
+	font-size: 0.9rem;
+}
+
 .mobile-controls {
 	display: none;
 	margin-top: 20px;
@@ -87,6 +93,17 @@ canvas {
 	border: 2px solid #00e5ff;
 	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
 }
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
 .primary-btn {
 	background: #00e5ff;
 	color: #000;
@@ -97,6 +114,15 @@ canvas {
 	border-radius: 8px;
 	cursor: pointer;
 	margin-top: 20px;
+}
+.primary-btn:hover {
+	transform: scale(1.05);
+	background: #00b2cc;
+	box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+
+.primary-btn:active {
+	transform: scale(0.98);
 }
 
 @media (max-width: 768px) {

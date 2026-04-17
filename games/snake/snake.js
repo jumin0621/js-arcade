@@ -123,10 +123,3 @@ function collision(head, array) {
 	}
 	return false;
 }
-
-// 처음 실행 시 모달 보여주기
-showModal(
-	"CLASSIC SNAKE",
-	"방향키나 버튼을 이용해 뱀을 조종하세요.",
-	"게임 시작",
-);

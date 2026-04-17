@@ -25,6 +25,13 @@ const gameData = [
 		emoji: "🧱",
 		path: "games/brick/index.html",
 	},
+	{
+		id: "bounce",
+		title: "바운스볼",
+		description: "공튕기기 게임의 귀환",
+		emoji: "🧱",
+		path: "games/bounce/index.html",
+	},
 	// 여기에 계속 추가 가능
 ];
 
