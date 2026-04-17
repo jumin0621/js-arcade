@@ -87,6 +87,18 @@ function enterGame(path) {
 	document.getElementById("play-room").style.display = "block";
 	document.getElementById("game-container").src = path;
 
+	const playRoom = document.getElementById("play-room");
+	const container = document.getElementById("game-container");
+
+	document.getElementById("selection-room").style.display = "none";
+	playRoom.style.display = "block";
+	container.src = path;
+
+	// iframe이 로드된 후 포커스를 줌
+	container.onload = function () {
+		container.contentWindow.focus();
+	};
+
 	// 페이지 최상단으로 스크롤 이동
 	window.scrollTo(0, 0);
 }
