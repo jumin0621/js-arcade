@@ -18,7 +18,13 @@ const gameData = [
 		emoji: "🐍",
 		path: "games/snake/index.html",
 	},
-
+	{
+		id: "brick",
+		title: "브릭 마스터",
+		description: "레트로 게임의 정석 벽돌깨기",
+		emoji: "🧱",
+		path: "games/brick/index.html",
+	},
 	// 여기에 계속 추가 가능
 ];
 

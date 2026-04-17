@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | 브릭 마스터</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="stage-info">STAGE <span id="stage">1</span></div>
+				<div class="score-container">SCORE: <span id="score">0</span></div>
+			</div>
+
+			<canvas id="brickGame" width="480" height="400"></canvas>
+
+			<div class="mobile-controls">
+				<button id="leftBtn">◀</button>
+				<button id="rightBtn">▶</button>
+			</div>
+
+			<div id="gameModal" class="modal-overlay">
+				<div class="modal-content">
+					<h2 id="modalTitle">BRICK MASTER</h2>
+					<p id="modalDesc">모든 벽돌을 제거하세요!</p>
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+				</div>
+			</div>
+		</div>
+		<script src="brick.js"></script>
+	</body>
+</html>
