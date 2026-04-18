@@ -33,11 +33,18 @@ const gameData = [
 		path: "games/js-bounce/index.html",
 	},
 	{
-		id: "brickStack",
+		id: "brickstack",
 		title: "브릭 스택",
 		description: "블록 없애기 게임",
 		emoji: "🟦",
 		path: "games/js-brickstack/index.html",
+	},
+	{
+		id: "bugsweeper",
+		title: "버그 스위퍼",
+		description: "버그를 찾아내는 게임",
+		emoji: "💣",
+		path: "games/js-bugsweeper/index.html",
 	},
 	// 여기에 계속 추가 가능
 ];

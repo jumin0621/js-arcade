@@ -12,6 +12,7 @@ const canvas = document.getElementById("tetris");
 const context = canvas.getContext("2d");
 const nextCanvas = document.getElementById("next");
 const nextContext = nextCanvas.getContext("2d");
+const ghostToggle = document.getElementById("ghostToggle");
 
 context.scale(20, 20);
 nextContext.scale(20, 20);
@@ -216,7 +217,43 @@ function draw() {
 	context.fillStyle = "#000";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	drawMatrix(arena, { x: 0, y: 0 });
+
+	if (ghostToggle.checked) {
+		drawGhost();
+	}
+
 	drawMatrix(player.matrix, player.pos);
+}
+
+// [고스트 그리기 로직 추가]
+function drawGhost() {
+	// 현재 플레이어 상태를 복사
+	const ghost = {
+		pos: { x: player.pos.x, y: player.pos.y },
+		matrix: player.matrix,
+	};
+
+	// 충돌할 때까지 아래로 밀어넣기
+	while (!collide(arena, ghost)) {
+		ghost.pos.y++;
+	}
+	// 충돌 직전 위치로 복구
+	ghost.pos.y--;
+
+	// 반투명하게 고스트 블록 그리기
+	ghost.matrix.forEach((row, y) => {
+		row.forEach((value, x) => {
+			if (value !== 0) {
+				context.globalAlpha = 0.2; // 투명도 조절
+				context.fillStyle = colors[value];
+				context.fillRect(x + ghost.pos.x, y + ghost.pos.y, 1, 1);
+				context.strokeStyle = colors[value];
+				context.lineWidth = 0.05;
+				context.strokeRect(x + ghost.pos.x, y + ghost.pos.y, 1, 1);
+				context.globalAlpha = 1.0; // 복구
+			}
+		});
+	});
 }
 
 function drawNext() {

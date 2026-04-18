@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<title>JS-Arcade | JS-BugSweeper</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">BUGS</span>
+					<span id="bugCount" class="info-value">0</span>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">TIME</span>
+					<span id="timer" class="info-value">0</span>
+				</div>
+			</div>
+
+			<div id="board" class="board"></div>
+
+			<div class="controls-guide">
+				<p>🖱️ <span>좌클릭</span>: 셀 오픈 / <span>우클릭</span>: 깃발</p>
+				<p class="mobile-only">
+					📱 <span>길게 터치(롱탭)</span>: 깃발 꽂기/해제
+				</p>
+			</div>
+
+			<div id="gameModal" class="modal-overlay">
+				<div class="modal-content">
+					<h2>JS-BUG SWEEPER</h2>
+					<p>숨어있는 버그를 모두 찾아내세요!</p>
+					<button id="startBtn" class="primary-btn">디버깅 시작</button>
+				</div>
+			</div>
+		</div>
+		<script src="js-bugSweeper.js"></script>
+	</body>
+</html>

@@ -92,6 +92,42 @@ canvas#next {
 	border-radius: 4px;
 }
 
+.option-box {
+	padding: 10px;
+	text-align: center;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 8px;
+	border: 1px solid #333;
+}
+
+.ghost-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	cursor: pointer;
+}
+
+.toggle-label {
+	font-size: 0.7rem;
+	color: #888;
+	letter-spacing: 1px;
+	font-weight: bold;
+}
+
+/* 체크박스 기본 스타일 커스텀 */
+#ghostToggle {
+	accent-color: #00e5ff; /* 네온 블루 색상 적용 */
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+#ghostToggle:checked + .toggle-label {
+	color: #00e5ff;
+	text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+}
+
 /* 모바일 컨트롤러 (기본 숨김) */
 .mobile-controls {
 	display: none;
@@ -171,6 +207,10 @@ canvas#next {
 	canvas#next {
 		width: 65px !important;
 		height: 65px !important;
+	}
+
+	.option-box {
+		margin-top: 10px;
 	}
 
 	.mobile-controls {
