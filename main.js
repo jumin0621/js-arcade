@@ -13,24 +13,31 @@ function closeGame() {
 const gameData = [
 	{
 		id: "snake",
-		title: "클래식 스네이크",
-		description: "가장 고전적인 뱀 통과하기 게임",
+		title: "바닐라 스네이크",
+		description: "뱀의 몸통을 늘리는 게임",
 		emoji: "🐍",
-		path: "games/snake/index.html",
+		path: "games/js-snake/index.html",
 	},
 	{
-		id: "brick",
+		id: "brickmaster",
 		title: "브릭 마스터",
-		description: "레트로 게임의 정석 벽돌깨기",
+		description: "벽돌을 부수는 게임",
 		emoji: "🧱",
-		path: "games/brick/index.html",
+		path: "games/js-brickmaster/index.html",
 	},
 	{
 		id: "bounce",
 		title: "바운스볼",
-		description: "공튕기기 게임의 귀환",
+		description: "공을 튕겨서 탈출시키는 게임",
 		emoji: "☄️",
-		path: "games/bounce/index.html",
+		path: "games/js-bounce/index.html",
+	},
+	{
+		id: "brickStack",
+		title: "브릭 스택",
+		description: "블록 없애기 게임",
+		emoji: "🟦",
+		path: "games/js-brickstack/index.html",
 	},
 	// 여기에 계속 추가 가능
 ];
