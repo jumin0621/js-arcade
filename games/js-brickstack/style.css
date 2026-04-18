@@ -1,0 +1,229 @@
+/* --- 공통 기본 스타일 --- */
+body {
+	background-color: #121212;
+	margin: 0;
+	color: white;
+	font-family: sans-serif;
+	overflow-x: hidden;
+}
+.game-wrapper {
+	width: 100%;
+	max-width: 480px;
+	margin: 0 auto;
+	padding: 20px 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+}
+
+/* 헤더: 네온 스타일 */
+.game-header {
+	margin-bottom: 25px;
+	display: flex;
+	justify-content: center;
+}
+.stage-container {
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+}
+.stage-container .label {
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 1rem;
+	font-weight: bold;
+	letter-spacing: 2px;
+	text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+.stage-container .value {
+	color: #00e5ff;
+	font-size: 1.2rem;
+	font-weight: bold;
+	font-family: "Courier New", Courier, monospace;
+	text-shadow:
+		0 0 10px #00e5ff,
+		0 0 20px rgba(0, 229, 255, 0.6);
+}
+
+/* 메인 레이아웃 (PC 기본) */
+.main-layout {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 30px;
+	width: 100%;
+}
+.canvas-container {
+	border: 3px solid #333;
+	border-radius: 8px;
+	flex-shrink: 0;
+	background: #000;
+}
+canvas#tetris {
+	display: block;
+	filter: brightness(0.9);
+	transition: filter 0.3s;
+}
+canvas#tetris:hover {
+	filter: brightness(1);
+}
+
+/* 사이드 패널 */
+.side-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+.next-box {
+	border: 2px solid #333;
+	padding: 10px;
+	border-radius: 8px;
+	text-align: center;
+	background: rgba(0, 0, 0, 0.2);
+}
+.side-label {
+	font-size: 0.7rem;
+	color: #888;
+	margin: 0 0 10px 0;
+	letter-spacing: 1px;
+}
+canvas#next {
+	background: #000;
+	border-radius: 4px;
+}
+
+/* 모바일 컨트롤러 (기본 숨김) */
+.mobile-controls {
+	display: none;
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+.modal-content {
+	background: #222;
+	padding: 30px;
+	border-radius: 15px;
+	border: 2px solid #00e5ff;
+	text-align: center;
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
+.primary-btn {
+	background: #00e5ff;
+	color: #000;
+	border: none;
+	padding: 12px 30px;
+	font-weight: bold;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 1rem;
+}
+.primary-btn:hover {
+	transform: scale(1.05);
+	background: #00b2cc;
+	box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+
+/* --- 모바일 전용 스타일 (480px 이하) --- */
+@media (max-width: 480px) {
+	.main-layout {
+		justify-content: flex-start;
+		gap: 10px;
+		padding: 0 5px;
+	}
+	canvas#tetris {
+		max-width: 58vw;
+		height: auto !important;
+	}
+	.side-panel {
+		display: flex;
+		flex-direction: column;
+		/* 핵심: NEXT는 맨 위, 조이스틱은 맨 아래로 밀어냄 */
+		justify-content: space-between;
+
+		/* 캔버스 높이와 맞추기 위해 캔버스 용 높이 설정 */
+		height: 373px; /* 캔버스 높이와 동일하게 맞춤 */
+		flex: 1;
+		gap: 0; /* space-between을 쓰므로 간격은 0으로 */
+		padding-bottom: 5px; /* 맨 아래 살짝 여백 */
+	}
+	canvas#next {
+		width: 65px !important;
+		height: 65px !important;
+	}
+
+	.mobile-controls {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		/* 조이스틱이 너무 가벼워 보이지 않게 하단 정렬 */
+		margin-top: auto;
+	}
+	.arrow-group {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		gap: 5px;
+	}
+
+	.ctrl-btn {
+		flex: 1;
+		height: 50px;
+		background: rgba(0, 229, 255, 0.1);
+		border: 1px solid rgba(0, 229, 255, 0.4);
+		border-radius: 12px;
+		color: #00e5ff;
+		font-size: 1.1rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+		touch-action: manipulation;
+		transition: all 0.1s;
+	}
+	.ctrl-btn.rotate {
+		width: 100%;
+		height: 50px;
+		flex: 0 0 50px;
+		margin-bottom: 2px;
+	} /* 회전 버튼 상단 고정 */
+	.ctrl-btn.space {
+		flex: none;
+		width: 100%;
+		height: 45px;
+		font-size: 0.9rem;
+		font-weight: bold;
+		background: rgba(0, 229, 255, 0.15); /* 조금 더 진하게 */
+		border-radius: 8px;
+		letter-spacing: 1px;
+	}
+	.ctrl-btn:active {
+		background: #00e5ff;
+		color: #121212;
+		transform: scale(0.95); /* 눌리는 효과 */
+		box-shadow: 0 0 15px #00e5ff;
+	}
+}
