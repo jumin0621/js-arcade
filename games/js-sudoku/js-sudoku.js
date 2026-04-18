@@ -175,6 +175,16 @@ function check(grid, r, col, num, conf) {
 
 function render(conf) {
 	boardEl.innerHTML = "";
+	const header = document.querySelector(".game-header");
+	// 보드가 화면에 그려진 직후의 실제 너비를 측정하여 헤더에 대입
+	setTimeout(() => {
+		if (board && header) {
+			const boardWidth = boardEl.getBoundingClientRect().width; // 실제 렌더링된 너비 정밀 측정
+			header.style.width = boardWidth + "px";
+			header.style.maxWidth = boardWidth + "px";
+			header.style.minWidth = boardWidth + "px";
+		}
+	}, 0);
 
 	// 모바일 터치 최적화 타일 크기 (size에 따라 유동적으로)
 	// 4x4일 때는 크게, 9x9일 때는 적당하게 조정

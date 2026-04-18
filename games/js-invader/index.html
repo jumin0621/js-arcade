@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | JS-Invader ✏️</title>
+		<link rel="stylesheet" href="style.css" />
+		<link rel="icon" type="image/png" href="../../assets/img/logo.png" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">STAGE</span>
+					<span id="stageDisplay" class="info-value">1</span>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">SCORE</span>
+					<span id="scoreDisplay" class="info-value">0</span>
+				</div>
+			</div>
+
+			<canvas id="gameCanvas"></canvas>
+
+			<div class="mobile-controls">
+				<button id="btnLeft" class="ctrl-btn">◀</button>
+				<button id="btnRight" class="ctrl-btn">▶</button>
+				<button id="btnFire" class="ctrl-btn fire">FIRE</button>
+			</div>
+
+			<div class="controls-guide">
+				<p>⌨️ <span>방향키</span> 이동 / <span>Space(꾹)</span> 연사</p>
+				<p>📱 적을 격파하면 <span>코드 파편</span>이 튀어나옵니다!</p>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">JS-CODE INVADER</h2>
+				<p id="modalText">JS코드를 지닌 적들을 격파하세요!</p>
+				<button id="startBtn" class="primary-btn">컴파일 시작</button>
+			</div>
+		</div>
+		<script src="js-invader.js"></script>
+	</body>
+</html>

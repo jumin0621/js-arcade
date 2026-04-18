@@ -50,8 +50,15 @@ const gameData = [
 		id: "sudoku",
 		title: "스도쿠",
 		description: "1~9까지 숫자를 충복없이 채우는 게임",
-		emoji: "🧩",
+		emoji: "✏️",
 		path: "games/js-sudoku/index.html",
+	},
+	{
+		id: "invader",
+		title: "코드 브레이커",
+		description: "바닐라JS로 코드를 격파하는 게임",
+		emoji: "👾",
+		path: "games/js-invader/index.html",
 	},
 	// 여기에 계속 추가 가능
 ];
