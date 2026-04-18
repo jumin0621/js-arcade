@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | JS-Sudoku</title>
+		<link rel="stylesheet" href="style.css" />
+		<link rel="icon" type="image/png" href="../../assets/img/logo.png" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">LEVEL</span>
+					<span id="levelDisplay" class="info-value">1</span>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">TIME</span>
+					<span id="timer" class="info-value">0</span>
+				</div>
+			</div>
+
+			<div id="sudokuBoard" class="sudoku-board"></div>
+
+			<div id="numberPad" class="number-pad"></div>
+
+			<div class="controls-guide">
+				<p>
+					✨ 숫자를 입력하거나 칸을 선택하고 <span>숫자</span>를 클릭하세요.
+				</p>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">JS-SUDOKU</h2>
+				<p id="modalText">중복 없이 숫자를 가득 채워주세요!</p>
+				<button id="startBtn" class="primary-btn">게임 시작</button>
+			</div>
+		</div>
+		<script src="js-sudoku.js"></script>
+	</body>
+</html>
