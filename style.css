@@ -207,6 +207,26 @@ main {
 	margin-top: 10px;
 }
 
+/* --- 조회수 레이아웃 스타일 --- */
+.info {
+	display: flex;
+	flex-direction: column;
+}
+
+.view-count {
+	font-size: 0.75rem;
+	color: #bb86fc; /* 네온 보라색 */
+	margin-top: 8px;
+	font-weight: 500;
+	opacity: 0.7;
+	letter-spacing: 0.5px;
+}
+
+.game-card:hover .view-count {
+	opacity: 1;
+	text-shadow: 0 0 5px rgba(187, 134, 252, 0.4);
+}
+
 /* 푸터 전체 컨테이너 */
 .site-footer {
 	background-color: #1a1a1a;

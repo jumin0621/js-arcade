@@ -19,6 +19,7 @@ let obstacles = [],
 let isInvincible = false;
 let invincibleTimer = 0;
 let nextSpawnFrame = 100;
+let keys = { jumping: false };
 
 const input = { jumping: false };
 
