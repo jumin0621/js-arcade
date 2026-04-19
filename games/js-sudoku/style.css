@@ -118,7 +118,7 @@ body {
 	color: #00e5ff;
 }
 
-/* 모달 스타일 (공통) */
+/* 통합 모달 스타일 */
 .modal-overlay {
 	position: fixed;
 	top: 0;
@@ -139,15 +139,14 @@ body {
 	text-align: center;
 	width: 80%;
 	max-width: 300px;
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
 }
-/* 모달 제목 */
 .modal-content h2 {
 	color: #00e5ff;
 	margin-top: 0;
 	font-size: 1.8rem;
 	letter-spacing: 1px;
 }
-/* 모달 설명 텍스트 */
 .modal-content p {
 	color: #bbb;
 	margin: 20px 0 30px;
@@ -161,7 +160,8 @@ body {
 	font-weight: bold;
 	border-radius: 8px;
 	cursor: pointer;
-	margin-top: 20px;
+	font-size: 1rem;
+	transition: 0.2s;
 }
 .primary-btn:hover {
 	transform: scale(1.05);

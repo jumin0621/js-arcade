@@ -43,7 +43,7 @@ const gameData = [
 		id: "bugsweeper",
 		title: "버그 스위퍼",
 		description: "버그를 찾아내는 게임",
-		emoji: "💣",
+		emoji: "👿",
 		path: "games/js-bugsweeper/index.html",
 	},
 	{
@@ -56,9 +56,23 @@ const gameData = [
 	{
 		id: "invader",
 		title: "코드 브레이커",
-		description: "바닐라JS로 코드를 격파하는 게임",
+		description: "바닐라JS로 버그 코드를 격파하는 게임",
 		emoji: "👾",
 		path: "games/js-invader/index.html",
+	},
+	{
+		id: "pixelrunner",
+		title: "픽셀 러너",
+		description: "장애물을 피해서 달리는 게임",
+		emoji: "🏃‍♂️",
+		path: "games/js-pixelrunner/index.html",
+	},
+	{
+		id: "puzzle",
+		title: "퍼즐 맞추기",
+		description: "흩어진 퍼즐 조각을 맞추는 게임",
+		emoji: "🧩",
+		path: "games/js-puzzle/index.html",
 	},
 	// 여기에 계속 추가 가능
 ];

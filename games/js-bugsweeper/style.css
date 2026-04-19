@@ -145,7 +145,6 @@ body {
 /* 모달 설명 텍스트 */
 .modal-content p {
 	color: #bbb;
-	margin: 20px 0 30px;
 	line-height: 1.5;
 }
 .primary-btn {
