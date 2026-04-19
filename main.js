@@ -71,18 +71,19 @@ function renderGames() {
 			// 로컬에서 조회수 가져오기 (기본값 랜덤 부여로 플랫폼 느낌 살리기)
 			let views = localStorage.getItem(`v-${game.id}`);
 			if (!views) {
-				views = Math.floor(Math.random() * 100) + 50;
+				// 조회수 수정
+				views = Math.floor(Math.random() * 1000) + 50;
 				localStorage.setItem(`v-${game.id}`, views);
 			}
 			return `
-        <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')" style="cursor:pointer;">
-            <div class="thumbnail">${game.emoji}</div>
-            <div class="info">
-                <h3>${game.title}</h3>
-                <p>${game.description}</p>
-                <span class="view-count">👁️ ${parseInt(views).toLocaleString()}</span>
-            </div>
-        </div>`;
+    <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')" style="cursor:pointer;">
+        <span class="view-count">👁️ ${parseInt(views).toLocaleString()}</span>
+        <div class="thumbnail">${game.emoji}</div>
+        <div class="info">
+            <h3>${game.title}</h3>
+            <p>${game.description}</p>
+        </div>
+    </div>`;
 		})
 		.join("");
 }
@@ -118,13 +119,13 @@ function renderFilteredGames(games) {
 			let views = localStorage.getItem(`v-${game.id}`) || 0;
 			return `
         <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')">
-            <div class="thumbnail">${game.emoji}</div>
-            <div class="info">
-                <h3>${game.title}</h3>
-                <p>${game.description}</p>
-                <span class="view-count">👁️ ${parseInt(views).toLocaleString()}</span>
-            </div>
-        </div>`;
+        <span class="view-count">👁️ ${parseInt(views).toLocaleString()}</span>
+        <div class="thumbnail">${game.emoji}</div>
+        <div class="info">
+            <h3>${game.title}</h3>
+            <p>${game.description}</p>
+        </div>
+    </div>`;
 		})
 		.join("");
 }

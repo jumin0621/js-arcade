@@ -126,6 +126,7 @@ main {
 
 /* 게임 카드 스타일 */
 .game-card {
+	position: relative;
 	background: #1e1e1e;
 	border-radius: 12px;
 	border: 1px solid #333;
@@ -214,17 +215,17 @@ main {
 }
 
 .view-count {
-	font-size: 0.75rem;
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	padding: 4px 8px;
+	border-radius: 20px;
+	font-size: 0.7rem;
 	color: #bb86fc; /* 네온 보라색 */
-	margin-top: 8px;
-	font-weight: 500;
-	opacity: 0.7;
-	letter-spacing: 0.5px;
-}
-
-.game-card:hover .view-count {
-	opacity: 1;
-	text-shadow: 0 0 5px rgba(187, 134, 252, 0.4);
+	font-weight: 600;
+	z-index: 10; /* 썸네일보다 위에 표시 */
+	backdrop-filter: blur(4px); /* 배경 흐림 효과로 더 고급스럽게 */
+	transition: all 0.3s ease;
 }
 
 /* 푸터 전체 컨테이너 */
