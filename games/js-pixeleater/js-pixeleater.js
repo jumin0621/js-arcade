@@ -326,7 +326,8 @@ function gameOver() {
 	gameActive = false;
 	statusDisplay.innerText = "CRASHED";
 	modalTitle.innerText = "GAME OVER";
-	modalText.innerText = `STAGE ${stage}에서 픽셀과 마주쳤습니다.`;
+	modalText.innerText =
+		`STAGE${stage}에서 픽셀과 마주쳤습니다.` + `최종스코어 : ${score}`;
 	startBtn.innerText = "다시 시작";
 	startBtn.onclick = () => initGame(false);
 	modal.style.display = "flex";
