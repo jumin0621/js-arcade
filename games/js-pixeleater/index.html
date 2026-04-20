@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | PIXEL EATER</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">SCORE</span>
+					<span id="scoreDisplay" class="info-value">0</span>
+				</div>
+				<div class="info-item">
+					<span class="info-label">STAGE</span>
+					<span id="stageDisplay" class="info-value">1</span>
+				</div>
+				<div class="info-item">
+					<span class="info-label">STATUS</span>
+					<span id="statusDisplay" class="info-value">READY</span>
+				</div>
+			</div>
+
+			<div class="canvas-container">
+				<canvas id="gameCanvas"></canvas>
+			</div>
+
+			<div id="desktopGuide" class="controls-guide">
+				<p>⌨️ 방향키로 보물상자를 조종하세요.</p>
+			</div>
+
+			<div id="virtualPad" class="virtual-pad">
+				<div class="pad-row">
+					<button id="padUp" class="pad-btn">▲</button>
+				</div>
+				<div class="pad-row">
+					<button id="padLeft" class="pad-btn">◀</button>
+					<button id="padDown" class="pad-btn">▼</button>
+					<button id="padRight" class="pad-btn">▶</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay" style="display: flex">
+			<div class="modal-content">
+				<h2 id="modalTitle">PIXEL EATER</h2>
+				<p id="modalText">모든 픽셀을 먹어치우세요!</p>
+				<button id="startBtn" class="primary-btn" onclick="initGame()">
+					게임 시작
+				</button>
+			</div>
+		</div>
+
+		<script src="js-pixeleater.js"></script>
+	</body>
+</html>

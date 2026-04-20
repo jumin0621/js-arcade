@@ -69,6 +69,13 @@ const gameData = [
 		emoji: "🧩",
 		path: "games/js-jigsawpuzzle/index.html",
 	},
+	{
+		id: "pixeleater",
+		title: "픽셀 이터",
+		description: "몬스터를 피해 데이터를 먹어치우는 게임",
+		emoji: "👻",
+		path: "games/js-pixeleater/index.html",
+	},
 ];
 
 function renderGames() {
