@@ -64,8 +64,11 @@ function generateRandomMap() {
 	// 아이템 배치 및 순환 통로 생성
 	for (let r = 1; r < ROWS - 1; r++) {
 		for (let c = 1; c < COLS - 1; c++) {
-			if (newMap[r][c] === 0) newMap[r][c] = 2;
-			else if (newMap[r][c] === 1 && Math.random() > 0.85) newMap[r][c] = 2;
+			// 모든 길(0)에 채우지 않고, 60% 확률로만 픽셀을 배치 (0.4보다 클 때)
+			// 이 숫자를 높이면(예: 0.7) 픽셀이 더 적어지고, 낮추면 더 많아집니다.
+			if (newMap[r][c] === 0 && Math.random() > 0.6) {
+				newMap[r][c] = 2;
+			} else if (newMap[r][c] === 1 && Math.random() > 0.85) newMap[r][c] = 2;
 		}
 	}
 	return newMap;
