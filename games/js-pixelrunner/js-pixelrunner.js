@@ -13,14 +13,13 @@ let gameActive = false;
 let score = 0;
 let gameSpeed = 3;
 let frameCount = 0;
+let bgObjects = [];
 let obstacles = [],
 	clouds = [],
 	items = [];
 let isInvincible = false;
 let invincibleTimer = 0;
 let nextSpawnFrame = 100;
-let keys = { jumping: false };
-
 const input = { jumping: false };
 
 // --- 픽셀 데이터 ---
@@ -75,20 +74,56 @@ class Cloud {
 	}
 }
 
+class BackgroundObject {
+	constructor(type) {
+		this.type = type;
+		this.x = canvas.width + 50;
+		if (this.type === "tree") {
+			this.width = 40;
+			this.height = 60 + Math.random() * 20;
+			this.y = canvas.height - 20 - this.height;
+			this.speed = 2.0;
+			this.color = "#2d5a27";
+		} else {
+			this.width = 60 + Math.random() * 20;
+			this.height = 100 + Math.random() * 80;
+			this.y = canvas.height - 20 - this.height;
+			this.speed = 1.2;
+			this.color = "#2a2a35";
+		}
+	}
+	update() {
+		this.x -= this.speed;
+	}
+	draw() {
+		ctx.fillStyle = this.color;
+		if (this.type === "tree") {
+			// [수정] 소나무처럼 뾰족한 픽셀 나무 그리기
+			const centerX = this.x + this.width / 2;
+			ctx.fillRect(centerX - 4, this.y + this.height - 15, 8, 15); // 기둥
+			// 3단 잎 (삼각형 느낌의 픽셀 레이어)
+			ctx.fillRect(centerX - 20, this.y + this.height - 35, 40, 10); // 하단 잎
+			ctx.fillRect(centerX - 15, this.y + this.height - 50, 30, 10); // 중단 잎
+			ctx.fillRect(centerX - 8, this.y + this.height - 65, 16, 15); // 상단 뾰족 잎
+		} else {
+			ctx.fillRect(this.x, this.y, this.width, this.height);
+			ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+			ctx.fillRect(this.x + 5, this.y + 10, this.width - 10, 5);
+		}
+	}
+}
+
 class Obstacle {
 	constructor(type) {
 		this.type = type;
 		this.width = 24;
 		this.height = 24;
 		this.x = canvas.width;
-		// 공중 몬스터는 화면 상단에서 랜덤하게 생성
 		this.y =
 			type === "ground"
 				? canvas.height - 20 - this.height
-				: Math.random() * 50 + 20;
+				: Math.random() * 80 + 20;
 		this.color = type === "ground" ? "#00e5ff" : "#ff0266";
-
-		// 사선 공격을 위한 벡터 계산
 		this.vx = -gameSpeed;
 		this.vy = 0;
 		this.isTargeted = false;
@@ -100,7 +135,6 @@ class Obstacle {
 		ctx.fillStyle = this.color;
 		const pSize = this.width / 3;
 		const pixelMap = this.type === "ground" ? bugPixel : errorPixel;
-
 		pixelMap.forEach((row, ri) => {
 			row.forEach((col, ci) => {
 				if (col)
@@ -111,13 +145,12 @@ class Obstacle {
 	}
 	update() {
 		if (this.type === "air") {
-			// [수정] 캐릭터와 일정 거리가 되면 캐릭터 위치를 향해 사선 돌진
-			if (!this.isTargeted && this.x < 350) {
+			if (!this.isTargeted && this.x < 300) {
 				const dx = player.x - this.x;
 				const dy = player.y - this.y;
 				const dist = Math.sqrt(dx * dx + dy * dy);
-				this.vx = (dx / dist) * (gameSpeed + 3);
-				this.vy = (dy / dist) * (gameSpeed + 3);
+				this.vx = (dx / dist) * (gameSpeed + 2);
+				this.vy = (dy / dist) * (gameSpeed + 2);
 				this.isTargeted = true;
 			}
 			this.x += this.vx;
@@ -141,8 +174,6 @@ class Item {
 		ctx.shadowColor = "#ffff00";
 		ctx.fillStyle = "#ffff00";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
-		ctx.fillStyle = "#000";
-		ctx.fillRect(this.x + 4, this.y + 4, 12, 12);
 		ctx.restore();
 	}
 	update() {
@@ -158,12 +189,11 @@ function initGame() {
 	frameCount = 0;
 	obstacles = [];
 	clouds = [new Cloud()];
+	bgObjects = [];
 	items = [];
 	isInvincible = false;
 	invincibleTimer = 0;
-
-	player.width = player.baseWidth;
-	player.height = player.baseHeight;
+	nextSpawnFrame = 100;
 	player.y = canvas.height - 20 - player.height;
 	player.dy = 0;
 
@@ -176,16 +206,32 @@ function initGame() {
 function updateLoop() {
 	if (!gameActive) return;
 
-	if (frameCount > 0 && frameCount % 200 === 0) gameSpeed += 0.3;
-
-	if (frameCount >= nextSpawnFrame) {
-		obstacles.push(new Obstacle(Math.random() > 0.4 ? "ground" : "air"));
-		// 다음 출현까지의 대기 시간을 랜덤하게 설정 (속도가 빠를수록 대기 시간의 최대치 감소)
-		nextSpawnFrame =
-			frameCount + Math.floor(Math.random() * (150 - gameSpeed * 5) + 30);
+	frameCount++;
+	// 1초(60프레임)마다 점수가 1씩 올라가도록 변경
+	// frameCount를 60으로 나눈 나머지가 0일 때만 점수를 올립니다.
+	if (frameCount % 60 === 0) {
+		score += 1;
+		scoreEl.innerText = score;
 	}
 
-	// 무적 모드: 거대화 + 반짝임(투명도 조절)
+	if (frameCount % 300 === 0) gameSpeed += 0.2;
+
+	// 배경 요소 생성
+	if (frameCount % 120 === 0) bgObjects.push(new BackgroundObject("tree"));
+	if (frameCount % 450 === 0) bgObjects.push(new BackgroundObject("building"));
+	bgObjects.forEach((obj, i) => {
+		obj.update();
+		if (obj.x + obj.width < -50) bgObjects.splice(i, 1);
+	});
+
+	// [수정] 2. 장애물 출현 빈도 보정 (강제 생성 주기 단축)
+	if (frameCount >= nextSpawnFrame) {
+		obstacles.push(new Obstacle(Math.random() > 0.4 ? "ground" : "air"));
+		nextSpawnFrame =
+			frameCount + Math.floor(Math.random() * (120 - gameSpeed * 4) + 40);
+	}
+
+	// 무적 상태 처리
 	if (isInvincible) {
 		invincibleTimer--;
 		player.width = player.baseWidth * 1.5;
@@ -197,6 +243,7 @@ function updateLoop() {
 		}
 	}
 
+	// 점프 및 물리
 	if (input.jumping && player.grounded) {
 		player.dy = player.jumpForce;
 		player.grounded = false;
@@ -210,16 +257,14 @@ function updateLoop() {
 		player.grounded = true;
 	}
 
+	// 구름
 	if (frameCount % 180 === 0) clouds.push(new Cloud());
 	clouds.forEach((c, i) => {
 		c.update();
-		if (c.x + 40 < 0) clouds.splice(i, 1);
+		if (c.x + 50 < 0) clouds.splice(i, 1);
 	});
 
-	if (frameCount % Math.max(45, Math.floor(120 - gameSpeed * 2.5)) === 0) {
-		obstacles.push(new Obstacle(Math.random() > 0.4 ? "ground" : "air"));
-	}
-
+	// 장애물 업데이트 및 충돌
 	obstacles.forEach((ob, i) => {
 		ob.update();
 		if (
@@ -231,14 +276,13 @@ function updateLoop() {
 		) {
 			gameOver();
 		}
-		if (ob.x + ob.width < 0 || ob.y > canvas.height) {
+		if (ob.x + ob.width < -50 || ob.y > canvas.height + 50) {
 			obstacles.splice(i, 1);
-			score += 10;
-			scoreEl.innerText = score;
 		}
 	});
 
-	if (frameCount % 1200 === 0) items.push(new Item());
+	// 아이템
+	if (frameCount % 1500 === 0) items.push(new Item());
 	items.forEach((it, i) => {
 		it.update();
 		if (
@@ -254,54 +298,23 @@ function updateLoop() {
 	});
 
 	player.animFrame++;
-	frameCount++;
 	render();
 	requestAnimationFrame(updateLoop);
 }
 
-function handleJumpAction(e) {
-	if (e) {
-		// 브라우저가 터치를 스크롤로 오해하지 않게 차단
-		if (e.cancelable) e.preventDefault();
-	}
-
-	// 원래 소스의 점프 방식에 맞춰 한 줄만 선택하세요
-	if (typeof player !== "undefined" && player.jump) {
-		player.jump(); // 직접 호출 방식일 때
-	}
-}
-
-function handleJumpEnd() {
-	if (typeof keys !== "undefined") {
-		keys.jumping = false;
-	}
-}
-
-// 1. 점프 버튼에 리스너 등록
-btnJump.addEventListener("touchstart", handleJumpAction, { passive: false });
-btnJump.addEventListener("mousedown", handleJumpAction);
-
-// 2. 버튼에서 손을 뗐을 때 (keys 방식 사용 시 필요)
-btnJump.addEventListener("touchend", handleJumpEnd);
-btnJump.addEventListener("mouseup", handleJumpEnd);
-
-// 3. 캔버스 영역 터치 시에도 점프하게 하려면 추가
-canvas.addEventListener("touchstart", handleJumpAction, { passive: false });
-
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	clouds.forEach((c) => c.draw());
+	bgObjects.forEach((obj) => obj.draw());
+
 	ctx.strokeStyle = "#444";
-	ctx.strokeRect(0, canvas.height - 20, canvas.width, 1);
+	ctx.beginPath();
+	ctx.moveTo(0, canvas.height - 20);
+	ctx.lineTo(canvas.width, canvas.height - 20);
+	ctx.stroke();
 
 	ctx.save();
-	// [수정] 무적 상태일 때 거대해진 상태에서 깜빡임 효과 추가
-	if (isInvincible && frameCount % 10 < 5) {
-		ctx.globalAlpha = 0.3;
-	}
-
-	ctx.shadowBlur = 10;
-	ctx.shadowColor = player.color;
+	if (isInvincible && frameCount % 10 < 5) ctx.globalAlpha = 0.3;
 	ctx.fillStyle = player.color;
 	const pSize = player.width / 4;
 	playerPixel.forEach((row, ri) => {
@@ -329,43 +342,24 @@ function render() {
 function gameOver() {
 	gameActive = false;
 	statusEl.innerText = "CRASHED";
-	document.getElementById("modalTitle").innerText = "GAME OVER";
-	document.getElementById("modalText").innerText =
-		"밀려오는 버그를 피하지 못했습니다!";
-	document.getElementById("startBtn").innerText = "다시 달리기";
 	modal.style.display = "flex";
 }
 
-// --- 이벤트 핸들러 ---
+// 이벤트 리스너
 window.onkeydown = (e) => {
-	if (
-		e.code === "Space" ||
-		e.code === "ArrowUp" ||
-		e.keyCode === 32 ||
-		e.keyCode === 38
-	) {
+	if (["Space", "ArrowUp"].includes(e.code)) {
 		e.preventDefault();
 		input.jumping = true;
 	}
 };
 window.onkeyup = (e) => {
-	if (
-		e.code === "Space" ||
-		e.code === "ArrowUp" ||
-		e.keyCode === 32 ||
-		e.keyCode === 38
-	) {
-		input.jumping = false;
-	}
+	if (["Space", "ArrowUp"].includes(e.code)) input.jumping = false;
 };
 btnJump.onmousedown = btnJump.ontouchstart = (e) => {
 	e.preventDefault();
 	input.jumping = true;
 };
-btnJump.onmouseup =
-	btnJump.onmouseleave =
-	btnJump.ontouchend =
-		() => {
-			input.jumping = false;
-		};
+btnJump.onmouseup = btnJump.ontouchend = () => {
+	input.jumping = false;
+};
 startBtn.onclick = initGame;

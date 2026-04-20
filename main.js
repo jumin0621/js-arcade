@@ -57,10 +57,17 @@ const gameData = [
 	},
 	{
 		id: "puzzle",
-		title: "퍼즐 맞추기",
-		description: "흩어진 퍼즐 조각을 맞추는 게임",
-		emoji: "🧩",
+		title: "슬라이드 퍼즐",
+		description: "슬라이드로 완성하는 퍼즐 게임",
+		emoji: "🖼️",
 		path: "games/js-puzzle/index.html",
+	},
+	{
+		id: "jigsaw",
+		title: "직소 퍼즐",
+		description: "퍼즐 조각을 맞추는 게임",
+		emoji: "🧩",
+		path: "games/js-jigsawpuzzle/index.html",
 	},
 ];
 

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | JS-JigsawPuzzle</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">PROGRESS</span>
+					<span id="progressDisplay" class="info-value">0%</span>
+				</div>
+
+				<div class="hint-container" id="hintContainer">
+					<div class="hint-thumb" id="hintThumb"></div>
+					<span class="hint-label">HINT</span>
+					<div class="hint-preview" id="hintPreview"></div>
+				</div>
+
+				<div class="info-item right">
+					<span class="info-label">PIECES</span>
+					<span id="pieceDisplay" class="info-value">READY</span>
+				</div>
+			</div>
+
+			<div class="canvas-container" id="gameArea">
+				<canvas id="puzzleCanvas"></canvas>
+			</div>
+
+			<div class="controls-guide">
+				<p>🧩 조각을 드래그하여 제자리에 맞추세요.</p>
+				<p>근처에 가면 자동으로 '착!' 하고 달라붙습니다.</p>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">JIGSAW PUZZLE</h2>
+				<p id="modalMessage">조각난 퍼즐조각을 맞춰주세요!</p>
+
+				<div id="difficultyOptions" class="difficulty-options">
+					<button class="diff-btn" data-grid="3">초급 (3x3)</button>
+					<button class="diff-btn" data-grid="4">중급 (4x4)</button>
+					<button class="diff-btn" data-grid="6">고급 (6x6)</button>
+				</div>
+
+				<div id="resultOptions" class="result-options" style="display: none">
+					<button class="action-btn" onclick="location.reload()">
+						새 게임 하기
+					</button>
+					<button
+						class="action-btn main-btn"
+						onclick="window.parent.exitGame()"
+					>
+						메인으로
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="js-jigsawpuzzle.js"></script>
+	</body>
+</html>

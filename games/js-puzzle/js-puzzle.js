@@ -56,7 +56,7 @@ function initGame() {
 	diffDisplay.innerText = `${gridSize}x${gridSize}`;
 
 	// 모달 초기 상태로 복구
-	document.getElementById("difficulty-options").style.display = "flex";
+	document.getElementById("difficultyOptions").style.display = "flex";
 	document.getElementById("resultOptions").style.display = "none";
 	modal.style.display = "none";
 
@@ -197,9 +197,9 @@ function checkWin() {
 	if (isWin && moves > 0) {
 		setTimeout(() => {
 			// 1. 모달 텍스트 변경
-			document.getElementById("modalTitle").innerText = "DEBUGGING COMPLETE!";
+			document.getElementById("modalTitle").innerText = "COMPLETE!";
 			document.getElementById("modalMessage").innerHTML =
-				`이미지 복구에 성공했습니다!<br><br><strong>총 이동 횟수: ${moves}회</strong>`;
+				`이미지를 모두 맞췄습니다!<br><br><strong>총 이동 횟수: ${moves}회</strong>`;
 
 			// 2. 난이도 선택창 숨기고 결과 버튼 보이기
 			document.getElementById("difficultyOptions").style.display = "none";

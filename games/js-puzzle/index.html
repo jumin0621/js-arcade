@@ -41,12 +41,10 @@
 
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
-				<h2 id="modalTitle">JS-PUZZLE</h2>
-				<p id="modalMessage">
-					이미지가 손상되었습니다.<br />난이도를 선택하여 이미지를 복구하세요.
-				</p>
+				<h2 id="modalTitle">SLIDE PUZZLE</h2>
+				<p id="modalMessage">섞여있는 이미지를 복구해주세요!</p>
 
-				<div id="difficulty-options">
+				<div id="difficultyOptions" class="difficulty-options">
 					<button class="diff-btn" data-grid="3">초급 (3x3)</button>
 					<button class="diff-btn" data-grid="5">중급 (5x5)</button>
 					<button class="diff-btn" data-grid="7">고급 (7x7)</button>
@@ -58,7 +56,7 @@
 					</button>
 					<button
 						class="action-btn main-btn"
-						onclick="location.href = '../../index.html'"
+						onclick="window.parent.exitGame()"
 					>
 						메인으로
 					</button>
