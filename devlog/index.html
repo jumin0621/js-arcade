@@ -1,615 +1,615 @@
 <!doctype html>
 <html lang="ko">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta
-			name="description"
-			content="JS-Arcade 게임 개발일지, 기획 및 트러블슈팅 해결 방법을 확인할 수 있습니다."
-		/>
-		<meta property="og:title" content="JS-Arcade 게임 개발일지" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="JS-Arcade 게임 개발일지, 기획 및 트러블슈팅 해결 방법을 확인할 수 있습니다."
+    />
+    <meta property="og:title" content="JS-Arcade 게임 개발일지" />
 
-		<title>Devlog | JS-Arcade</title>
-		<style>
-			/* 기본 스타일 초기화 */
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-			body {
-				font-family: "Pretendard", sans-serif;
-				background-color: #121212;
-				color: #e0e0e0;
-			}
-			a {
-				text-decoration: none;
-				color: inherit;
-			}
+    <title>Devlog | JS-Arcade</title>
+    <style>
+      /* 기본 스타일 초기화 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Pretendard", sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
 
-			/* 상단 네비게이션 */
-			header {
-				background-color: #1e1e1e;
-				border-bottom: 1px solid #333;
-				padding: 1rem 2rem;
-				position: sticky;
-				top: 0;
-				z-index: 100;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-			.logo {
-				font-size: 1.5rem;
-				font-weight: bold;
-				color: #bb86fc;
-			}
-			.logo-group {
-				display: flex;
-				align-items: center;
-				gap: 12px; /* 로고와 글자 사이 간격 */
-				text-decoration: none;
-			}
-			.logo-symbol {
-				height: 32px; /* 로고 높이 */
-				width: auto;
-			}
-			.logo-text {
-				font-size: 1.1rem;
-				font-weight: 800;
-				color: #ffffff;
-				letter-spacing: -0.5px;
-				white-space: nowrap;
-				/* 로고의 청록색 느낌을 텍스트에도 살짝 주려면 아래 속성 추가 */
-				background: linear-gradient(to right, #ffffff, #00e5ff);
-				-webkit-background-clip: text;
-				background-clip: text;
-				-webkit-text-fill-color: transparent;
-			}
-			nav ul {
-				display: flex;
-				list-style: none;
-				gap: 12px;
-			}
-			nav ul li {
-				color: #b0b0b0;
-				font-size: 0.95rem;
-				font-weight: 500;
-				cursor: pointer;
-				transition: color 0.2s;
-			}
-			nav ul li:hover {
-				color: #00e5ff;
-				cursor: pointer;
-			}
+      /* 상단 네비게이션 */
+      header {
+        background-color: #1e1e1e;
+        border-bottom: 1px solid #333;
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #bb86fc;
+      }
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 12px; /* 로고와 글자 사이 간격 */
+        text-decoration: none;
+      }
+      .logo-symbol {
+        height: 32px; /* 로고 높이 */
+        width: auto;
+      }
+      .logo-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+        white-space: nowrap;
+        /* 로고의 청록색 느낌을 텍스트에도 살짝 주려면 아래 속성 추가 */
+        background: linear-gradient(to right, #ffffff, #00e5ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      nav ul {
+        display: flex;
+        list-style: none;
+        gap: 12px;
+      }
+      nav ul li {
+        color: #b0b0b0;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      nav ul li:hover {
+        color: #00e5ff;
+        cursor: pointer;
+      }
 
-			/* 패들렛 그리드 스타일만 추가 */
-			.devlog-wrapper {
-				padding: 60px 20px;
-				max-width: 1200px;
-				margin: 0 auto;
-			}
-			.shelf-header {
-				margin-bottom: 40px;
-				border-bottom: 2px solid #333;
-				padding-bottom: 10px;
-			}
+      /* 패들렛 그리드 스타일만 추가 */
+      .devlog-wrapper {
+        padding: 60px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .shelf-header {
+        margin-bottom: 40px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+      }
 
-			.padlet-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-				gap: 25px;
-			}
+      .padlet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+      }
 
-			.post-it {
-				background: #1e1e1e;
-				border: 1px solid #ddd;
-				border-bottom: 4px solid #2ecc71; /* 카테고리별 포인트 컬러 */
-				padding: 0;
-				border-radius: 8px;
-				transition: 0.3s;
-				cursor: pointer;
-				display: flex;
-				flex-direction: column;
-			}
+      .post-it {
+        background: #1e1e1e;
+        border: 1px solid #ddd;
+        border-bottom: 4px solid #2ecc71; /* 카테고리별 포인트 컬러 */
+        padding: 0;
+        border-radius: 8px;
+        transition: 0.3s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+      }
 
-			.post-it:hover {
-				transform: rotate(-1deg) translateY(-5px);
-				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-			}
+      .post-it:hover {
+        transform: rotate(-1deg) translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
 
-			.post-it img {
-				width: 100%;
-				height: 190px;
-				padding-top: 10px;
-				object-fit: cover;
-				border-radius: 8px 8px 0 0;
-			}
-			.post-it .inner {
-				padding: 20px;
-			}
-			.post-it .tag {
-				font-size: 12px;
-				font-weight: bold;
-				color: #2ecc71;
-				text-transform: uppercase;
-			}
-			.post-it h3 {
-				margin: 10px 0;
-				font-size: 20px;
-				line-height: 1.4;
-			}
-			.post-it p {
-				color: #666;
-				font-size: 14px;
-				line-height: 1.6;
-			}
+      .post-it img {
+        width: 100%;
+        height: 190px;
+        padding-top: 10px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+      }
+      .post-it .inner {
+        padding: 20px;
+      }
+      .post-it .tag {
+        font-size: 12px;
+        font-weight: bold;
+        color: #2ecc71;
+        text-transform: uppercase;
+      }
+      .post-it h3 {
+        margin: 10px 0;
+        font-size: 20px;
+        line-height: 1.4;
+      }
+      .post-it p {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.6;
+      }
 
-			/* 푸터 전체 컨테이너 */
-			.site-footer {
-				background-color: #1a1a1a;
-				color: #666;
-				padding: 60px 20px 40px;
-				text-align: center;
-				border-top: 1px solid #333;
-				margin-top: 50px;
-			}
+      /* 푸터 전체 컨테이너 */
+      .site-footer {
+        background-color: #1a1a1a;
+        color: #666;
+        padding: 60px 20px 40px;
+        text-align: center;
+        border-top: 1px solid #333;
+        margin-top: 50px;
+      }
 
-			.footer-content {
-				max-width: 1200px;
-				margin: 0 auto;
-			}
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-			/* 푸터 로고 이미지 */
-			.footer-logo img {
-				width: 40px; /* 로고 크기 최적화 */
-				height: auto;
-				margin-bottom: 15px;
-				filter: grayscale(1) opacity(0.5); /* 평소에는 흑백+반투명 */
-				transition: all 0.3s ease;
-			}
+      /* 푸터 로고 이미지 */
+      .footer-logo img {
+        width: 40px; /* 로고 크기 최적화 */
+        height: auto;
+        margin-bottom: 15px;
+        filter: grayscale(1) opacity(0.5); /* 평소에는 흑백+반투명 */
+        transition: all 0.3s ease;
+      }
 
-			.footer-logo img:hover {
-				filter: grayscale(0) opacity(1); /* 마우스 올리면 컬러 복원 */
-				transform: scale(1.1);
-			}
+      .footer-logo img:hover {
+        filter: grayscale(0) opacity(1); /* 마우스 올리면 컬러 복원 */
+        transform: scale(1.1);
+      }
 
-			/* 푸터 텍스트 스타일 */
-			.footer-title {
-				color: #888;
-				font-size: 1.2rem;
-				letter-spacing: 1px;
-				margin-bottom: 10px;
-			}
+      /* 푸터 텍스트 스타일 */
+      .footer-title {
+        color: #888;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+      }
 
-			.footer-description {
-				margin-bottom: 25px;
-				font-size: 0.85rem;
-				color: #555;
-			}
+      .footer-description {
+        margin-bottom: 25px;
+        font-size: 0.85rem;
+        color: #555;
+      }
 
-			/* 링크 스타일 */
-			.footer-links {
-				margin-bottom: 25px;
-			}
+      /* 링크 스타일 */
+      .footer-links {
+        margin-bottom: 25px;
+      }
 
-			.footer-links a {
-				color: #444;
-				margin: 0 15px;
-				text-decoration: none;
-				font-size: 0.8rem;
-				transition: color 0.2s;
-			}
+      .footer-links a {
+        color: #444;
+        margin: 0 15px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        transition: color 0.2s;
+      }
 
-			.footer-links a:hover {
-				color: #00e5ff; /* 로고 포인트 컬러로 변경 */
-			}
+      .footer-links a:hover {
+        color: #00e5ff; /* 로고 포인트 컬러로 변경 */
+      }
 
-			/* 카피라이트 */
-			.copyright {
-				font-size: 0.75rem;
-				color: #444;
-				letter-spacing: 0.5px;
-			}
+      /* 카피라이트 */
+      .copyright {
+        font-size: 0.75rem;
+        color: #444;
+        letter-spacing: 0.5px;
+      }
 
-			.copyright strong {
-				color: #666;
-			}
+      .copyright strong {
+        color: #666;
+      }
 
-			/* 모달 배경 (어둡고 투명하게) */
-			.modal-overlay {
-				display: none; /* 기본적으로 숨김 */
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: rgba(0, 0, 0, 0.85); /* 다크 모드에 맞춰 어둡게 */
-				z-index: 9999;
-				justify-content: center;
-				align-items: center;
-				backdrop-filter: blur(8px); /* 패들렛 느낌의 블러 효과 */
-			}
+      /* 모달 배경 (어둡고 투명하게) */
+      .modal-overlay {
+        display: none; /* 기본적으로 숨김 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85); /* 다크 모드에 맞춰 어둡게 */
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(8px); /* 패들렛 느낌의 블러 효과 */
+      }
 
-			/* 모달 창 */
-			.modal-window {
-				width: 90%;
-				max-width: 900px;
-				height: 85vh;
-				background: #1e1e1e; /* 다크 모드 배경색 */
-				border-radius: 20px;
-				display: flex;
-				flex-direction: column;
-				overflow: hidden;
-				border: 1px solid #333;
-				animation: slideUp 0.3s ease-out;
-			}
+      /* 모달 창 */
+      .modal-window {
+        width: 90%;
+        max-width: 900px;
+        height: 85vh;
+        background: #1e1e1e; /* 다크 모드 배경색 */
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid #333;
+        animation: slideUp 0.3s ease-out;
+      }
 
-			/* 상단 헤더 */
-			.modal-header {
-				padding: 15px 25px;
-				background: #252525;
-				border-bottom: 1px solid #333;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
+      /* 상단 헤더 */
+      .modal-header {
+        padding: 15px 25px;
+        background: #252525;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-			.modal-header h2 {
-				margin: 0;
-				font-size: 1.2rem;
-				color: #fff;
-			}
+      .modal-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+      }
 
-			.close-btn {
-				background: none;
-				border: none;
-				color: #888;
-				font-size: 1.5rem;
-				cursor: pointer;
-				transition: 0.2s;
-			}
+      .close-btn {
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: 0.2s;
+      }
 
-			.close-btn:hover {
-				color: #fff;
-				transform: scale(1.1);
-			}
+      .close-btn:hover {
+        color: #fff;
+        transform: scale(1.1);
+      }
 
-			/* 모달 내부 콘텐츠 스타일링 */
-			#modalContent {
-				color: #e0e0e0; /* 약간 밝은 회색으로 가독성 향상 */
-				font-family: "Pretendard", sans-serif;
-			}
+      /* 모달 내부 콘텐츠 스타일링 */
+      #modalContent {
+        color: #e0e0e0; /* 약간 밝은 회색으로 가독성 향상 */
+        font-family: "Pretendard", sans-serif;
+      }
 
-			#modalContent h1,
-			#modalContent h2,
-			#modalContent h3 {
-				color: #ffffff;
-				margin-top: 1.5em;
-				margin-bottom: 0.5em;
-			}
+      #modalContent h1,
+      #modalContent h2,
+      #modalContent h3 {
+        color: #ffffff;
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+      }
 
-			/* 바닐라 스네이크 포인트 컬러 (초록색) 강조 */
-			#modalContent h2 {
-				border-left: 4px solid #2ecc71;
-				padding-left: 15px;
-			}
+      /* 바닐라 스네이크 포인트 컬러 (초록색) 강조 */
+      #modalContent h2 {
+        border-left: 4px solid #2ecc71;
+        padding-left: 15px;
+      }
 
-			/* 코드 블록 스타일링 */
-			#modalContent pre {
-				max-width: 100%;
-				background: #000000;
-				border: 1px solid #333;
-				padding: 20px;
-				border-radius: 10px;
-				overflow-x: auto;
-				font-family: "Consolas", "Monaco", monospace;
-				white-space: pre;
-				word-wrap: normal;
-				-webkit-overflow-scrolling: touch;
-			}
+      /* 코드 블록 스타일링 */
+      #modalContent pre {
+        max-width: 100%;
+        background: #000000;
+        border: 1px solid #333;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-x: auto;
+        font-family: "Consolas", "Monaco", monospace;
+        white-space: pre;
+        word-wrap: normal;
+        -webkit-overflow-scrolling: touch;
+      }
 
-			#modalContent code {
-				color: #2ecc71; /* 코드 텍스트 색상 */
-			}
+      #modalContent code {
+        color: #2ecc71; /* 코드 텍스트 색상 */
+      }
 
-			/* 이미지 및 캡션 */
-			#modalContent figure {
-				margin: 30px 0;
-				text-align: center;
-			}
+      /* 이미지 및 캡션 */
+      #modalContent figure {
+        margin: 30px 0;
+        text-align: center;
+      }
 
-			#modalContent img {
-				max-width: 100%;
-				border-radius: 12px;
-				border: 1px solid #444;
-			}
+      #modalContent img {
+        max-width: 100%;
+        border-radius: 12px;
+        border: 1px solid #444;
+      }
 
-			#modalContent figcaption {
-				font-size: 0.9rem;
-				color: #888;
-				margin-top: 10px;
-			}
+      #modalContent figcaption {
+        font-size: 0.9rem;
+        color: #888;
+        margin-top: 10px;
+      }
 
-			/* --- 모달 내부 푸터(Dual Button) 스타일 --- */
+      /* --- 모달 내부 푸터(Dual Button) 스타일 --- */
 
-			/* 푸터 전체 컨테이너 */
-			#modalContent .article-footer {
-				margin-top: 80px;
-				padding: 60px 0;
-				text-align: center;
-				border-top: 1px dashed #444;
-				background: linear-gradient(to bottom, transparent, #1a1a1a);
-			}
+      /* 푸터 전체 컨테이너 */
+      #modalContent .article-footer {
+        margin-top: 80px;
+        padding: 60px 0;
+        text-align: center;
+        border-top: 1px dashed #444;
+        background: linear-gradient(to bottom, transparent, #1a1a1a);
+      }
 
-			#modalContent .article-footer p {
-				color: #aaa;
-				font-size: 1.1rem;
-				margin-bottom: 30px;
-				letter-spacing: -0.5px;
-			}
+      #modalContent .article-footer p {
+        color: #aaa;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        letter-spacing: -0.5px;
+      }
 
-			/* 버튼 그룹 레이아웃 */
-			#modalContent .button-group {
-				display: flex;
-				justify-content: center;
-				gap: 20px;
-				flex-wrap: wrap; /* 모바일 대응 */
-			}
+      /* 버튼 그룹 레이아웃 */
+      #modalContent .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap; /* 모바일 대응 */
+      }
 
-			/* 공통 버튼 베이스 */
-			#modalContent .play-btn {
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-				padding: 18px 40px;
-				border-radius: 50px;
-				text-decoration: none;
-				font-weight: 800;
-				font-size: 1.1rem;
-				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-				min-width: 220px; /* 버튼 크기 균형 유지 */
-			}
+      /* 공통 버튼 베이스 */
+      #modalContent .play-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 40px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.1rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 220px; /* 버튼 크기 균형 유지 */
+      }
 
-			/* 메인 액션: 지금 바로 플레이 (초록색) */
-			#modalContent .play-btn.primary {
-				background: #2ecc71;
-				color: #fff !important; /* 텍스트 강조 */
-				box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
-			}
+      /* 메인 액션: 지금 바로 플레이 (초록색) */
+      #modalContent .play-btn.primary {
+        background: #2ecc71;
+        color: #fff !important; /* 텍스트 강조 */
+        box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+      }
 
-			#modalContent .play-btn.primary:hover {
-				background: #27ae60;
-				transform: translateY(-5px);
-				box-shadow: 0 15px 30px rgba(46, 204, 113, 0.4);
-			}
+      #modalContent .play-btn.primary:hover {
+        background: #27ae60;
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(46, 204, 113, 0.4);
+      }
 
-			/* 보조 액션: 다른 게임 더 보기 (테두리형) */
-			#modalContent .play-btn.secondary {
-				background: transparent;
-				border: 2px solid #555;
-				color: #888 !important;
-			}
+      /* 보조 액션: 다른 게임 더 보기 (테두리형) */
+      #modalContent .play-btn.secondary {
+        background: transparent;
+        border: 2px solid #555;
+        color: #888 !important;
+      }
 
-			#modalContent .play-btn.secondary:hover {
-				border-color: #fff;
-				color: #fff !important;
-				background: rgba(255, 255, 255, 0.05);
-				transform: translateY(-5px);
-			}
+      #modalContent .play-btn.secondary:hover {
+        border-color: #fff;
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-5px);
+      }
 
-			/* 본문 영역 (스크롤 가능하게) */
-			.modal-body {
-				padding: 30px;
-				overflow-y: auto;
-				color: #ccc;
-				line-height: 1.7;
-			}
+      /* 본문 영역 (스크롤 가능하게) */
+      .modal-body {
+        padding: 30px;
+        overflow-y: auto;
+        color: #ccc;
+        line-height: 1.7;
+      }
 
-			/* 모달 열릴 때 애니메이션 */
-			@keyframes slideUp {
-				from {
-					transform: translateY(30px);
-					opacity: 0;
-				}
-				to {
-					transform: translateY(0);
-					opacity: 1;
-				}
-			}
+      /* 모달 열릴 때 애니메이션 */
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
 
-			/* 스크롤바 커스텀 (선택) */
-			.modal-body::-webkit-scrollbar {
-				width: 5px;
-			}
-			.modal-body::-webkit-scrollbar-thumb {
-				background: #444;
-				border-radius: 10px;
-			}
-			#modalContent pre::-webkit-scrollbar {
-				height: 3px;
-			}
-			#modalContent pre::-webkit-scrollbar-thumb {
-				background: #444;
-				border-radius: 10px;
-			}
+      /* 스크롤바 커스텀 (선택) */
+      .modal-body::-webkit-scrollbar {
+        width: 5px;
+      }
+      .modal-body::-webkit-scrollbar-thumb {
+        background: #444;
+        border-radius: 10px;
+      }
+      #modalContent pre::-webkit-scrollbar {
+        height: 3px;
+      }
+      #modalContent pre::-webkit-scrollbar-thumb {
+        background: #444;
+        border-radius: 10px;
+      }
 
-			/* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
-			@media (max-width: 480px) {
-				header {
-					padding: 0.8rem 1rem; /* 좌우 여백 축소 */
-				}
-				.logo-group {
-					gap: 6px;
-				}
-				.logo-symbol {
-					height: 24px; /* 로고 아이콘 크기 축소 */
-				}
-				nav ul li a {
-					font-size: 0.85rem; /* 모바일 대응을 위해 폰트 크기 축소 */
-					white-space: nowrap;
-				}
+      /* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
+      @media (max-width: 480px) {
+        header {
+          padding: 0.8rem 1rem; /* 좌우 여백 축소 */
+        }
+        .logo-group {
+          gap: 6px;
+        }
+        .logo-symbol {
+          height: 24px; /* 로고 아이콘 크기 축소 */
+        }
+        nav ul li a {
+          font-size: 0.85rem; /* 모바일 대응을 위해 폰트 크기 축소 */
+          white-space: nowrap;
+        }
 
-				#modalContent .button-group {
-					flex-direction: column;
-					align-items: center;
-				}
-				#modalContent .play-btn {
-					width: 100%;
-					max-width: 300px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header>
-			<a href="../" class="logo-group" aria-label="JS-Arcade 홈으로 이동">
-				<img
-					src="https://i.ibb.co/21Jb6jD1/image.png"
-					alt="JS-Arcade 로고 심볼"
-					class="logo-symbol"
-				/>
-				<span class="logo-text">JS-Arcade</span>
-			</a>
-			<nav>
-				<ul>
-					<li><a href="../">홈</a></li>
-					<li><a href="../notice">공지사항</a></li>
-					<li>
-						<a href="./">개발일지</a>
-					</li>
-				</ul>
-			</nav>
-		</header>
+        #modalContent .button-group {
+          flex-direction: column;
+          align-items: center;
+        }
+        #modalContent .play-btn {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="../" class="logo-group" aria-label="JS-Arcade 홈으로 이동">
+        <img
+          src="https://i.ibb.co/21Jb6jD1/image.png"
+          alt="JS-Arcade 로고 심볼"
+          class="logo-symbol"
+        />
+        <span class="logo-text">JS-Arcade</span>
+      </a>
+      <nav>
+        <ul>
+          <li><a href="../">홈</a></li>
+          <li><a href="../notice">공지사항</a></li>
+          <li>
+            <a href="./">개발일지</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-		<main class="devlog-wrapper">
-			<div class="shelf-header">
-				<h2>📂 Game Development Logs</h2>
-				<p>프로젝트의 탄생부터 완성까지, 기술적인 도전과 기록들</p>
-			</div>
+    <main class="devlog-wrapper">
+      <div class="shelf-header">
+        <h2>📂 Game Development Logs</h2>
+        <p>프로젝트의 탄생부터 완성까지, 기술적인 도전과 기록들</p>
+      </div>
 
-			<div class="padlet-grid">
-				<article class="post-it" style="border-bottom-color: #e74c3c">
-					<div class="inner">
-						<span class="tag" style="color: #e74c3c">System</span>
-						<h3>개발일지 모음</h3>
-						<p>
-							VanillaJS 게임을 개발하면서 발생한 트러블슈팅이나 기획등을
-							기록하고자 별도의 페이지를 만들었습니다. 평소에
-							<strong style="color: #ddd"> 패들렛 스타일의 레이아웃</strong>이
-							깔끔하다고 생각하여 구현해보았습니다. 개발일지를 클릭하면
-							모달창으로 내용이 출력되는 것이 포인트입니다.
-						</p>
-					</div>
-				</article>
-				<article class="post-it" onclick="openDevlog('vanilla-snake')">
-					<img src="assets/snake_thumb.png" alt="Vanilla Snake Devlog" />
-					<div class="inner">
-						<span class="tag" style="color: #2ecc71">Classic</span>
-						<h3>바닐라 스네이크 개발일지<br />배열로 구현한 몸통 로직</h3>
-						<p>
-							순수 JS로 구현하는 스네이크 게임의 핵심 알고리즘과 트러블슈팅
-							기록입니다.
-						</p>
-					</div>
-				</article>
-			</div>
-		</main>
+      <div class="padlet-grid">
+        <article class="post-it" style="border-bottom-color: #e74c3c">
+          <div class="inner">
+            <span class="tag" style="color: #e74c3c">System</span>
+            <h3>개발일지 모음</h3>
+            <p>
+              VanillaJS 게임을 개발하면서 발생한 트러블슈팅이나 기획등을
+              기록하고자 별도의 페이지를 만들었습니다. 평소에
+              <strong style="color: #ddd"> 패들렛 스타일의 레이아웃</strong>이
+              깔끔하다고 생각하여 구현해보았습니다. 개발일지를 클릭하면
+              모달창으로 내용이 출력되는 것이 포인트입니다.
+            </p>
+          </div>
+        </article>
+        <article class="post-it" onclick="openDevlog('vanilla-snake')">
+          <img src="../assets/snake_thumb.png" alt="Vanilla Snake Devlog" />
+          <div class="inner">
+            <span class="tag" style="color: #2ecc71">Classic</span>
+            <h3>바닐라 스네이크 개발일지<br />배열로 구현한 몸통 로직</h3>
+            <p>
+              순수 JS로 구현하는 스네이크 게임의 핵심 알고리즘과 트러블슈팅
+              기록입니다.
+            </p>
+          </div>
+        </article>
+      </div>
+    </main>
 
-		<footer class="site-footer">
-			<div class="footer-content">
-				<a href="index.html" class="footer-logo">
-					<img
-						src="https://i.ibb.co/21Jb6jD1/image.png"
-						alt="JS-Arcade 하단 로고"
-					/>
-				</a>
-				<h2 class="footer-title">JS-Arcade</h2>
-				<p class="footer-description">Pure Vanilla JS Web Game Archive</p>
-				<nav class="footer-links">
-					<a
-						href="https://github.com/jumin0621"
-						target="_blank"
-						rel="noopener noreferrer"
-						>GitHub</a
-					>
-					<a
-						href="https://imgtocode.tistory.com"
-						target="_blank"
-						rel="noopener noreferrer"
-						>Tistory</a
-					>
-				</nav>
-				<p class="copyright">
-					&copy; 2026 <strong>imgtocode</strong>. All rights reserved.
-				</p>
-			</div>
-		</footer>
+    <footer class="site-footer">
+      <div class="footer-content">
+        <a href="../index.html" class="footer-logo">
+          <img
+            src="https://i.ibb.co/21Jb6jD1/image.png"
+            alt="JS-Arcade 하단 로고"
+          />
+        </a>
+        <h2 class="footer-title">JS-Arcade</h2>
+        <p class="footer-description">Pure Vanilla JS Web Game Archive</p>
+        <nav class="footer-links">
+          <a
+            href="https://github.com/jumin0621"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://imgtocode.tistory.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Tistory</a
+          >
+        </nav>
+        <p class="copyright">
+          &copy; 2026 <strong>imgtocode</strong>. All rights reserved.
+        </p>
+      </div>
+    </footer>
 
-		<div id="devlogModal" class="modal-overlay">
-			<div class="modal-window">
-				<div class="modal-header">
-					<h2 id="modalTitle">Development Log</h2>
-					<button class="close-btn" onclick="closeModal()">✕</button>
-				</div>
+    <div id="devlogModal" class="modal-overlay">
+      <div class="modal-window">
+        <div class="modal-header">
+          <h2 id="modalTitle">Development Log</h2>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
 
-				<div id="modalContent" class="modal-body">
-					<p style="color: #666; text-align: center">
-						게시글을 불러오는 중입니다...
-					</p>
-				</div>
-			</div>
-		</div>
-		<script>
-			function openDevlog(slug) {
-				// 1. 주소창 주소 변경
-				const newUrl = `./${slug}.html`;
-				history.pushState(null, "", newUrl);
+        <div id="modalContent" class="modal-body">
+          <p style="color: #666; text-align: center">
+            게시글을 불러오는 중입니다...
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      function openDevlog(slug) {
+        // 1. 주소창 주소 변경
+        const newUrl = `../devlog/${slug}.html`;
+        history.pushState(null, "", newUrl);
 
-				const modal = document.getElementById("devlogModal");
-				const contentArea = document.getElementById("modalContent");
+        const modal = document.getElementById("devlogModal");
+        const contentArea = document.getElementById("modalContent");
 
-				// 2. 모달 열기 및 내용 불러오기
-				modal.style.display = "flex";
+        // 2. 모달 열기 및 내용 불러오기
+        modal.style.display = "flex";
 
-				fetch(newUrl)
-					.then((response) => {
-						if (!response.ok) throw new Error("파일을 찾을 수 없습니다.");
-						return response.text();
-					})
-					.then((html) => {
-						const parser = new DOMParser();
-						const doc = parser.parseFromString(html, "text/html");
+        fetch(newUrl)
+          .then((response) => {
+            if (!response.ok) throw new Error("파일을 찾을 수 없습니다.");
+            return response.text();
+          })
+          .then((html) => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
 
-						// 상세 페이지의 <h1> 태그 내용을 가져와서 모달 헤더에 넣기
-						const pageTitle = doc.querySelector("h1")
-							? doc.querySelector("h1").innerText
-							: "Development Log";
-						document.getElementById("modalTitle").innerText = pageTitle;
+            // 상세 페이지의 <h1> 태그 내용을 가져와서 모달 헤더에 넣기
+            const pageTitle = doc.querySelector("h1")
+              ? doc.querySelector("h1").innerText
+              : "Development Log";
+            document.getElementById("modalTitle").innerText = pageTitle;
 
-						const content = doc.querySelector("main").innerHTML;
-						contentArea.innerHTML = content;
-						document.body.style.overflow = "hidden"; // 부모 페이지 스크롤 방지
-					})
-					.catch((err) => {
-						contentArea.innerHTML = `<p style="color:red; text-align:center;">오류: ${err.message}</p>`;
-					});
-			}
+            const content = doc.querySelector("main").innerHTML;
+            contentArea.innerHTML = content;
+            document.body.style.overflow = "hidden"; // 부모 페이지 스크롤 방지
+          })
+          .catch((err) => {
+            contentArea.innerHTML = `<p style="color:red; text-align:center;">오류: ${err.message}</p>`;
+          });
+      }
 
-			function closeModal() {
-				// 1. 주소창 원래대로 (devlog 메인으로)
-				history.pushState(null, "", "./index.html");
-				// 2. 모달 닫기
-				document.getElementById("devlogModal").style.display = "none";
-				document.body.style.overflow = "auto";
-			}
+      function closeModal() {
+        // 1. 주소창 원래대로 (devlog 메인으로)
+        history.pushState(null, "", "./index.html");
+        // 2. 모달 닫기
+        document.getElementById("devlogModal").style.display = "none";
+        document.body.style.overflow = "auto";
+      }
 
-			// Esc 키 누르면 닫히는 기능 추가
-			window.onkeydown = function (event) {
-				if (event.key === "Escape") {
-					closeModal();
-				}
-			};
-		</script>
-	</body>
+      // Esc 키 누르면 닫히는 기능 추가
+      window.onkeydown = function (event) {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      };
+    </script>
+  </body>
 </html>
