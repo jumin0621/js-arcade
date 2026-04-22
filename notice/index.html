@@ -25,9 +25,9 @@
       <nav>
         <ul>
           <li><a href="../">홈</a></li>
-          <li><a href="./">공지사항</a></li>
+          <li><a href="../notice/index.html">공지사항</a></li>
           <li>
-            <a href="../devlog">개발일지</a>
+            <a href="../devlog/index.html">개발일지</a>
           </li>
         </ul>
       </nav>
@@ -80,9 +80,7 @@
     <script>
       function openNotice(slug) {
         // 1. 공지사항 상세 파일 경로 (notice/ 폴더 안에 있다고 가정)
-        const newUrl = window.location.pathname.endsWith("/")
-          ? `${window.location.pathname}${slug}.html`
-          : `${window.location.pathname}/${slug}.html`;
+        const newUrl = `/notice/${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");

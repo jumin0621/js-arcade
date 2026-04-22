@@ -474,9 +474,9 @@
       <nav>
         <ul>
           <li><a href="../">홈</a></li>
-          <li><a href="../notice">공지사항</a></li>
+          <li><a href="../notice/">공지사항</a></li>
           <li>
-            <a href="./">개발일지</a>
+            <a href="../devlog/">개발일지</a>
           </li>
         </ul>
       </nav>
@@ -563,7 +563,7 @@
     <script>
       function openDevlog(slug) {
         // 1. 주소창 주소 변경
-        const newUrl = `${slug}.html`;
+        const newUrl = `/devlog/${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");
