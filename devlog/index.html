@@ -562,8 +562,17 @@
     </div>
     <script>
       function openDevlog(slug) {
-        // 1. 주소창 주소 변경
-        const newUrl = `/devlog/${slug}.html`;
+        // 1. 현재 환경 감지 (로컬인지 배포 서버인지)
+        const isLocal =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1";
+
+        // 2. 환경에 따른 베이스 경로 설정
+        // 로컬이면 상대경로(./), 배포 후면 절대경로(/devlog/) 사용
+        const basePath = isLocal ? "." : "/devlog";
+
+        // 3. 최종 URL 생성
+        const newUrl = `${basePath}/${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");

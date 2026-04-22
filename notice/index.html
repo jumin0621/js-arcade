@@ -68,6 +68,37 @@
         </li>
       </ul>
     </section>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <a href="../index.html" class="footer-logo">
+          <img
+            src="https://i.ibb.co/21Jb6jD1/image.png"
+            alt="JS-Arcade 하단 로고"
+          />
+        </a>
+        <h2 class="footer-title">JS-Arcade</h2>
+        <p class="footer-description">Pure Vanilla JS Web Game Archive</p>
+        <nav class="footer-links">
+          <a
+            href="https://github.com/jumin0621"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://imgtocode.tistory.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Tistory</a
+          >
+        </nav>
+        <p class="copyright">
+          &copy; 2026 <strong>imgtocode</strong>. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
     <div id="devlogModal" class="modal-overlay">
       <div class="modal-window">
         <div class="modal-header">
@@ -79,8 +110,17 @@
     </div>
     <script>
       function openNotice(slug) {
-        // 1. 공지사항 상세 파일 경로 (notice/ 폴더 안에 있다고 가정)
-        const newUrl = `/notice/${slug}.html`;
+        // 1. 현재 환경 감지 (로컬인지 배포 서버인지)
+        const isLocal =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1";
+
+        // 2. 환경에 따른 베이스 경로 설정
+        // 로컬이면 상대경로(./), 배포 후면 절대경로(/devlog/) 사용
+        const basePath = isLocal ? "." : "/notice";
+
+        // 3. 최종 URL 생성
+        const newUrl = `${basePath}/${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");
