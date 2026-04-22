@@ -10,7 +10,7 @@
     <meta property="og:title" content="JS-Arcade 공식 공지사항" />
 
     <title>공지사항 | JS-Arcade</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
@@ -80,7 +80,7 @@
     <script>
       function openNotice(slug) {
         // 1. 공지사항 상세 파일 경로 (notice/ 폴더 안에 있다고 가정)
-        const newUrl = `../notice/${slug}.html`;
+        const newUrl = `./${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");

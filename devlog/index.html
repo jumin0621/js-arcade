@@ -563,7 +563,7 @@
     <script>
       function openDevlog(slug) {
         // 1. 주소창 주소 변경
-        const newUrl = `../devlog/${slug}.html`;
+        const newUrl = `${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");
