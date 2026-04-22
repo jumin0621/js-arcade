@@ -14,6 +14,10 @@ a {
 	color: inherit;
 }
 
+#emoji-hidden {
+	display: none;
+}
+
 /* 상단 네비게이션 */
 header {
 	background-color: #1e1e1e;

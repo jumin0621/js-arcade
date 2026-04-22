@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JS-Arcade 정식 런칭 안내 | 공지사항</title>
+		<meta
+			name="description"
+			content="JS-Arcade 자바스크립트 게임 플랫폼의 정식 런칭 소식을 전해드립니다. 아케이드 게임부터 개발일지까지 다양한 콘텐츠를 만나보세요."
+		/>
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="JS-Arcade 정식 런칭 및 개발일지 오픈 안내"
+		/>
+		<meta
+			property="og:description"
+			content="자바스크립트 아카이브 게임 플랫폼 JS-Arcade의 시작을 함께하세요. 다양한 게임과 개발 비화를 만나보세요!"
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/notice/launch-announcement.html"
+		/>
+	</head>
+	<body>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "NewsArticle",
+				"headline": "JS-Arcade 플랫폼 정식 런칭 안내",
+				"datePublished": "2026-04-20",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				}
+			}
+		</script>
+		<style>
+			body {
+				font-family: "Pretendard", sans-serif;
+				background-color: #121212; /* 다크 모드 배경 */
+				color: #e0e0e0;
+				line-height: 1.7;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+
+			header {
+				border-bottom: 1px solid #333;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+
+			header p {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 5px;
+			}
+
+			h1 {
+				font-size: 2.2rem;
+				color: #ffffff;
+				line-height: 1.3;
+				margin-bottom: 10px;
+			}
+
+			h2 {
+				color: #2ecc71; /* 포인트 컬러: 초록 */
+				margin-top: 40px;
+				border-left: 5px solid #2ecc71;
+				padding-left: 15px;
+				font-size: 1.5rem;
+			}
+
+			h3 {
+				color: #ffffff;
+				margin-top: 30px;
+				margin-bottom: 15px;
+			}
+
+			.meta-line {
+				display: flex;
+				justify-content: space-between; /* 양 끝으로 정렬 */
+				align-items: center;
+				width: 100%;
+			}
+
+			section p {
+				margin-bottom: 20px;
+				color: #ccc;
+			}
+
+			ul {
+				margin-bottom: 20px;
+				padding-left: 20px;
+				list-style: none;
+			}
+
+			li {
+				margin-bottom: 10px;
+				color: #ccc;
+			}
+
+			strong {
+				color: #2ecc71;
+			}
+
+			/* 강조 박스 스타일 */
+			.highlight-box {
+				background: #1a1a1a;
+				border-left: 4px solid #2ecc71;
+				padding: 25px;
+				margin: 40px 0;
+				border-radius: 0 10px 10px 0;
+			}
+
+			/* 푸터 영역 (index.html 모달 푸터 스타일 이식) */
+			.article-footer {
+				margin-top: 80px;
+				padding: 60px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+				background: linear-gradient(to bottom, transparent, #1a1a1a);
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1.1rem;
+				margin-bottom: 30px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 20px;
+				flex-wrap: wrap;
+			}
+
+			/* 공통 버튼 스타일 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 18px 40px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.1rem;
+				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				min-width: 220px;
+			}
+
+			.play-btn.primary {
+				background: #2ecc71;
+				color: #fff !important;
+				box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #27ae60;
+				transform: translateY(-5px);
+				box-shadow: 0 15px 30px rgba(46, 204, 113, 0.4);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #888 !important;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #fff !important;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-5px);
+			}
+
+			@media (max-width: 600px) {
+				body {
+					padding: 30px 15px; /* 양옆 여백을 줄여 콘텐츠 공간 확보 */
+				}
+
+				/* 1. 헤더 영역 재배치 */
+				header {
+					margin-bottom: 30px; /* */
+					padding-bottom: 15px; /* */
+				}
+
+				/* 모바일에서는 3단 배치가 불가능하므로 수직으로 쌓음 */
+				.meta-line {
+					flex-direction: column;
+					align-items: center;
+					gap: 8px;
+					text-align: center;
+				}
+
+				/* 타이틀 크기 축소 (이미지 속 깨짐 방지) */
+				h1 {
+					font-size: 1.4rem;
+					text-align: center;
+					margin: 10px 0;
+					word-break: keep-all; /* 단어 단위 줄바꿈으로 가독성 향상 */
+				}
+
+				header p {
+					font-size: 0.8rem; /* 메타 정보 폰트 축소 */
+				}
+
+				/* 2. 본문 요소 조정 */
+				h2 {
+					font-size: 1.25rem;
+					margin-top: 30px;
+				}
+
+				.highlight-box {
+					padding: 20px; /* 내부 여백 축소 */
+					margin: 25px 0;
+				}
+
+				.highlight-box h3 {
+					font-size: 1.1rem;
+				}
+
+				/* 리스트 아이템 간격 조정 */
+				ul {
+					padding-left: 10px;
+				}
+
+				li {
+					font-size: 0.95rem;
+				}
+
+				/* 3. 하단 버튼 그룹 (세로 배치) */
+				.article-footer {
+					margin-top: 50px;
+					padding: 40px 0;
+				}
+
+				.button-group {
+					flex-direction: column;
+					align-items: center;
+					gap: 12px;
+				}
+
+				.play-btn {
+					width: 100%; /* 버튼이 가로를 꽉 채우도록 변경 */
+					max-width: none;
+					padding: 15px 0;
+					font-size: 1rem;
+				}
+			}
+		</style>
+		<main class="notice-body">
+			<header>
+				<div class="meta-line">
+					<p>Category: <strong>Platform Notice</strong></p>
+					<p>게시일: <time>2026-04-20</time> | 작성자: imgtocode</p>
+				</div>
+				<h1>JS-Arcade 정식 런칭 안내</h1>
+			</header>
+
+			<section>
+				<h2>🚀 Grand Open!</h2>
+				<p>
+					안녕하세요, <strong>imgtocode</strong>입니다. 오랜 준비 끝에
+					자바스크립트 아카이브 플랫폼 <strong>JS-Arcade</strong>가 정식으로
+					문을 열었습니다.
+				</p>
+
+				<div class="highlight-box">
+					<h3>🕹️ JS-Arcade는 어떤 곳인가요?</h3>
+					<p>
+						우리는 브라우저만 있다면 누구나 즐길 수 있는 게임을 제공함과 동시에,
+						<strong>'개발일지(Devlog)'</strong>를 통해 그 제작 과정을 투명하게
+						공유하는 게임 플랫폼입니다.
+					</p>
+				</div>
+
+				<h2>🌟 현재 이용 가능한 콘텐츠</h2>
+				<ul>
+					<li>
+						<strong>[Game] 아케이드 게임</strong><br />
+						정통 아케이드 게임을 JS-Arcade 식으로 Vanilla JS와 Canvas API를
+						활용해 재탄생시켰습니다.
+					</li>
+					<li>
+						<strong>[Devlog] 게임 개발일지</strong><br />
+						게임 기획과 트러블슈팅등을 기록하는 공간입니다.
+					</li>
+					<li>
+						<strong>[Notice] 공지사항</strong><br />
+						특이사항이나 게임 업데이트 소식등을 알려드립니다.
+					</li>
+				</ul>
+
+				<h2>📈 향후 업데이트 계획</h2>
+				<p>
+					현재 등록된 게임들을
+					<strong>플랫폼에서 원활하게 플레이하도록 하기위해</strong> 최적화
+					작업을 진행 중입니다. 새로운 게임과 깊이 있는 개발 기록으로 곧
+					찾아뵙겠습니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>JS-Arcade의 새로운 시작을 함께 응원해주세요!</p>
+				<div class="button-group">
+					<a href="../" class="play-btn primary">
+						<span>🏠 플랫폼 둘러보기</span>
+					</a>
+					<a href="../devlog" class="play-btn secondary">
+						<span>📂 개발일지 읽기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>

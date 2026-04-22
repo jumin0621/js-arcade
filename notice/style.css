@@ -1,0 +1,380 @@
+/* 기본 스타일 초기화 */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body {
+	font-family: "Pretendard", sans-serif;
+	background-color: #121212;
+	color: #e0e0e0;
+}
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+/* 상단 네비게이션 */
+header {
+	background-color: #1e1e1e;
+	border-bottom: 1px solid #333;
+	padding: 1rem 2rem;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.logo {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #bb86fc;
+}
+.logo-group {
+	display: flex;
+	align-items: center;
+	gap: 12px; /* 로고와 글자 사이 간격 */
+	text-decoration: none;
+}
+.logo-symbol {
+	height: 32px; /* 로고 높이 */
+	width: auto;
+}
+.logo-text {
+	font-size: 1.1rem;
+	font-weight: 800;
+	color: #ffffff;
+	letter-spacing: -0.5px;
+	white-space: nowrap;
+	/* 로고의 청록색 느낌을 텍스트에도 살짝 주려면 아래 속성 추가 */
+	background: linear-gradient(to right, #ffffff, #00e5ff);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+nav ul {
+	display: flex;
+	list-style: none;
+	gap: 12px;
+}
+nav ul li {
+	color: #b0b0b0;
+	font-size: 0.95rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: color 0.2s;
+}
+nav ul li:hover {
+	color: #00e5ff;
+	cursor: pointer;
+}
+
+.notice-container {
+	max-width: 900px;
+	margin: 60px auto;
+	padding: 0 20px;
+}
+
+.notice-header {
+	margin-bottom: 40px;
+	border-bottom: 2px solid #333;
+	padding-bottom: 20px;
+}
+
+.notice-list {
+	list-style: none;
+	padding: 0;
+}
+
+.notice-item {
+	display: flex;
+	align-items: center;
+	padding: 20px;
+	border-bottom: 1px solid #222;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.notice-item:hover {
+	background: rgba(255, 255, 255, 0.03);
+}
+
+/* 태그 스타일 */
+.notice-tag {
+	font-size: 0.75rem;
+	font-weight: bold;
+	padding: 4px 10px;
+	border-radius: 4px;
+	margin-right: 20px;
+	min-width: 70px;
+	text-align: center;
+}
+
+.notice-tag.update {
+	background: #2ecc71;
+	color: #fff;
+} /* 업데이트는 초록 */
+.notice-tag.notice {
+	background: #3498db;
+	color: #fff;
+} /* 일반 공지는 파랑 */
+
+.notice-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-grow: 1;
+}
+
+.notice-title {
+	color: #eee;
+	font-size: 1.05rem;
+}
+
+.notice-date {
+	color: #666;
+	font-size: 0.9rem;
+}
+
+/* 1. 오버레이 및 창 설정 */
+.modal-overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.9);
+	z-index: 9999;
+	justify-content: center;
+	align-items: center;
+	backdrop-filter: blur(10px);
+}
+
+.modal-window {
+	width: 95%;
+	max-width: 800px;
+	height: 85vh;
+	background: #121212; /* 상세페이지 배경색과 통일 */
+	border-radius: 20px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid #333;
+	position: relative;
+}
+
+/* 2. 최상단 모달 헤더 (Notice / X 버튼) */
+.modal-header {
+	padding: 15px 25px;
+	background: #1e1e1e;
+	border-bottom: 1px solid #333;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-shrink: 0; /* 높이 고정 */
+	z-index: 20;
+}
+
+/* 3. 내부 콘텐츠 스크롤 영역 */
+.modal-body {
+	flex-grow: 1;
+	overflow-y: auto;
+	padding: 0 30px 40px 30px; /* 상단 패딩은 0 (헤더에서 처리) */
+	scrollbar-width: thin;
+	scrollbar-color: #333 transparent;
+}
+
+/* 4. 콘텐츠 내 헤더 (Title 영역) - Sticky 설정 */
+#modalContent header {
+	position: sticky;
+	padding: 30px 0 20px 0;
+	top: 0;
+	position: sticky;
+	background-color: #121212; /* 배경을 채워 뒤의 내용이 보이지 않게 함 */
+	border-bottom: 1px solid #333;
+	box-shadow: -2px -1px 0 1px #121212;
+
+	z-index: 10; /* 본문보다 위에 위치 */
+	display: flex;
+	flex-direction: column;
+	gap: 15px; /* 줄 간격 */
+}
+
+#modalContent header .meta-line {
+	display: flex;
+	justify-content: space-between; /* 양 끝으로 정렬 */
+	align-items: center;
+	width: 100%;
+}
+
+/* 첫 번째 줄: 카테고리(좌) / 게시일(우) 배치 */
+/* 카테고리 */
+#modalContent header .meta-line p:first-child {
+	color: #666;
+	font-size: 0.85rem;
+	font-weight: 700;
+	margin: 0;
+}
+
+#modalContent header .meta-line p:last-child {
+	/* 게시일/작성자 */
+	color: #666;
+	font-size: 0.85rem;
+	margin-top: 5px;
+}
+
+#modalContent h1 {
+	/* 타이틀 */
+	text-align: center;
+	font-size: 1.8rem;
+	color: #fff;
+	font-weight: 800;
+	line-height: 1.3;
+	margin: 5px 0 10px 0;
+	word-break: keep-all;
+}
+
+/* 5. 본문 콘텐츠 스타일 */
+#modalContent h2 {
+	color: #2ecc71;
+	font-size: 1.4rem;
+	margin: 40px 0 20px 0;
+	border-left: 4px solid #2ecc71;
+	padding-left: 15px;
+}
+
+#modalContent .highlight-box {
+	background: #1a1a1a;
+	border-left: 4px solid #2ecc71;
+	padding: 20px;
+	margin: 25px 0;
+	border-radius: 0 10px 10px 0;
+}
+
+#modalContent ul {
+	list-style: none;
+	padding: 0;
+}
+#modalContent li {
+	background: rgba(255, 255, 255, 0.03);
+	padding: 15px 20px;
+	border-radius: 12px;
+	margin-bottom: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 6. 푸터 및 버튼 그룹 (반응형 대응) */
+#modalContent .article-footer {
+	margin-top: 50px;
+	padding-top: 30px;
+	border-top: 1px dashed #444;
+}
+
+#modalContent .button-group {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+#modalContent .play-btn {
+	flex: 1;
+	max-width: 200px;
+	padding: 14px 0;
+	border-radius: 12px;
+	text-align: center;
+	font-weight: 700;
+	font-size: 0.95rem;
+	transition: 0.2s;
+}
+
+#modalContent .play-btn.primary {
+	background: #2ecc71;
+	color: #fff !important;
+}
+#modalContent .play-btn.secondary {
+	border: 1px solid #444;
+	color: #888 !important;
+}
+
+#devlogModal footer p {
+	text-align: center;
+}
+
+#devlogModal .close-btn {
+	font-family: "Arial", "sans-serif"; /* 깨끗한 sans-serif 폰트 */
+	color: #888; /* 기본 색상을 연한 그레이로 */
+	font-size: 1.6rem;
+	line-height: 1;
+	background: none;
+	border: none;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s ease;
+}
+
+/* 마우스 호버 시 효과 */
+#devlogModal .close-btn:hover {
+	color: #fff; /* 텍스트 색상을 화이트로 */
+}
+
+/* 마우스 클릭 시 효과 */
+#devlogModal .close-btn:active {
+	transform: scale(0.95); /* 살짝 눌리는 느낌 */
+}
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+	.notice-item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.notice-tag {
+		margin-bottom: 10px;
+	}
+	.notice-info {
+		width: 100%;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 5px;
+	}
+	.notice-date {
+		font-size: 0.8rem;
+	}
+	.modal-window {
+		width: 100%;
+		height: 100%; /* 전체 화면 */
+		border-radius: 0;
+		border: none;
+	}
+
+	.modal-body {
+		padding: 0 20px 30px 20px;
+	}
+
+	.meta-line {
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		text-align: center;
+	}
+
+	#modalContent h1 {
+		font-size: 1.4rem; /* 폰트 크기 축소 */
+	}
+
+	#modalContent .button-group {
+		flex-direction: column; /* 세로 배치 */
+		align-items: center;
+	}
+
+	#modalContent .play-btn {
+		width: 100%;
+		max-width: none;
+	}
+}

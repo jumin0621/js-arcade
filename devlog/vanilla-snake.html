@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>바닐라 스네이크 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트 배열과 Canvas API를 활용한 바닐라 스네이크 게임 개발일지. 뱀의 이동 로직과 충돌 감지 구현 과정을 상세히 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="바닐라 스네이크 개발일지: 순수 JS 게임 제작"
+		/>
+		<meta
+			property="og:description"
+			content="VanillaJ로 숨 쉬는 뱀, 어떻게 만들었을까요? 스네이크 게임의 핵심 로직을 공개합니다."
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/vanilla-snake.html"
+		/>
+		<meta
+			property="og:image"
+			content="https://JS-Arcade.com/devlog/assets/snake_thumb.png"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "바닐라 스네이크 개발일지: 순수 JS 게임 제작",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-04-21",
+				"articleSection": "Game Development",
+				"image": "https://JS-Arcade.com/devlog/assets/snake_thumb.png",
+				"keywords": "Javascript Game, VanillaJS Game, Canvas API, Web Development"
+			}
+		</script>
+
+		<style>
+			body {
+				line-height: 1.7;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #eee;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #2c3e50;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #27ae60;
+				margin-top: 40px;
+				border-left: 5px solid #27ae60;
+				padding-left: 15px;
+			}
+			.code-block {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				overflow-x: auto;
+			}
+			pre {
+				background: #2d3436; /* 코드 박스 배경색 */
+				color: #dfe6e9; /* 코드 글자색 */
+				padding: 20px;
+				border-radius: 8px;
+
+				/* 핵심: 가로 스크롤 활성화 */
+				display: block;
+				overflow-x: auto; /* 넘치면 스크롤바 생성 */
+				white-space: pre; /* 줄바꿈 방지 및 원본 유지 */
+				word-wrap: normal;
+
+				/* iOS 부드러운 스크롤 */
+				-webkit-overflow-scrolling: touch;
+			}
+			pre::-webkit-scrollbar {
+				height: 4px;
+			}
+			pre::-webkit-scrollbar-thumb {
+				background: #666;
+				border-radius: 10px;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+			.back-btn {
+				display: inline-block;
+				margin-top: 50px;
+				text-decoration: none;
+				color: #666;
+				border: 1px solid #ccc;
+				padding: 10px 20px;
+				border-radius: 5px;
+			}
+
+			/* 푸터 영역 컨테이너 */
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444; /* 절취선 느낌의 구분선 */
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1rem;
+				margin-bottom: 25px;
+				letter-spacing: -0.5px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px; /* 버튼 사이 간격 */
+				flex-wrap: wrap; /* 모바일에서 좁을 경우 줄바꿈 */
+			}
+
+			/* 게임 플레이 버튼 - 네온 스타일 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				background: #2ecc71;
+				color: #fff;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+				border: 2px solid transparent;
+			}
+
+			.play-btn:hover {
+				background: #27ae60;
+				transform: translateY(-5px) scale(1.05);
+				box-shadow: 0 15px 30px rgba(46, 204, 113, 0.4);
+				border-color: rgba(255, 255, 255, 0.3);
+			}
+
+			.play-btn:active {
+				transform: translateY(0) scale(0.98);
+			}
+
+			.play-btn.primary {
+				background: #2ecc71;
+				color: #fff;
+				box-shadow: 0 8px 15px rgba(46, 204, 113, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #27ae60;
+				transform: translateY(-3px);
+			}
+
+			/* 보조 버튼: 테두리 스타일 */
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #aaa;
+				color: #aaa;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #2c3e50;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-3px);
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Classic Puzzle</strong></p>
+			<h1>바닐라 스네이크(Vanilla Snake) 개발일지</h1>
+			<p>작성일: <time>2026-04-21</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>🕹️ 프로젝트 개요</h2>
+				<p>
+					모든 게임 개발의 기초가 되는 '스네이크'를 순수 자바스크립트(Vanilla
+					JS)와 HTML5 Canvas만으로 제작했습니다. 외부 라이브러리 없이
+					<strong>배열(Array)</strong> 자료구조만으로 뱀의 성장을 구현하는 것이
+					이번 프로젝트의 핵심 과제였습니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 뱀의 몸통 추적</h2>
+				<p>
+					<strong>문제 상황:</strong> 머리가 움직일 때 몸통 조각들이 제각각 따로
+					노는 현상이 발생했습니다. 단순히 머리 좌표를 복사하는 것만으로는 뱀
+					특유의 '흐르는 듯한' 움직임을 만들 수 없었습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong> <code>unshift()</code>와
+					<code>pop()</code>의 조합을 사용했습니다. 새로운 머리 위치를 배열의 맨
+					앞에 추가하고, 먹이를 먹지 않았다면 배열의 마지막 요소를 제거함으로써
+					뱀이 전진하는 효과를 완벽하게 구현했습니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 뱀 이동의 핵심 로직
+const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+snake.unshift(head); // 새로운 머리 추가
+
+if (head.x === food.x && head.y === food.y) {
+    score += 10;
+    generateFood(); // 먹이를 먹으면 pop을 하지 않아 몸통이 길어짐
+} else {
+    snake.pop(); // 먹이를 안 먹으면 꼬리 제거
+}</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					간단해 보이지만 Canvas의 <code>requestAnimationFrame</code>과 좌표
+					평면의 이해가 필수적인 작업이었습니다. 이제
+					<strong>JS-Arcade</strong>의 첫 번째 기초를 다졌으니, 다음은 좀 더
+					복잡한 물리 엔진이 들어가는 액션 게임에 도전해볼 생각입니다.
+				</p>
+			</section>
+			<footer class="article-footer">
+				<p>VanillaJS로 구현된 움직이는 뱀, 손맛이 궁금하지 않으신가요?</p>
+				<div class="button-group">
+					<a href="../games/js-snake/" target="_blank" class="play-btn primary">
+						<span>🎮 지금 바로 플레이</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>
