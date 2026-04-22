@@ -80,7 +80,9 @@
     <script>
       function openNotice(slug) {
         // 1. 공지사항 상세 파일 경로 (notice/ 폴더 안에 있다고 가정)
-        const newUrl = `./${slug}.html`;
+        const newUrl = window.location.pathname.endsWith("/")
+          ? `${window.location.pathname}${slug}.html`
+          : `${window.location.pathname}/${slug}.html`;
         history.pushState(null, "", newUrl);
 
         const modal = document.getElementById("devlogModal");
