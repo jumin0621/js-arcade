@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JS-Arcade | 명예의 전당 (랭킹)</title>
+		<style>
+			/* 랭킹 페이지 전용 스타일 */
+			.ranking-container {
+				max-width: 800px;
+				margin: 40px auto;
+				padding: 20px;
+			}
+			.rank-tabs {
+				display: flex;
+				gap: 10px;
+				overflow-x: auto;
+				margin-bottom: 30px;
+				padding-bottom: 10px;
+			}
+			.tab-btn {
+				padding: 8px 16px;
+				background: #2a2a2a;
+				color: #ccc;
+				border: 1px solid #444;
+				border-radius: 20px;
+				cursor: pointer;
+				white-space: nowrap;
+				transition: 0.3s;
+			}
+			.tab-btn.active {
+				background: #00e5ff;
+				color: #000;
+				border-color: #00e5ff;
+				font-weight: bold;
+			}
+
+			.rank-table {
+				width: 100%;
+				border-collapse: collapse;
+				background: #1e1e1e;
+				border-radius: 12px;
+				overflow: hidden;
+			}
+			.rank-table th {
+				background: #2a2a2a;
+				padding: 15px;
+				text-align: left;
+				color: #888;
+				font-size: 0.9rem;
+			}
+			.rank-table td {
+				padding: 15px;
+				border-bottom: 1px solid #2a2a2a;
+				color: #eee;
+			}
+
+			/* 순위별 강조 */
+			.rank-num {
+				font-weight: bold;
+				width: 100px;
+			}
+			#rank-list tr:nth-child(1) td {
+				color: #ffd700 !important; /* 금색 */
+				font-weight: bold;
+				font-size: 1.2rem;
+				text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+			} /* 금 */
+			#rank-list tr:nth-child(2) td {
+				color: #c0c0c0 !important; /* 은색 */
+				font-weight: bold;
+				font-size: 1.1rem;
+				text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+			} /* 은 */
+			#rank-list tr:nth-child(3)td {
+				color: #cd7f32 !important; /* 동생 */
+				font-weight: bold;
+				font-size: 1.05rem;
+				text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+			} /* 동 */
+
+			.nickname {
+				font-weight: 500;
+			}
+			.score {
+				text-align: right;
+				color: #00e5ff;
+				font-family: "Courier New", Courier, monospace;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<main class="ranking-container">
+			<div class="search-area" style="text-align: center; margin-bottom: 40px">
+				<h1>🏆 명예의 전당</h1>
+				<p class="sub-text">최고의 자리를 차지한 플레이어들을 확인하세요.</p>
+			</div>
+
+			<div class="rank-tabs" id="rank-tabs"></div>
+
+			<table class="rank-table">
+				<thead>
+					<tr>
+						<th>순위</th>
+						<th>플레이어</th>
+						<th style="text-align: right">최고 점수</th>
+					</tr>
+				</thead>
+				<tbody id="rank-list">
+					<tr>
+						<td
+							colspan="3"
+							style="text-align: center; padding: 50px; color: #666"
+						>
+							데이터를 불러오는 중입니다...
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main>
+		<script type="module">
+			import { initHeader, initFooter } from "../common/layout.js";
+			initHeader();
+			initFooter();
+		</script>
+		<script type="module" src="ranking.js"></script>
+	</body>
+</html>

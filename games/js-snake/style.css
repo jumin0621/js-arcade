@@ -96,6 +96,30 @@ canvas {
 	color: #121212;
 }
 
+/* --- 랭킹 닉네임 입력 영역 --- */
+.rank-input-area {
+	display: none; /* JS에서 block/none으로 제어합니다 */
+	margin: 15px 0;
+}
+
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.nickname-input:focus {
+	border-color: #00e5ff; /* 포커스 시 청록색 네온 효과 */
+	box-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+}
+
 /* 모달 전체 배경 (어둡게) */
 .modal-overlay {
 	position: fixed;
@@ -157,4 +181,30 @@ canvas {
 
 .primary-btn:active {
 	transform: scale(0.98);
+}
+
+/* 버튼 배치용 컨테이너 */
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 20px;
+}
+
+/* '다시 시작' 버튼 (어두운 톤) */
+.secondary-btn {
+	padding: 12px 24px;
+	background: #333;
+	color: #fff;
+	border: 1px solid #444;
+	border-radius: 8px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 1rem;
+}
+
+.secondary-btn:hover {
+	background: #444;
+	border-color: #666;
 }

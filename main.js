@@ -1,3 +1,13 @@
+import { db } from "./common/firebase-config.js";
+// ✅ 에러 방지를 위해 CDN에서 직접 파이어베이스 함수들을 가져옵니다.
+import {
+	doc,
+	setDoc,
+	increment,
+	collection,
+	getDocs,
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
 const gameData = [
 	{
 		id: "snake",
@@ -78,20 +88,44 @@ const gameData = [
 	},
 ];
 
-function renderGames() {
+// DB에서 불러온 각 게임의 실제 조회수를 담아둘 객체
+let dbViewStats = {};
+
+// 1. 전체 사이트 방문자 수 증가 로직
+async function updateVisitCount() {
+	try {
+		const statsRef = doc(db, "site_stats", "total_visits");
+		await setDoc(statsRef, { count: increment(1) }, { merge: true });
+	} catch (error) {
+		console.error("전체 방문자 업데이트 실패:", error);
+	}
+}
+
+// 2. 파이어베이스에서 '모든 게임의 조회수'를 한 번에 가져오기
+async function fetchGameStats() {
+	try {
+		const snapshot = await getDocs(collection(db, "game_stats"));
+		snapshot.forEach((doc) => {
+			dbViewStats[doc.id] = doc.data().views || 0;
+		});
+	} catch (error) {
+		console.error("조회수 데이터 불러오기 실패:", error);
+	}
+}
+
+// 3. 게임 리스트 화면에 그리기
+async function renderGames() {
+	updateVisitCount(); // 전체 방문자 +1
+	await fetchGameStats(); // DB 데이터 동기화 완료 대기
+
 	const listContainer = document.getElementById("game-list");
 	listContainer.innerHTML = gameData
 		.map((game) => {
-			// 로컬에서 조회수 가져오기 (기본값 랜덤 부여로 플랫폼 느낌 살리기)
-			let views = localStorage.getItem(`v-${game.id}`);
-			if (!views) {
-				// 조회수 수정
-				views = Math.floor(Math.random() * 1000) + 50;
-				localStorage.setItem(`v-${game.id}`, views);
-			}
+			// DB에 값이 없으면 0으로 표시
+			const views = dbViewStats[game.id] || 0;
 			return `
     <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')" style="cursor:pointer;">
-        <span class="view-count">👁️ ${parseInt(views).toLocaleString()}</span>
+        <span class="view-count" id="view-${game.id}">👁️ ${views.toLocaleString()}</span>
         <div class="thumbnail">${game.emoji}</div>
         <div class="info">
             <h3>${game.title}</h3>
@@ -102,15 +136,29 @@ function renderGames() {
 		.join("");
 }
 
-// 조회수 증가 후 게임 입장
-function enterGameWithCount(id, path) {
-	// 로컬 조회수 즉시 증가
-	let currentViews = parseInt(localStorage.getItem(`v-${id}`)) || 0;
-	localStorage.setItem(`v-${id}`, currentViews + 1);
+// 4. 게임 입장 시 파이어베이스 조회수 증가 (HTML에서 접근 가능하도록 window 객체에 할당)
+window.enterGameWithCount = async function (id, path) {
+	const gameRef = doc(db, "game_stats", id);
 
-	enterGame(path);
-}
+	try {
+		// 파이어베이스 DB 조회수 +1 업데이트
+		await setDoc(gameRef, { views: increment(1) }, { merge: true });
 
+		// 사용자 화면(DOM)의 숫자도 바로 변경하여 딜레이가 없게 만듦
+		dbViewStats[id] = (dbViewStats[id] || 0) + 1;
+		const viewElement = document.getElementById(`view-${id}`);
+		if (viewElement) {
+			viewElement.innerText = `👁️ ${dbViewStats[id].toLocaleString()}`;
+		}
+	} catch (error) {
+		console.error("조회수 증가 에러:", error);
+	}
+
+	// 기존 게임 진입 로직 실행
+	window.enterGame(path);
+};
+
+// 5. 검색 기능
 const searchInput = document.getElementById("game-search");
 searchInput.addEventListener("input", (e) => {
 	const searchTerm = e.target.value.toLowerCase();
@@ -130,10 +178,10 @@ function renderFilteredGames(games) {
 	}
 	listContainer.innerHTML = games
 		.map((game) => {
-			let views = localStorage.getItem(`v-${game.id}`) || 0;
+			const views = dbViewStats[game.id] || 0;
 			return `
-        <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')">
-        <span class="view-count">👁️ ${parseInt(views).toLocaleString()}</span>
+        <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')" style="cursor:pointer;">
+        <span class="view-count" id="view-${game.id}">👁️ ${views.toLocaleString()}</span>
         <div class="thumbnail">${game.emoji}</div>
         <div class="info">
             <h3>${game.title}</h3>
@@ -144,7 +192,8 @@ function renderFilteredGames(games) {
 		.join("");
 }
 
-function enterGame(path) {
+// 6. 게임 화면 토글 관련 함수들
+window.enterGame = function (path) {
 	const selectionRoom = document.getElementById("selection-room");
 	const playRoom = document.getElementById("play-room");
 	const container = document.getElementById("game-container");
@@ -157,13 +206,15 @@ function enterGame(path) {
 		container.contentWindow.focus();
 	};
 	window.scrollTo(0, 0);
-}
+};
 
-function exitGame() {
+window.exitGame = function () {
 	document.getElementById("selection-room").style.display = "block";
 	document.getElementById("play-room").style.display = "none";
 	document.getElementById("game-container").src = "";
-	renderGames(); // 돌아올 때 조회수 갱신
-}
+	// 로비로 돌아올 때 최신 조회수로 한 번 더 갱신
+	renderGames();
+};
 
+// 페이지 로드 시 최초 실행
 window.onload = renderGames;

@@ -33,10 +33,26 @@
 				<div class="modal-content">
 					<h2 id="modalTitle">VANILLA SNAKE</h2>
 					<p id="modalDesc">방향키를 이용해 길게 살아남으세요!</p>
-					<button id="startBtn" class="primary-btn">게임 시작</button>
+
+					<div id="rankInputArea" class="rank-input-area">
+						<input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/>
+					</div>
+
+					<div class="modal-buttons">
+						<button id="startBtn" class="primary-btn">게임 시작</button>
+						<button id="restartBtn" class="secondary-btn" style="display: none">
+							다시 시작
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-		<script src="js-snake.js"></script>
+		<script type="module" src="js-snake.js"></script>
 	</body>
 </html>
