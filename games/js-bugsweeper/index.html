@@ -29,12 +29,28 @@
 
 			<div id="gameModal" class="modal-overlay">
 				<div class="modal-content">
-					<h2>BUG SWEEPER</h2>
-					<p>숨어있는 버그를 모두 찾아내세요!</p>
-					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<h2 id="modalTitle">BUG SWEEPER</h2>
+					<p id="modalDesc">숨어있는 버그를 모두 찾아내세요!</p>
+
+					<div id="rankInputArea" class="rank-input-area">
+						<input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/>
+					</div>
+
+					<div class="modal-buttons">
+						<button id="startBtn" class="primary-btn">게임 시작</button>
+						<button id="restartBtn" class="secondary-btn" style="display: none">
+							다시 시작
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-		<script src="js-bugsweeper.js"></script>
+		<script type="module" src="js-bugsweeper.js"></script>
 	</body>
 </html>

@@ -41,13 +41,29 @@
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
 				<h2 id="modalTitle">PIXEL RUNNER</h2>
-				<div class="pixel-icon-container">
+				<div id="pixelIcon" class="pixel-icon-container">
 					<div class="pixel-runner-icon"></div>
 				</div>
-				<p id="modalText">픽셀 버그들을 피해 질주하세요.</p>
-				<button id="startBtn" class="primary-btn">게임시작</button>
+				<p id="modalDesc">픽셀 버그들을 피해 질주하세요.</p>
+
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (3~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다시 시작
+					</button>
+				</div>
 			</div>
 		</div>
-		<script src="js-pixelrunner.js"></script>
+		<script type="module" src="js-pixelrunner.js"></script>
 	</body>
 </html>

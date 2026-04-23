@@ -1,9 +1,21 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("scoreDisplay");
 const statusEl = document.getElementById("statusDisplay");
+
+// --- 모달 제어 변수 ---
 const modal = document.getElementById("gameModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const pixelIcon = document.getElementById("pixelIcon");
 const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+
 const btnJump = document.getElementById("btnJump");
 
 canvas.width = 480;
@@ -57,7 +69,7 @@ let player = {
 	animFrame: 0,
 };
 
-// --- 클래스 정의 ---
+// --- 클래스 정의 (기존과 동일) ---
 class Cloud {
 	constructor() {
 		this.x = canvas.width + Math.random() * 200;
@@ -98,13 +110,11 @@ class BackgroundObject {
 	draw() {
 		ctx.fillStyle = this.color;
 		if (this.type === "tree") {
-			// [수정] 소나무처럼 뾰족한 픽셀 나무 그리기
 			const centerX = this.x + this.width / 2;
-			ctx.fillRect(centerX - 4, this.y + this.height - 15, 8, 15); // 기둥
-			// 3단 잎 (삼각형 느낌의 픽셀 레이어)
-			ctx.fillRect(centerX - 20, this.y + this.height - 35, 40, 10); // 하단 잎
-			ctx.fillRect(centerX - 15, this.y + this.height - 50, 30, 10); // 중단 잎
-			ctx.fillRect(centerX - 8, this.y + this.height - 65, 16, 15); // 상단 뾰족 잎
+			ctx.fillRect(centerX - 4, this.y + this.height - 15, 8, 15);
+			ctx.fillRect(centerX - 20, this.y + this.height - 35, 40, 10);
+			ctx.fillRect(centerX - 15, this.y + this.height - 50, 30, 10);
+			ctx.fillRect(centerX - 8, this.y + this.height - 65, 16, 15);
 		} else {
 			ctx.fillRect(this.x, this.y, this.width, this.height);
 			ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
@@ -199,7 +209,6 @@ function initGame() {
 
 	scoreEl.innerText = "0";
 	statusEl.innerText = "RUNNING";
-	modal.style.display = "none";
 	updateLoop();
 }
 
@@ -207,8 +216,6 @@ function updateLoop() {
 	if (!gameActive) return;
 
 	frameCount++;
-	// 1초(60프레임)마다 점수가 1씩 올라가도록 변경
-	// frameCount를 60으로 나눈 나머지가 0일 때만 점수를 올립니다.
 	if (frameCount % 60 === 0) {
 		score += 1;
 		scoreEl.innerText = score;
@@ -216,7 +223,6 @@ function updateLoop() {
 
 	if (frameCount % 300 === 0) gameSpeed += 0.2;
 
-	// 배경 요소 생성
 	if (frameCount % 120 === 0) bgObjects.push(new BackgroundObject("tree"));
 	if (frameCount % 450 === 0) bgObjects.push(new BackgroundObject("building"));
 	bgObjects.forEach((obj, i) => {
@@ -224,14 +230,12 @@ function updateLoop() {
 		if (obj.x + obj.width < -50) bgObjects.splice(i, 1);
 	});
 
-	// [수정] 2. 장애물 출현 빈도 보정 (강제 생성 주기 단축)
 	if (frameCount >= nextSpawnFrame) {
 		obstacles.push(new Obstacle(Math.random() > 0.4 ? "ground" : "air"));
 		nextSpawnFrame =
 			frameCount + Math.floor(Math.random() * (120 - gameSpeed * 4) + 40);
 	}
 
-	// 무적 상태 처리
 	if (isInvincible) {
 		invincibleTimer--;
 		player.width = player.baseWidth * 1.5;
@@ -243,7 +247,6 @@ function updateLoop() {
 		}
 	}
 
-	// 점프 및 물리
 	if (input.jumping && player.grounded) {
 		player.dy = player.jumpForce;
 		player.grounded = false;
@@ -257,14 +260,12 @@ function updateLoop() {
 		player.grounded = true;
 	}
 
-	// 구름
 	if (frameCount % 180 === 0) clouds.push(new Cloud());
 	clouds.forEach((c, i) => {
 		c.update();
 		if (c.x + 50 < 0) clouds.splice(i, 1);
 	});
 
-	// 장애물 업데이트 및 충돌
 	obstacles.forEach((ob, i) => {
 		ob.update();
 		if (
@@ -281,7 +282,6 @@ function updateLoop() {
 		}
 	});
 
-	// 아이템
 	if (frameCount % 1500 === 0) items.push(new Item());
 	items.forEach((it, i) => {
 		it.update();
@@ -339,10 +339,70 @@ function render() {
 	items.forEach((it) => it.draw());
 }
 
-function gameOver() {
+// --- 모달 제어 로직 ---
+
+function showStartModal() {
 	gameActive = false;
-	statusEl.innerText = "CRASHED";
+	modalTitle.innerText = "PIXEL RUNNER";
+	modalDesc.innerText = "픽셀 버그들을 피해 질주하세요.";
+	pixelIcon.style.display = "flex"; // 애니메이션 아이콘 보이기
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+	};
 	modal.style.display = "flex";
+}
+
+function showGameOverModal(finalScore) {
+	gameActive = false;
+	modalTitle.innerText = "CRASHED!";
+	modalDesc.innerText = `장애물에 충돌했습니다.\n이동 거리: ${finalScore}m`;
+	pixelIcon.style.display = "none"; // 랭킹 창에서는 아이콘 숨기기 공간 확보
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 등록
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		// gameId는 pixelrunner!
+		const result = await saveGameScore("pixelrunner", nickname, finalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	// 다시 시작
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+	};
+
+	modal.style.display = "flex";
+}
+
+function gameOver() {
+	statusEl.innerText = "CRASHED";
+	showGameOverModal(score);
 }
 
 // 이벤트 리스너
@@ -362,4 +422,6 @@ btnJump.onmousedown = btnJump.ontouchstart = (e) => {
 btnJump.onmouseup = btnJump.ontouchend = () => {
 	input.jumping = false;
 };
-startBtn.onclick = initGame;
+
+// 최초 진입
+showStartModal();

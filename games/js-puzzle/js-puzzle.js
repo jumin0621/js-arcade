@@ -1,4 +1,8 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 const board = document.getElementById("puzzleBoard");
+const spinner = document.getElementById("loadingSpinner");
 const modal = document.getElementById("gameModal");
 const moveDisplay = document.getElementById("moveDisplay");
 const diffDisplay = document.getElementById("diffDisplay");
@@ -6,23 +10,42 @@ const hintThumb = document.getElementById("hintThumb");
 const hintPreview = document.getElementById("hintPreview");
 const hintContainer = document.getElementById("hintContainer");
 
-// 퍼즐 이미지 URL (원하시는 애니메이션 이미지로 교체 가능)
+// --- 모달 제어 변수 ---
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const difficultyOptions = document.getElementById("difficultyOptions");
+const resultOptions = document.getElementById("resultOptions");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+
 const PUZZLE_IMAGES = [
-	"https://i.ibb.co/DHN1JxbY/image.png",
-	"https://i.ibb.co/r2Gm2XLs/Astonishia-Story-Wallpaper-B-1920x1080.png",
-	"https://i.ibb.co/B25ZdxQP/Astonishia-Story-Wallpaper-A-1920x1080.png",
-	"https://i.ibb.co/N6PTKf0F/u2337176951-httpss-mj-run-Uq5lap-HI-p-I-Please-transform-my-styl-b9cfab23-1ca6-4e3b-8b78-5311c8ba566.png",
-	"https://i.ibb.co/BHCmCnSw/u2337176951-httpss-mj-run-Uq5lap-HI-p-I-Please-transform-my-styl-b9cfab23-1ca6-4e3b-8b78-5311c8ba566.png",
-	"https://i.ibb.co/zV0MwJrH/u2337176951-httpss-mj-run-Uq5lap-HI-p-I-Please-transform-my-styl-b9cfab23-1ca6-4e3b-8b78-5311c8ba566.png",
+	"https://i.ibb.co/SDXWtZnn/image.webp",
+	"https://i.ibb.co/KjmBXsL0/image.webp",
+	"https://i.ibb.co/JFmsKVc3/image.webp",
+	"https://i.ibb.co/tTF8Wn51/image.webp",
+	"https://i.ibb.co/m5TnXj8C/image.webp",
+	"https://i.ibb.co/CKd3Jvwm/dejavufina21.webp",
 ];
 
 let gridSize = 3;
-let pieces = []; // 조각 객체들을 담을 배열
+let pieces = [];
 let moves = 0;
-let emptyPos = 0; // 빈칸의 현재 위치 index
+let emptyPos = 0;
 let currentImg = "";
 
-// 난이도 선택
+// 1. 시작 모달 띄우기
+function showStartModal() {
+	modalTitle.innerText = "SLIDE PUZZLE";
+	modalDesc.innerHTML = "난이도를 선택해 이미지를 복구하세요!";
+	difficultyOptions.style.display = "flex";
+	resultOptions.style.display = "none";
+	rankInputArea.style.display = "none";
+	modal.style.display = "flex";
+}
+
+// 난이도 버튼 클릭 이벤트
 document.querySelectorAll(".diff-btn").forEach((btn) => {
 	btn.onclick = () => {
 		gridSize = parseInt(btn.dataset.grid);
@@ -30,43 +53,46 @@ document.querySelectorAll(".diff-btn").forEach((btn) => {
 	};
 });
 
-// 게임 시작 시 힌트 이미지 설정
 function setupHint() {
 	hintThumb.style.backgroundImage = `url(${currentImg})`;
 	hintPreview.style.backgroundImage = `url(${currentImg})`;
 }
 
-// 모바일용 터치 클릭 이벤트
 hintContainer.addEventListener("click", (e) => {
-	// 마우스 오버가 불가능한 기기(터치 기기)에서만 토글
 	if (window.matchMedia("(hover: none)").matches) {
 		hintPreview.classList.toggle("active");
 		e.stopPropagation();
 	}
 });
 
-// 화면 아무데나 누르면 힌트 닫기 (모바일용)
 document.addEventListener("click", () => {
 	hintPreview.classList.remove("active");
 });
 
+// 🔥 2. 게임 초기화 & 로딩 스피너 로직
 function initGame() {
 	moves = 0;
 	moveDisplay.innerText = moves;
 	diffDisplay.innerText = `${gridSize}x${gridSize}`;
-
-	// 모달 초기 상태로 복구
-	document.getElementById("difficultyOptions").style.display = "flex";
-	document.getElementById("resultOptions").style.display = "none";
 	modal.style.display = "none";
 
-	// 배열에서 랜덤으로 이미지 선택
+	// 보드 숨기고 스피너 표시
+	board.style.display = "none";
+	spinner.style.display = "block";
+
 	const randomIndex = Math.floor(Math.random() * PUZZLE_IMAGES.length);
 	currentImg = PUZZLE_IMAGES[randomIndex];
 
-	setupHint();
-	createPuzzle();
-	shufflePieces();
+	// 이미지 프리로딩 (완료되면 퍼즐 생성)
+	const imgObj = new Image();
+	imgObj.onload = () => {
+		spinner.style.display = "none";
+		board.style.display = "grid";
+		setupHint();
+		createPuzzle();
+		shufflePieces();
+	};
+	imgObj.src = currentImg;
 }
 
 function createPuzzle() {
@@ -84,24 +110,19 @@ function createPuzzle() {
 		const row = Math.floor(i / gridSize);
 		const col = i % gridSize;
 
-		// 마지막 조각을 빈칸으로 설정
 		if (i === totalPieces - 1) {
 			piece.classList.add("empty");
 			emptyPos = i;
 		} else {
 			piece.style.backgroundImage = `url(${currentImg})`;
 			piece.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
-
-			// 이미지 조각 정렬 계산
 			const bgPosX = (col / (gridSize - 1)) * 100;
 			const bgPosY = (row / (gridSize - 1)) * 100;
 			piece.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
 		}
 
-		piece.setAttribute("data-orig-pos", i); // 정답 위치
-		piece.setAttribute("data-curr-pos", i); // 현재 위치
-
-		// 클릭 이벤트: 슬라이드 로직 실행
+		piece.setAttribute("data-orig-pos", i);
+		piece.setAttribute("data-curr-pos", i);
 		piece.onclick = () => trySlide(piece);
 
 		pieces.push(piece);
@@ -109,47 +130,33 @@ function createPuzzle() {
 	}
 }
 
-// 조각 이동(슬라이드) 핵심 로직
 function trySlide(clickedPiece) {
 	const currPos = parseInt(clickedPiece.getAttribute("data-curr-pos"));
-
-	// 빈칸과의 거리 계산
 	const row = Math.floor(currPos / gridSize);
 	const col = currPos % gridSize;
 	const emptyRow = Math.floor(emptyPos / gridSize);
 	const emptyCol = emptyPos % gridSize;
 
-	// 상하좌우 인접 여부 확인
 	const isAdjacent = Math.abs(row - emptyRow) + Math.abs(col - emptyCol) === 1;
-
-	if (isAdjacent) {
-		swapWithEmpty(clickedPiece);
-	}
+	if (isAdjacent) swapWithEmpty(clickedPiece);
 }
 
 function swapWithEmpty(piece) {
 	const clickedPos = parseInt(piece.getAttribute("data-curr-pos"));
 	const emptyPiece = pieces.find((p) => p.classList.contains("empty"));
 
-	// 데이터 위치 교체
 	piece.setAttribute("data-curr-pos", emptyPos);
 	emptyPiece.setAttribute("data-curr-pos", clickedPos);
 
-	// 실제 빈칸 인덱스 업데이트
-	const temp = emptyPos;
 	emptyPos = clickedPos;
-
-	// 화면 재배치
 	renderBoard();
 
 	moves++;
 	moveDisplay.innerText = moves;
-
 	checkWin();
 }
 
 function renderBoard() {
-	// 현재 위치(data-curr-pos) 기준으로 정렬하여 DOM에 다시 배치
 	const sorted = [...pieces].sort(
 		(a, b) =>
 			parseInt(a.getAttribute("data-curr-pos")) -
@@ -158,55 +165,85 @@ function renderBoard() {
 	sorted.forEach((p) => board.appendChild(p));
 }
 
-// 유효한 퍼즐을 만들기 위한 셔플 (빈칸을 실제로 움직임)
 function shufflePieces() {
-	let shuffleMoves = gridSize * gridSize * 15; // 난이도 비례 셔플 횟수
-
+	let shuffleMoves = gridSize * gridSize * 15;
 	for (let i = 0; i < shuffleMoves; i++) {
 		const row = Math.floor(emptyPos / gridSize);
 		const col = emptyPos % gridSize;
 
 		const neighbors = [];
-		if (col > 0) neighbors.push(emptyPos - 1); // 좌
-		if (col < gridSize - 1) neighbors.push(emptyPos + 1); // 우
-		if (row > 0) neighbors.push(emptyPos - gridSize); // 상
-		if (row < gridSize - 1) neighbors.push(emptyPos + gridSize); // 하
+		if (col > 0) neighbors.push(emptyPos - 1);
+		if (col < gridSize - 1) neighbors.push(emptyPos + 1);
+		if (row > 0) neighbors.push(emptyPos - gridSize);
+		if (row < gridSize - 1) neighbors.push(emptyPos + gridSize);
 
 		const nextPos = neighbors[Math.floor(Math.random() * neighbors.length)];
 		const targetPiece = pieces.find(
 			(p) => parseInt(p.getAttribute("data-curr-pos")) === nextPos,
 		);
 
-		// 데이터만 교체 (연산 속도를 위해 마지막에만 render)
 		const currentEmpty = emptyPos;
 		targetPiece.setAttribute("data-curr-pos", currentEmpty);
 		emptyPos = nextPos;
-		// 빈칸 역할을 하는 DOM 찾기
+
 		const emptyDOM = pieces.find((p) => p.classList.contains("empty"));
 		emptyDOM.setAttribute("data-curr-pos", nextPos);
 	}
 	renderBoard();
 }
 
+// 🏆 3. 클리어 및 점수 계산 로직
 function checkWin() {
-	// 모든 조각의 현재 위치가 원래 위치와 같은지 확인
 	const isWin = pieces.every(
 		(p) => p.getAttribute("data-orig-pos") === p.getAttribute("data-curr-pos"),
 	);
 
 	if (isWin && moves > 0) {
+		// 점수 계산: (그리드수^2 * 1000) - (이동횟수 * 15). 최소 10점 보장
+		const finalScore = Math.max(10, gridSize * gridSize * 1000 - moves * 15);
+
 		setTimeout(() => {
-			// 1. 모달 텍스트 변경
-			document.getElementById("modalTitle").innerText = "COMPLETE!";
-			document.getElementById("modalMessage").innerHTML =
-				`이미지를 모두 맞췄습니다!<br><br><strong>총 이동 횟수: ${moves}회</strong>`;
+			modalTitle.innerText = "COMPLETE!";
+			modalDesc.innerHTML = `퍼즐을 완성했습니다!<br>이동 횟수: ${moves}회<br>최종 점수: ${finalScore}점`;
 
-			// 2. 난이도 선택창 숨기고 결과 버튼 보이기
-			document.getElementById("difficultyOptions").style.display = "none";
-			document.getElementById("resultOptions").style.display = "flex";
+			difficultyOptions.style.display = "none";
+			resultOptions.style.display = "flex";
+			rankInputArea.style.display = "block";
+			nicknameInput.value = "";
 
-			// 3. 모달 띄우기
+			startBtn.innerText = "랭킹 등록";
+			startBtn.disabled = false;
+
+			// 랭킹 등록 이벤트
+			startBtn.onclick = async () => {
+				const nickname = nicknameInput.value.trim();
+				if (!nickname || nickname.length < 2)
+					return alert("닉네임을 2자 이상 입력해주세요!");
+
+				startBtn.disabled = true;
+				startBtn.innerText = "데이터 확인 중...";
+
+				// gameId는 slidepuzzle!
+				const result = await saveGameScore("puzzle", nickname, finalScore);
+				alert(result.msg);
+
+				if (result.status !== "error") {
+					showStartModal();
+				} else {
+					startBtn.disabled = false;
+					startBtn.innerText = "랭킹 등록";
+				}
+			};
+
+			// 처음으로 돌아가기 (다시 난이도 선택)
+			restartBtn.onclick = () => {
+				showStartModal();
+			};
+
 			modal.style.display = "flex";
 		}, 300);
 	}
 }
+
+// 최초 진입 시 모달
+showStartModal();

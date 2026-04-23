@@ -1,3 +1,6 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 window.addEventListener(
 	"keydown",
 	function (e) {
@@ -12,21 +15,25 @@ const boardEl = document.getElementById("sudokuBoard");
 const padEl = document.getElementById("numberPad");
 const levelDisplay = document.getElementById("levelDisplay");
 const timerEl = document.getElementById("timer");
+
+// --- 모달 제어 변수 ---
 const modal = document.getElementById("gameModal");
 const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
 
-// 1. 단계별 설정 (size: 판크기, boxR/boxC: 박스규격, reveal: 공개비율)
 const levels = {
-	1: { size: 4, boxR: 2, boxC: 2, reveal: 0.7 }, // 4x4 입문
-	2: { size: 6, boxR: 2, boxC: 3, reveal: 0.6 }, // 6x6 초급
-	3: { size: 9, boxR: 3, boxC: 3, reveal: 0.6 }, // 9x9 중급 시작
+	1: { size: 4, boxR: 2, boxC: 2, reveal: 0.7 },
+	2: { size: 6, boxR: 2, boxC: 3, reveal: 0.6 },
+	3: { size: 9, boxR: 3, boxC: 3, reveal: 0.6 },
 	4: { size: 9, boxR: 3, boxC: 3, reveal: 0.5 },
 	5: { size: 9, boxR: 3, boxC: 3, reveal: 0.45 },
 	6: { size: 9, boxR: 3, boxC: 3, reveal: 0.4 },
 	7: { size: 9, boxR: 3, boxC: 3, reveal: 0.35 },
 	8: { size: 9, boxR: 3, boxC: 3, reveal: 0.3 },
 	9: { size: 9, boxR: 3, boxC: 3, reveal: 0.25 },
-	10: { size: 9, boxR: 3, boxC: 3, reveal: 0.2 }, // 최상급
+	10: { size: 9, boxR: 3, boxC: 3, reveal: 0.2 },
 };
 
 let currentLevel = 1;
@@ -36,11 +43,80 @@ let board = [],
 let selectedIdx = null;
 let timer,
 	timeElapsed = 0;
+let totalScore = 0; // 🔥 누적 점수 변수 추가
 
-startBtn.onclick = () => {
-	modal.style.display = "none";
-	initGame();
-};
+// 1. 초기 시작 모달
+function showStartModal() {
+	document.getElementById("modalTitle").innerText = "SUDOKU";
+	document.getElementById("modalDesc").innerText =
+		"중복 없이 숫자를 가득 채워주세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		currentLevel = 1;
+		totalScore = 0;
+		initGame();
+	};
+	modal.style.display = "flex";
+}
+
+// 2. 레벨 클리어 & 랭킹 등록 모달
+function showLevelClearModal(isAllClear = false) {
+	document.getElementById("modalTitle").innerText = isAllClear
+		? "MASTER CLEAR!"
+		: `LEVEL ${currentLevel} CLEAR`;
+	document.getElementById("modalDesc").innerText = isAllClear
+		? `모든 레벨을 정복했습니다!\n최종 누적 점수: ${totalScore}점`
+		: `클리어 타임: ${timeElapsed}초\n현재 누적 점수: ${totalScore}점\n(랭킹을 등록하면 게임이 종료됩니다)`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록(종료)";
+	startBtn.disabled = false;
+
+	restartBtn.innerText = isAllClear ? "처음부터 다시" : "다음 단계(계속)";
+
+	// 랭킹 등록 진행 (진행 후 초기화)
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		// gameId는 sudoku!
+		const result = await saveGameScore("sudoku", nickname, totalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록(종료)";
+		}
+	};
+
+	// 랭킹 포기하고 그냥 다음 단계 진행
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		if (isAllClear) {
+			currentLevel = 1;
+			totalScore = 0;
+		} else {
+			currentLevel++;
+		}
+		initGame();
+	};
+
+	modal.style.display = "flex";
+}
 
 function initGame() {
 	const conf = levels[currentLevel];
@@ -49,11 +125,9 @@ function initGame() {
 	clearInterval(timer);
 	startTimer();
 
-	// 1. 정답 판 생성 (Backtracking)
 	solution = Array.from({ length: conf.size }, () => Array(conf.size).fill(0));
 	solve(solution, conf);
 
-	// 2. 문제 판 생성
 	board = JSON.parse(JSON.stringify(solution));
 	fixed = Array.from({ length: conf.size }, () => Array(conf.size).fill(false));
 
@@ -85,7 +159,6 @@ window.addEventListener("keydown", (e) => {
 	if (e.key === "ArrowLeft") newIdx -= 1;
 	if (e.key === "ArrowRight") newIdx += 1;
 
-	// 범위를 벗어나지 않을 때만 선택 이동
 	if (newIdx >= 0 && newIdx < size * size) {
 		const cells = document.querySelectorAll(".sudoku-cell");
 		cells[selectedIdx].classList.remove("selected");
@@ -94,33 +167,21 @@ window.addEventListener("keydown", (e) => {
 	}
 });
 
-// 키보드 입력 이벤트 추가
 window.addEventListener("keydown", (e) => {
-	// 1. 선택된 셀이 없으면 무시
 	if (selectedIdx === null) return;
-
 	const r = Math.floor(selectedIdx / levels[currentLevel].size);
 	const c = selectedIdx % levels[currentLevel].size;
-
-	// 이미 고정된(시작 시 주어진) 숫자는 수정 불가
 	if (fixed[r][c]) return;
 
-	// 2. 누른 키가 숫자인지 확인 (0~9)
-	// 숫자 키패드와 상단 숫자 키 모두 대응
 	const isNumber = /^[0-9]$/.test(e.key);
-
-	// 3. 백스페이스나 Delete 키는 숫자 0(지우기)과 동일하게 처리
 	const isDelete = e.key === "Backspace" || e.key === "Delete";
 
 	if (isNumber || isDelete) {
 		const value = isDelete ? 0 : parseInt(e.key);
-
-		// 로직 실행 (기존 숫자 패드 클릭 시와 동일한 로직)
 		updateCellValue(selectedIdx, value);
 	}
 });
 
-// 중복 코드를 방지하기 위해 입력 로직을 별도 함수로 분리 (권장)
 function updateCellValue(idx, value) {
 	const conf = levels[currentLevel];
 	const r = Math.floor(idx / conf.size);
@@ -130,7 +191,6 @@ function updateCellValue(idx, value) {
 	board[r][c] = value;
 	cell.innerText = value === 0 ? "" : value;
 
-	// 정답 검증 시각적 피드백
 	if (value !== 0 && value !== solution[r][c]) {
 		cell.classList.add("error");
 	} else {
@@ -140,7 +200,6 @@ function updateCellValue(idx, value) {
 	checkWin(conf.size);
 }
 
-// 백트래킹 알고리즘
 function solve(grid, conf) {
 	for (let r = 0; r < conf.size; r++) {
 		for (let c = 0; c < conf.size; c++) {
@@ -176,18 +235,15 @@ function check(grid, r, col, num, conf) {
 function render(conf) {
 	boardEl.innerHTML = "";
 	const header = document.querySelector(".game-header");
-	// 보드가 화면에 그려진 직후의 실제 너비를 측정하여 헤더에 대입
 	setTimeout(() => {
 		if (board && header) {
-			const boardWidth = boardEl.getBoundingClientRect().width; // 실제 렌더링된 너비 정밀 측정
+			const boardWidth = boardEl.getBoundingClientRect().width;
 			header.style.width = boardWidth + "px";
 			header.style.maxWidth = boardWidth + "px";
 			header.style.minWidth = boardWidth + "px";
 		}
 	}, 0);
 
-	// 모바일 터치 최적화 타일 크기 (size에 따라 유동적으로)
-	// 4x4일 때는 크게, 9x9일 때는 적당하게 조정
 	let cellSize = 40;
 	if (conf.size === 6) cellSize = 35;
 	if (conf.size === 9) cellSize = 32;
@@ -200,7 +256,6 @@ function render(conf) {
 		const cell = document.createElement("div");
 		cell.className = "sudoku-cell";
 
-		// 박스 경계선 강조 로직
 		if ((c + 1) % conf.boxC === 0 && c !== conf.size - 1)
 			cell.classList.add("border-right");
 		if ((r + 1) % conf.boxR === 0 && r !== conf.size - 1)
@@ -208,7 +263,7 @@ function render(conf) {
 
 		cell.style.width = `${cellSize}px`;
 		cell.style.height = `${cellSize}px`;
-		cell.style.fontSize = `${cellSize * 0.5}px`; // 타일 크기에 비례한 폰트 크기
+		cell.style.fontSize = `${cellSize * 0.5}px`;
 
 		if (fixed[r][c]) {
 			cell.classList.add("fixed");
@@ -229,13 +284,12 @@ function render(conf) {
 
 function renderPad(size) {
 	padEl.innerHTML = "";
-	// 숫자 패드도 현재 판 크기에 맞게 1~N 까지 생성
 	padEl.style.gridTemplateColumns = `repeat(5, 1fr)`;
 
 	for (let i = 0; i <= size; i++) {
 		const btn = document.createElement("div");
 		btn.className = "num-btn";
-		btn.innerText = i === 0 ? "CLR" : i; // 0은 지우기 버튼으로 표기
+		btn.innerText = i === 0 ? "CLR" : i;
 		btn.onclick = () => {
 			if (selectedIdx === null) return;
 			const r = Math.floor(selectedIdx / size),
@@ -245,7 +299,6 @@ function renderPad(size) {
 			board[r][c] = i;
 			cell.innerText = i === 0 ? "" : i;
 
-			// 정답 검증 및 시각적 피드백
 			if (i !== 0 && i !== solution[r][c]) {
 				cell.classList.add("error");
 			} else {
@@ -257,20 +310,22 @@ function renderPad(size) {
 	}
 }
 
+// 🏆 스도쿠 점수 계산 로직 추가
 function checkWin(size) {
 	for (let r = 0; r < size; r++)
 		for (let c = 0; c < size; c++) if (board[r][c] !== solution[r][c]) return;
+
 	clearInterval(timer);
+
+	// 점수 = (레벨 * 1000) + (남은 시간 보너스)
+	const baseScore = currentLevel * 1000;
+	const timeBonus = Math.max(0, currentLevel * 300 - timeElapsed * 10);
+	totalScore += baseScore + timeBonus;
+
 	if (currentLevel < 10) {
-		showModal("LEVEL CLEAR", "완벽한 논리입니다!", "다음 레벨");
-		currentLevel++;
+		showLevelClearModal(false);
 	} else {
-		showModal(
-			"MASTER CLEAR",
-			"당신은 진정한 스도쿠 마스터입니다!",
-			"처음부터 다시",
-		);
-		currentLevel = 1;
+		showLevelClearModal(true);
 	}
 }
 
@@ -280,9 +335,6 @@ function startTimer() {
 		timerEl.innerText = timeElapsed;
 	}, 1000);
 }
-function showModal(t, p, b) {
-	modal.querySelector("h2").innerText = t;
-	modal.querySelector("p").innerText = p;
-	startBtn.innerText = b;
-	modal.style.display = "flex";
-}
+
+// 최초 화면 로드
+showStartModal();

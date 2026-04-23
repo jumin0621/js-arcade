@@ -1,3 +1,6 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 window.addEventListener(
 	"keydown",
 	function (e) {
@@ -33,16 +36,16 @@ const player = {
 	matrix: null,
 };
 
-// [2. 블록 색상 팔레트 (Muted Neon)]
+// [2. 블록 색상 팔레트]
 const colors = [
 	null,
-	"#4dd0e1", // I
-	"#ffb74d", // L
-	"#64b5f6", // J
-	"#fff176", // O
-	"#ff8a65", // Z
-	"#81c784", // S
-	"#ba68c8", // T
+	"#4dd0e1",
+	"#ffb74d",
+	"#64b5f6",
+	"#fff176",
+	"#ff8a65",
+	"#81c784",
+	"#ba68c8",
 ];
 
 // [3. 블록 데이터 생성]
@@ -166,6 +169,7 @@ function playerMove(dir) {
 	if (collide(arena, player)) player.pos.x -= dir;
 }
 
+// 🔥 핵심 변경: 게임 오버 조건 처리
 function playerReset() {
 	const pieces = "ILJOTSZ";
 	if (!nextPiece)
@@ -176,10 +180,10 @@ function playerReset() {
 	player.pos.x =
 		((arena[0].length / 2) | 0) - ((player.matrix[0].length / 2) | 0);
 	drawNext();
+
+	// 블록이 꼭대기에 닿았을 때 (게임 오버)
 	if (collide(arena, player)) {
-		arena.forEach((row) => row.fill(0));
-		score = 0;
-		updateScore();
+		showGameOverModal(score); // 조용히 리셋하지 않고 모달 띄우기!
 	}
 }
 
@@ -218,39 +222,31 @@ function draw() {
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	drawMatrix(arena, { x: 0, y: 0 });
 
-	if (ghostToggle.checked) {
-		drawGhost();
-	}
+	if (ghostToggle.checked) drawGhost();
 
 	drawMatrix(player.matrix, player.pos);
 }
 
-// [고스트 그리기 로직 추가]
 function drawGhost() {
-	// 현재 플레이어 상태를 복사
 	const ghost = {
 		pos: { x: player.pos.x, y: player.pos.y },
 		matrix: player.matrix,
 	};
-
-	// 충돌할 때까지 아래로 밀어넣기
 	while (!collide(arena, ghost)) {
 		ghost.pos.y++;
 	}
-	// 충돌 직전 위치로 복구
 	ghost.pos.y--;
 
-	// 반투명하게 고스트 블록 그리기
 	ghost.matrix.forEach((row, y) => {
 		row.forEach((value, x) => {
 			if (value !== 0) {
-				context.globalAlpha = 0.2; // 투명도 조절
+				context.globalAlpha = 0.2;
 				context.fillStyle = colors[value];
 				context.fillRect(x + ghost.pos.x, y + ghost.pos.y, 1, 1);
 				context.strokeStyle = colors[value];
 				context.lineWidth = 0.05;
 				context.strokeRect(x + ghost.pos.x, y + ghost.pos.y, 1, 1);
-				context.globalAlpha = 1.0; // 복구
+				context.globalAlpha = 1.0;
 			}
 		});
 	});
@@ -276,20 +272,88 @@ function update(time = 0) {
 	animationId = requestAnimationFrame(update);
 }
 
-// [6. 제어 및 시작]
-const startBtn = document.getElementById("startBtn");
+// [6. 모달 및 랭킹 제어]
 const modal = document.getElementById("gameModal");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
 
-startBtn.onclick = () => {
-	modal.style.display = "none";
-	if (!isGameRunning) {
-		isGameRunning = true;
-		playerReset();
+// 시작 모달
+function showStartModal() {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = "BRICK STACK";
+	document.getElementById("modalDesc").innerText =
+		"블록을 쌓아 라인을 클리어하세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+
+	startBtn.onclick = function () {
+		modal.style.display = "none";
+		arena.forEach((row) => row.fill(0)); // 화면 비우기
+		score = 0;
 		updateScore();
+		playerReset();
+		isGameRunning = true;
 		update();
-	}
-};
+	};
+	modal.style.display = "flex";
+}
 
+// 게임 오버 & 랭킹 모달
+function showGameOverModal(finalScore) {
+	isGameRunning = false;
+	cancelAnimationFrame(animationId);
+
+	document.getElementById("modalTitle").innerText = "GAME OVER";
+	document.getElementById("modalDesc").innerText = `최종 점수: ${finalScore}점`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 등록
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		// gameId는 brickstack!
+		const result = await saveGameScore("brickstack", nickname, finalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	// 다시 시작
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		arena.forEach((row) => row.fill(0));
+		score = 0;
+		updateScore();
+		playerReset();
+		isGameRunning = true;
+		update();
+	};
+
+	modal.style.display = "flex";
+}
+
+// [7. 조작 이벤트 바인딩]
 window.addEventListener("keydown", (event) => {
 	if (!isGameRunning) return;
 	if (event.key === "ArrowLeft") playerMove(-1);
@@ -302,31 +366,26 @@ window.addEventListener("keydown", (event) => {
 	}
 });
 
-// 연속 동작을 실행할 함수
 function startContinuousAction(actionFn) {
-	if (touchTimer) return; // 이미 실행 중이면 중복 방지
-
-	actionFn(); // 즉시 한 번 실행
-	touchTimer = setInterval(actionFn, 120); // 120ms 간격으로 반복 (속도는 조절 가능)
+	if (touchTimer) return;
+	actionFn();
+	touchTimer = setInterval(actionFn, 120);
 }
-
 function stopContinuousAction() {
 	if (touchTimer) {
 		clearInterval(touchTimer);
 		touchTimer = null;
 	}
 }
-// 모바일 버튼 바인딩
-// 왼쪽 이동
+
 const btnLeft = document.getElementById("btnLeft");
 btnLeft.onpointerdown = (e) => {
 	e.preventDefault();
 	startContinuousAction(() => playerMove(-1));
 };
 btnLeft.onpointerup = stopContinuousAction;
-btnLeft.onpointerleave = stopContinuousAction; // 손가락이 버튼 밖으로 나갔을 때도 정지
+btnLeft.onpointerleave = stopContinuousAction;
 
-// 오른쪽 이동
 const btnRight = document.getElementById("btnRight");
 btnRight.onpointerdown = (e) => {
 	e.preventDefault();
@@ -335,7 +394,6 @@ btnRight.onpointerdown = (e) => {
 btnRight.onpointerup = stopContinuousAction;
 btnRight.onpointerleave = stopContinuousAction;
 
-// 아래로 이동 (소프트 드롭)
 const btnDown = document.getElementById("btnDown");
 btnDown.onpointerdown = (e) => {
 	e.preventDefault();
@@ -344,7 +402,6 @@ btnDown.onpointerdown = (e) => {
 btnDown.onpointerup = stopContinuousAction;
 btnDown.onpointerleave = stopContinuousAction;
 
-// [주의] 회전과 하드드롭은 연속 실행되면 안 되므로 기존 방식 유지 (혹은 터치 다운 시 1회만 실행)
 document.getElementById("btnRotate").onpointerdown = (e) => {
 	e.preventDefault();
 	playerRotate(1);
@@ -353,3 +410,6 @@ document.getElementById("btnSpace").onpointerdown = (e) => {
 	e.preventDefault();
 	playerHardDrop();
 };
+
+// 최초 진입
+showStartModal();

@@ -13,8 +13,9 @@
 			}
 			.rank-tabs {
 				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
 				gap: 10px;
-				overflow-x: auto;
 				margin-bottom: 30px;
 				padding-bottom: 10px;
 			}
@@ -25,8 +26,9 @@
 				border: 1px solid #444;
 				border-radius: 20px;
 				cursor: pointer;
-				white-space: nowrap;
 				transition: 0.3s;
+				white-space: nowrap;
+				flex-shrink: 0;
 			}
 			.tab-btn.active {
 				background: #00e5ff;

@@ -1,3 +1,6 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 const canvas = document.getElementById("bounceGame");
 const ctx = canvas.getContext("2d");
 
@@ -14,27 +17,16 @@ let isTransitioning = false;
 // [2. 사용자 지정 물리 설정 적용]
 const boxCount = 20;
 const box = canvas.width / boxCount; // 20px
+const gravity = 0.08;
+const jumpForce = -2.2;
+const moveSpeed = 1.4;
 
-// 사용자 요청 수치 적용
-const gravity = 0.08; // 중력 (낮게)
-const jumpForce = -2.2; // 점프 힘 (낮게)
-const moveSpeed = 1.4; // 이동 속도 (느리게)
+let ball = { x: 0, y: 0, r: 3, dx: 0, dy: 0, trail: [] };
 
-// [1. 좌우 반동 dx 개념 도입]
-let ball = {
-	x: 0,
-	y: 0,
-	r: 3, // 공 크기 (작게 유지)
-	dx: 0, // 좌우 반동 속도
-	dy: 0,
-	trail: [],
-};
-
-// [4. 10단계 스테이지 데이터: 좌우 벽 강화]
-// 0:빈공간, 1:벽돌, 2:가시, 4:출구, 5:시작점
+// [3. 10단계 스테이지 데이터 (생략 없이 원본 유지)]
 const maps = [
+	// Stage 1
 	[
-		// Stage 1: 기초 (좌우 막음)
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -56,17 +48,17 @@ const maps = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 2
 	[
-		// Stage 2: 벽 타기 입문 (1 0 1 구조)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], // 1 0 1 구조
+		[1, 5, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
 		[1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 4],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 3
 	[
-		// Stage 3: 가시 피하기 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -74,8 +66,8 @@ const maps = [
 		[1, 0, 0, 0, 0, 1, 1, 0, 0, 2, 2, 0, 0, 1, 1, 1, 0, 0, 0, 4],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 4
 	[
-		// Stage 4: 정밀 점프 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -83,8 +75,8 @@ const maps = [
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 		[1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1],
 	],
+	// Stage 5
 	[
-		// Stage 5: 지그재그 하강 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -92,8 +84,8 @@ const maps = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
 		[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 6
 	[
-		// Stage 6: 가시 기둥 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
@@ -101,8 +93,8 @@ const maps = [
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 7
 	[
-		// Stage 7: 타이밍 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -110,8 +102,8 @@ const maps = [
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 8
 	[
-		// Stage 8: 좁은 길 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -119,8 +111,8 @@ const maps = [
 		[1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0, 4],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	],
+	// Stage 9
 	[
-		// Stage 9: 최종 미로 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1],
@@ -128,8 +120,8 @@ const maps = [
 		[1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 4],
 		[1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1],
 	],
+	// Stage 10
 	[
-		// Stage 10: 라스트 런 (좌우 막음)
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -139,15 +131,19 @@ const maps = [
 	],
 ];
 
+// --- 모달 및 UI 제어 ---
 const modal = document.getElementById("gameModal");
 const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
 
 // [초기화 로직]
 function initStage(stageIdx) {
 	const map = maps[stageIdx];
 	const yOffset = canvas.height - map.length * box;
 	ball.dy = 0;
-	ball.trail = []; // 잔상 초기화
+	ball.trail = [];
 	isTransitioning = false;
 
 	for (let r = 0; r < map.length; r++) {
@@ -161,18 +157,86 @@ function initStage(stageIdx) {
 	}
 }
 
-startBtn.onclick = function () {
-	modal.style.display = "none";
-	currentStage = 0;
-	cameraX = 0;
-	targetCameraX = 0;
-	initStage(currentStage);
-	document.getElementById("stage").innerText = currentStage + 1;
-	if (!isGameRunning) {
+// 1. 게임 시작 모달
+function showStartModal() {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = "BOUNCE BALL";
+	document.getElementById("modalDesc").innerText =
+		"좌우 방향키로 다음 세상으로 나아가세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+
+	startBtn.onclick = function () {
+		modal.style.display = "none";
+		currentStage = 0;
+		cameraX = 0;
+		targetCameraX = 0;
+		initStage(currentStage);
+		document.getElementById("stage").innerText = currentStage + 1;
 		isGameRunning = true;
 		update();
-	}
-};
+	};
+	modal.style.display = "flex";
+}
+
+// 2. 게임 오버 & 랭킹 모달 (바운스볼은 점수 대신 도달한 스테이지 번호를 보냅니다!)
+function showGameOverModal(stageScore, isAllClear = false) {
+	isGameRunning = false;
+	ball.dx = 0;
+	cancelAnimationFrame(animationId);
+
+	document.getElementById("modalTitle").innerText = isAllClear
+		? "ALL CLEAR!"
+		: "GAME OVER";
+	document.getElementById("modalDesc").innerText = isAllClear
+		? "축하합니다! 모든 스테이지를 정복했습니다!"
+		: `아쉽네요! 최고 도달: STAGE ${stageScore}`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 등록
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		// gameId는 bounceball, 점수는 도달한 스테이지 수!
+		const result = await saveGameScore("bounce", nickname, stageScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	// 다시 시작
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		currentStage = 0;
+		cameraX = 0;
+		targetCameraX = 0;
+		initStage(currentStage);
+		document.getElementById("stage").innerText = currentStage + 1;
+		isGameRunning = true;
+		update();
+	};
+
+	modal.style.display = "flex";
+}
 
 // [이벤트 리스너]
 window.addEventListener("keydown", (e) => {
@@ -202,58 +266,36 @@ function update() {
 
 	if (!isTransitioning) {
 		ball.dy += gravity;
-
-		// 유저의 입력 속도
 		let inputDx = rightPressed ? moveSpeed : leftPressed ? -moveSpeed : 0;
-
-		// 현재 공의 속도는 유저 입력 + 외부 반동(ball.dx)
 		let nextX = ball.x + inputDx + ball.dx;
 		let nextY = ball.y + ball.dy;
 		const map = maps[currentStage];
 
-		// 1. X축 충돌 검사 (벽 튕기기 핵심)
 		if (!checkWall(nextX, ball.y, map)) {
 			ball.x = nextX;
-			// 공중에 있을 때 반동(ball.dx)을 서서히 줄여서 조작감을 회복시킴
 			ball.dx *= 0.95;
 		} else {
-			// [강력 반동 로직] 벽에 닿는 순간 반대 방향으로 튕겨냄
-			// 단순히 멈추는 게 아니라 반대쪽으로 강한 힘(dx)을 부여
-			if (nextX > ball.x) {
-				// 오른쪽 벽 충돌
-				ball.dx = -moveSpeed * 2.3; // 왼쪽으로 튕김
-			} else {
-				// 왼쪽 벽 충돌
-				ball.dx = moveSpeed * 2.3; // 오른쪽으로 튕김
-			}
-
-			// [벽 점프] 튕길 때만 살짝 위로 힘을 줌
+			if (nextX > ball.x) ball.dx = -moveSpeed * 2.3;
+			else ball.dx = moveSpeed * 2.3;
 			ball.dy = jumpForce * 0.8;
-
-			// 한쪽 벽만 타는 것을 방지하기 위해 튕겨 나간 후에는 반대 키를 눌러야 함
 			ball.x += ball.dx;
 		}
 
-		// 2. Y축 충돌 검사 (바닥/천장)
 		if (!checkWall(ball.x, nextY, map)) {
 			ball.y = nextY;
 		} else {
 			if (ball.dy > 0) {
-				// 바닥 충돌
 				ball.dy = jumpForce;
-				ball.dx = 0; // 바닥에 닿으면 좌우 반동 초기화 (안정적 착지)
+				ball.dx = 0;
 			} else {
-				// 천장 충돌
 				ball.dy = 0;
 			}
 		}
 
-		// 잔상 및 타일 체크
 		ball.trail.push({ x: ball.x, y: ball.y });
-		if (ball.trail.length > 12) ball.trail.shift(); // 잔상을 더 길게 (12개)
+		if (ball.trail.length > 12) ball.trail.shift();
 		checkTiles(map);
 	} else {
-		// 카메라 전환 로직 동일
 		cameraX += (targetCameraX - cameraX) * 0.08;
 		if (Math.abs(cameraX - targetCameraX) < 1) {
 			cameraX = targetCameraX;
@@ -267,7 +309,6 @@ function update() {
 function checkWall(x, y, map) {
 	const yOffset = canvas.height - map.length * box;
 	const xOff = currentStage * canvas.width;
-	// 정밀 충돌 판정을 위해 사방 4점 체크
 	const pts = [
 		{ x: x - ball.r, y: y - ball.r },
 		{ x: x + ball.r, y: y - ball.r },
@@ -295,7 +336,6 @@ function checkTiles(map) {
 		if (tile === 2) gameOver();
 		if (tile === 4 && !isTransitioning) startTransition();
 	}
-	// [4. 좌우 낙사 방지 처리로 인해 Y축 낙사만 체크]
 	if (ball.y > canvas.height + 100) gameOver();
 }
 
@@ -312,23 +352,21 @@ function startTransition() {
 				if (nextMap[r][c] === 5) {
 					ball.x = c * box + box / 2 + currentStage * canvas.width;
 					ball.y = r * box + box / 2 + yOff;
-					ball.dx = 0; // 전환 시 dx 초기화
+					ball.dx = 0;
 					break;
 				}
 			}
 		}
 		document.getElementById("stage").innerText = currentStage + 1;
 	} else {
-		isGameRunning = false;
-		showModal("BOUNCE MASTER!", "전설의 공튀기기 정복!", "다시 하기");
+		// [10단계 올 클리어 시 10점 만점 등록]
+		showGameOverModal(10, true);
 	}
 }
 
 function gameOver() {
-	isGameRunning = false;
-	ball.dx = 0; // dx 초기화
-	cancelAnimationFrame(animationId);
-	showModal("GAME OVER", "다시 도전하시겠습니까?", "재시작");
+	// [죽었을 때는 현재 도달한 스테이지 번호를 점수로 취급]
+	showGameOverModal(currentStage + 1, false);
 }
 
 function draw() {
@@ -362,16 +400,13 @@ function draw() {
 		}
 	}
 
-	// [3. 잔상 그리기 - 더 진하고 길게]
 	ball.trail.forEach((p, i) => {
 		ctx.beginPath();
 		ctx.arc(p.x, p.y, ball.r, 0, Math.PI * 2);
-		// 알파값을 i / trail.length로 조절하여 끝으로 갈수록 흐려짐
 		ctx.fillStyle = `rgba(142, 36, 170, ${i / ball.trail.length})`;
 		ctx.fill();
 	});
 
-	// 공 그리기 (작아진 공)
 	ctx.fillStyle = "#8e24aa";
 	ctx.beginPath();
 	ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
@@ -382,11 +417,6 @@ function draw() {
 	ctx.restore();
 }
 
-function showModal(title, desc, btnText) {
-	document.getElementById("modalTitle").innerText = title;
-	document.getElementById("modalDesc").innerText = desc;
-	startBtn.innerText = btnText;
-	modal.style.display = "flex";
-}
-
+// 게임 최초 진입 시
 initStage(0);
+showStartModal();

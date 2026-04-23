@@ -171,3 +171,113 @@ canvas {
 	color: #888;
 	margin-top: 5px;
 }
+
+/* --- 로딩 스피너 스타일 --- */
+.spinner {
+	width: 50px;
+	height: 50px;
+	border: 5px solid rgba(0, 229, 255, 0.2);
+	border-top-color: #00e5ff;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -25px;
+	margin-left: -25px;
+}
+
+@keyframes spin {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* --- 모달 랭킹 & 슬림 버튼 스타일 --- */
+.difficulty-options {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 15px;
+}
+
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 25px;
+	width: 100%;
+}
+
+.primary-btn,
+.secondary-btn,
+.diff-btn {
+	flex: 1;
+	padding: 10px 0 !important;
+	font-size: 0.95rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	line-height: 1.4;
+	color: #000;
+}
+
+.primary-btn {
+	background: #00e5ff;
+}
+.primary-btn:hover {
+	background: #00b8cc;
+	transform: translateY(-2px);
+}
+
+.secondary-btn {
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #00e5ff;
+	transform: translateY(-2px);
+}
+
+/* 난이도 버튼 색상 (초급, 중급, 고급) */
+.diff-btn[data-grid="3"] {
+	background: #00e5ff;
+}
+.diff-btn[data-grid="4"] {
+	background: #bb86fc;
+}
+.diff-btn[data-grid="6"] {
+	background: #ff0266;
+	color: #fff;
+}
+.diff-btn:hover {
+	filter: brightness(1.1);
+	transform: translateY(-2px);
+}
+
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.nickname-input:focus {
+	border-color: #00e5ff;
+}

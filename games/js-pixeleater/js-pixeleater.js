@@ -1,12 +1,20 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreDisplay = document.getElementById("scoreDisplay");
 const stageDisplay = document.getElementById("stageDisplay");
 const statusDisplay = document.getElementById("statusDisplay");
+
+// --- 모달 제어 변수 ---
 const modal = document.getElementById("gameModal");
 const modalTitle = document.getElementById("modalTitle");
-const modalText = document.getElementById("modalText");
+const modalDesc = document.getElementById("modalDesc");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
 const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
 
 const TILE_SIZE = 20;
 const ROWS = 19;
@@ -30,7 +38,7 @@ let player = {
 	isOpen: false,
 };
 
-// 랜덤 미로 생성 알고리즘 (Recursive Backtracking)
+// [랜덤 미로 생성 알고리즘 유지]
 function generateRandomMap() {
 	let newMap = Array.from({ length: ROWS }, () => Array(COLS).fill(1));
 	function carvePath(r, c) {
@@ -57,15 +65,11 @@ function generateRandomMap() {
 		}
 	}
 	carvePath(1, 1);
-	// 중앙 몬스터 방 & 플레이어 시작점 강제 개방
 	for (let r = 8; r <= 10; r++) for (let c = 8; c <= 10; c++) newMap[r][c] = 3;
 	newMap[7][9] = 3;
 	newMap[15][9] = 3;
-	// 아이템 배치 및 순환 통로 생성
 	for (let r = 1; r < ROWS - 1; r++) {
 		for (let c = 1; c < COLS - 1; c++) {
-			// 모든 길(0)에 채우지 않고, 60% 확률로만 픽셀을 배치 (0.4보다 클 때)
-			// 이 숫자를 높이면(예: 0.7) 픽셀이 더 적어지고, 낮추면 더 많아집니다.
 			if (newMap[r][c] === 0 && Math.random() > 0.6) {
 				newMap[r][c] = 2;
 			} else if (newMap[r][c] === 1 && Math.random() > 0.85) newMap[r][c] = 2;
@@ -74,6 +78,7 @@ function generateRandomMap() {
 	return newMap;
 }
 
+// [몬스터 클래스 유지]
 class Bug {
 	constructor(x, y, color, speed) {
 		this.startX = x * TILE_SIZE;
@@ -105,7 +110,6 @@ class Bug {
 				(d) => !isWall(this.x + d.x * TILE_SIZE, this.y + d.y * TILE_SIZE),
 			);
 			if (possibleDirs.length > 0) {
-				// 추적 AI: 70% 확률로 가장 가까운 길 선택
 				possibleDirs.sort((a, b) => {
 					const distA = Math.hypot(
 						player.x - (this.x + a.x * TILE_SIZE),
@@ -169,22 +173,17 @@ function initGame(next = false) {
 		stage = 1;
 	}
 
-	// 몬스터 속도 설정
-	// 그리드에 맞게 2.0 또는 2.5로 추천
 	let bugSpeed = 1.0;
 	let bugCount = 2;
 	if (stage >= 3) bugSpeed = 1.2;
-
 	if (stage == 6) {
 		bugCount = 3;
 		bugSpeed = 1.0;
 	}
-
 	if (stage >= 7) {
 		bugCount = 3;
 		bugSpeed = 1.2;
 	}
-
 	if (stage >= 10) bugCount = 4;
 
 	MAP = generateRandomMap();
@@ -206,21 +205,6 @@ function initGame(next = false) {
 
 	if (animationId) cancelAnimationFrame(animationId);
 	update();
-}
-
-function shuffleMap() {
-	let cells = [];
-	for (let r = 0; r < ROWS; r++) {
-		for (let c = 0; c < COLS; c++) {
-			if (MAP[r][c] === 2) cells.push({ r, c });
-		}
-	}
-	cells.forEach((cell) => (MAP[cell.r][cell.c] = 3));
-	for (let i = cells.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[cells[i], cells[j]] = [cells[j], cells[i]];
-	}
-	cells.forEach((cell) => (MAP[cell.r][cell.c] = 2));
 }
 
 function update() {
@@ -289,7 +273,6 @@ function render() {
 			}
 		}
 	}
-	// 보물상자 디자인
 	ctx.save();
 	ctx.translate(player.x, player.y);
 	ctx.fillStyle = "#ffc107";
@@ -308,34 +291,99 @@ function render() {
 	bugs.forEach((bug) => bug.draw());
 }
 
+// --- 모달 제어 로직 ---
+
+function showStartModal() {
+	gameActive = false;
+	modalTitle.innerText = "PIXEL EATER";
+	modalDesc.innerText = "모든 픽셀을 먹어치우세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame(false);
+	};
+	modal.style.display = "flex";
+}
+
+function showStageClearModal() {
+	modalTitle.innerText = `STAGE ${stage - 1} CLEAR!`;
+	modalDesc.innerText = "성공적으로 먹어치웠습니다!\n다음 단계로 도전하세요.";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "다음 단계";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame(true);
+	};
+	modal.style.display = "flex";
+}
+
+function showGameOverModal(finalScore, isAllClear = false) {
+	modalTitle.innerText = isAllClear ? "ALL CLEAR!" : "GAME OVER";
+	modalDesc.innerText = isAllClear
+		? `모든 픽셀을 먹어치웠습니다!\n최종 스코어: ${finalScore}점`
+		: `픽셀 괴물과 마주쳤습니다.\n최종 스코어: ${finalScore}점`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 등록
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		// gameId는 pixeleater!
+		const result = await saveGameScore("pixeleater", nickname, finalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	// 다시 시작
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame(false);
+	};
+
+	modal.style.display = "flex";
+}
+
 function gameWin() {
 	gameActive = false;
 	if (stage >= 10) {
-		modalTitle.innerText = "ALL CLEAR!";
-		modalText.innerText = "모든 픽셀을 먹어치웠습니다!";
-		stage = 1;
-		startBtn.innerText = "처음부터 다시";
+		showGameOverModal(score, true);
 	} else {
 		stage++;
-		modalTitle.innerText = `STAGE ${stage - 1} CLEAR!`;
-		modalText.innerText = "다음 단계로 도전하세요.";
-		startBtn.innerText = "다음 단계";
+		showStageClearModal();
 	}
-	startBtn.onclick = () => initGame(true);
-	modal.style.display = "flex";
 }
 
 function gameOver() {
 	gameActive = false;
 	statusDisplay.innerText = "CRASHED";
-	modalTitle.innerText = "GAME OVER";
-	modalText.innerText =
-		`STAGE${stage}에서 픽셀과 마주쳤습니다.` + `최종스코어 : ${score}`;
-	startBtn.innerText = "다시 시작";
-	startBtn.onclick = () => initGame(false);
-	modal.style.display = "flex";
+	showGameOverModal(score, false);
 }
 
+// [이벤트 바인딩]
 function setDir(x, y) {
 	if (gameActive) player.nextDir = { x, y };
 }
@@ -349,7 +397,6 @@ window.addEventListener("keydown", (e) => {
 		e.preventDefault();
 });
 
-// 가상 패드 터치 이벤트 (touchstart, mousedown 모두 대응)
 const bindPad = (id, x, y) => {
 	const btn = document.getElementById(id);
 	const handler = (e) => {
@@ -364,3 +411,6 @@ bindPad("padUp", 0, -1);
 bindPad("padDown", 0, 1);
 bindPad("padLeft", -1, 0);
 bindPad("padRight", 1, 0);
+
+// 최초 진입 시 모달 표시
+showStartModal();

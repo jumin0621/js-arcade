@@ -161,6 +161,20 @@ canvas {
 }
 
 /* 게임 시작 / 재시작 버튼 */
+primary-btn,
+.secondary-btn {
+	flex: 1;
+	/* 패딩 조절: 위아래(10px)를 줄여서 뚱뚱함을 해결하고 좌우(0)는 flex로 맞춤 */
+	padding: 10px 0;
+	font-size: 0.95rem; /* 폰트도 살짝 줄여서 더 세련되게 */
+	font-weight: 700;
+	border-radius: 6px; /* 살짝 더 각진 느낌으로 세련미 추가 */
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	line-height: 1.4; /* 줄간격을 조절해서 텍스트가 중앙에 예쁘게 오도록 함 */
+}
+
 .primary-btn {
 	background: #00e5ff;
 	color: #121212;

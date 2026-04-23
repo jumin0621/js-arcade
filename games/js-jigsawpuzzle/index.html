@@ -30,7 +30,8 @@
 			</div>
 
 			<div class="canvas-container" id="gameArea">
-				<canvas id="puzzleCanvas"></canvas>
+				<div id="loadingSpinner" class="spinner" style="display: none"></div>
+				<canvas id="puzzleCanvas" style="display: none"></canvas>
 			</div>
 
 			<div class="controls-guide">
@@ -42,7 +43,7 @@
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
 				<h2 id="modalTitle">JIGSAW PUZZLE</h2>
-				<p id="modalMessage">조각난 퍼즐조각을 맞춰주세요!</p>
+				<p id="modalMessage">난이도를 선택해 이미지를 복구하세요!</p>
 
 				<div id="difficultyOptions" class="difficulty-options">
 					<button class="diff-btn" data-grid="3">초급 (3x3)</button>
@@ -50,20 +51,23 @@
 					<button class="diff-btn" data-grid="6">고급 (6x6)</button>
 				</div>
 
-				<div id="resultOptions" class="result-options" style="display: none">
-					<button class="action-btn" onclick="location.reload()">
-						새 게임 하기
-					</button>
-					<button
-						class="action-btn main-btn"
-						onclick="window.parent.exitGame()"
-					>
-						메인으로
-					</button>
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (2~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div id="resultOptions" class="modal-buttons" style="display: none">
+					<button id="startBtn" class="primary-btn">랭킹 등록</button>
+					<button id="restartBtn" class="secondary-btn">처음으로</button>
 				</div>
 			</div>
 		</div>
 
-		<script src="js-jigsawpuzzle.js"></script>
+		<script type="module" src="js-jigsawpuzzle.js"></script>
 	</body>
 </html>

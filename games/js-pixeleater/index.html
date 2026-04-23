@@ -20,7 +20,7 @@
 					<span class="info-label">STAGE</span>
 					<span id="stageDisplay" class="info-value">1</span>
 				</div>
-				<div class="info-item">
+				<div class="info-item right">
 					<span class="info-label">STATUS</span>
 					<span id="statusDisplay" class="info-value">READY</span>
 				</div>
@@ -46,16 +46,30 @@
 			</div>
 		</div>
 
-		<div id="gameModal" class="modal-overlay" style="display: flex">
+		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
 				<h2 id="modalTitle">PIXEL EATER</h2>
-				<p id="modalText">모든 픽셀을 먹어치우세요!</p>
-				<button id="startBtn" class="primary-btn" onclick="initGame()">
-					게임 시작
-				</button>
+				<p id="modalDesc">모든 픽셀을 먹어치우세요!</p>
+
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (3~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다시 시작
+					</button>
+				</div>
 			</div>
 		</div>
 
-		<script src="js-pixeleater.js"></script>
+		<script type="module" src="js-pixeleater.js"></script>
 	</body>
 </html>

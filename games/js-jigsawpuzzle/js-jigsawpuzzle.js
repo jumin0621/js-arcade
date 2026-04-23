@@ -1,17 +1,30 @@
+// ✅ 랭킹 저장 함수 임포트
+import { saveGameScore } from "../../common/firebase-config.js";
+
 const canvas = document.getElementById("puzzleCanvas");
 const ctx = canvas.getContext("2d");
+const spinner = document.getElementById("loadingSpinner");
 const modal = document.getElementById("gameModal");
 const progressDisplay = document.getElementById("progressDisplay");
 const pieceDisplay = document.getElementById("pieceDisplay");
 
-// [원상복구] 이미지 6개 리스트 누락 없이 전체 포함
+// --- 모달 제어 변수 ---
+const modalTitle = document.getElementById("modalTitle");
+const modalMessage = document.getElementById("modalMessage");
+const difficultyOptions = document.getElementById("difficultyOptions");
+const resultOptions = document.getElementById("resultOptions");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+
 const PUZZLE_IMAGES = [
-	"https://i.ibb.co/DHN1JxbY/image.png",
-	"https://i.ibb.co/r2Gm2XLs/Astonishia-Story-Wallpaper-B-1920x1080.png",
-	"https://i.ibb.co/B25ZdxQP/Astonishia-Story-Wallpaper-A-1920x1080.png",
-	"https://i.ibb.co/N6PTKf0F/u2337176951-httpss-mj-run-Uq5lap-HI-p-I-Please-transform-my-styl-b9cfab23-1ca6-4e3b-8b78-5311c8ba566.png",
-	"https://i.ibb.co/BHCmCnSw/u2337176951-httpss-mj-run-Uq5lap-HI-p-I-Please-transform-my-styl-b9cfab23-1ca6-4e3b-8b78-5311c8ba566.png",
-	"https://i.ibb.co/zV0MwJrH/u2337176951-httpss-mj-run-Uq5lap-HI-p-I-Please-transform-my-styl-b9cfab23-1ca6-4e3b-8b78-5311c8ba566.png",
+	"https://i.ibb.co/SDXWtZnn/image.webp",
+	"https://i.ibb.co/KjmBXsL0/image.webp",
+	"https://i.ibb.co/JFmsKVc3/image.webp",
+	"https://i.ibb.co/tTF8Wn51/image.webp",
+	"https://i.ibb.co/m5TnXj8C/image.webp",
+	"https://i.ibb.co/CKd3Jvwm/dejavufina21.webp",
 ];
 
 let img = new Image();
@@ -20,14 +33,34 @@ let gridSize = 3;
 let selectedPiece = null;
 let offset = { x: 0, y: 0 };
 let solvedCount = 0;
+let timeElapsed = 0;
+let timerInterval;
 
+// 1. 초기 시작 모달
+function showStartModal() {
+	modalTitle.innerText = "JIGSAW PUZZLE";
+	modalMessage.innerText = "난이도를 선택해 이미지를 복구하세요!";
+	difficultyOptions.style.display = "flex";
+	resultOptions.style.display = "none";
+	rankInputArea.style.display = "none";
+	modal.style.display = "flex";
+}
+
+// 난이도 클릭 및 스피너 로직
 document.querySelectorAll(".diff-btn").forEach((btn) => {
 	btn.onclick = () => {
 		gridSize = parseInt(btn.dataset.grid);
 		const randomImg =
 			PUZZLE_IMAGES[Math.floor(Math.random() * PUZZLE_IMAGES.length)];
+
+		modal.style.display = "none";
+		canvas.style.display = "none";
+		spinner.style.display = "block"; // 로딩 시작
+
 		img.src = randomImg;
 		img.onload = () => {
+			spinner.style.display = "none"; // 로딩 끝
+			canvas.style.display = "block";
 			document.getElementById("hintThumb").style.backgroundImage =
 				`url(${img.src})`;
 			document.getElementById("hintPreview").style.backgroundImage =
@@ -38,13 +71,21 @@ document.querySelectorAll(".diff-btn").forEach((btn) => {
 });
 
 function initGame() {
-	modal.style.display = "none";
 	const container = document.getElementById("gameArea");
 	canvas.width = container.clientWidth;
 	canvas.height = container.clientHeight;
+	progressDisplay.innerText = "0%";
+
 	createPieces();
 	shufflePieces();
 	draw();
+
+	// 점수 계산을 위한 타이머 시작
+	timeElapsed = 0;
+	clearInterval(timerInterval);
+	timerInterval = setInterval(() => {
+		timeElapsed++;
+	}, 1000);
 }
 
 function createPieces() {
@@ -85,11 +126,9 @@ function shufflePieces() {
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	// 가이드 라인 (정답 위치 표시)
 	ctx.strokeStyle = "rgba(187, 134, 252, 0.1)";
 	pieces.forEach((p) => ctx.strokeRect(p.destX, p.destY, p.width, p.height));
 
-	// 조각 그리기 (맞춘 조각을 밑에, 드래그 중인 조각을 위에 그리기 위해 정렬)
 	const sortedPieces = [...pieces].sort((a, b) => a.isSolved - b.isSolved);
 
 	sortedPieces.forEach((p) => {
@@ -142,7 +181,6 @@ function handleStart(mx, my) {
 			selectedPiece = p;
 			offset.x = mx - p.x;
 			offset.y = my - p.y;
-			// 선택한 조각을 맨 위로
 			pieces.push(pieces.splice(i, 1)[0]);
 			break;
 		}
@@ -158,7 +196,6 @@ window.onmousemove = window.ontouchmove = (e) => {
 	let nX = mx - offset.x;
 	let nY = my - offset.y;
 
-	// [유지] 화면 이탈 방지 (70% 이탈 허용 로직)
 	const mW = selectedPiece.width * 0.7;
 	const mH = selectedPiece.height * 0.7;
 	selectedPiece.x = Math.max(
@@ -175,7 +212,6 @@ window.onmousemove = window.ontouchmove = (e) => {
 window.onmouseup = window.ontouchend = () => {
 	if (!selectedPiece) return;
 
-	// [유지] 스냅 기능 (30px 이내 부착)
 	if (
 		Math.abs(selectedPiece.x - selectedPiece.destX) < 30 &&
 		Math.abs(selectedPiece.y - selectedPiece.destY) < 30
@@ -193,13 +229,54 @@ window.onmouseup = window.ontouchend = () => {
 	progressDisplay.innerText = `${progress}%`;
 
 	if (solvedCount === gridSize * gridSize) {
+		clearInterval(timerInterval);
+
+		// 점수 계산: (그리드수^2 * 1000) - (걸린 시간 * 20). 최소 10점
+		const finalScore = Math.max(
+			10,
+			gridSize * gridSize * 1000 - timeElapsed * 20,
+		);
+
 		setTimeout(() => {
-			document.getElementById("modalTitle").innerText = "COMPLETED!";
-			document.getElementById("modalMessage").innerText =
-				"모든 퍼즐조각을 맞췄습니다.";
-			document.getElementById("difficultyOptions").style.display = "none";
-			document.getElementById("resultOptions").style.display = "flex";
+			modalTitle.innerText = "COMPLETED!";
+			modalMessage.innerHTML = `모든 퍼즐을 맞췄습니다!<br>소요 시간: ${timeElapsed}초<br>최종 점수: ${finalScore}점`;
+			difficultyOptions.style.display = "none";
+			resultOptions.style.display = "flex";
+			rankInputArea.style.display = "block";
+			nicknameInput.value = "";
 			modal.style.display = "flex";
+
+			startBtn.innerText = "랭킹 등록";
+			startBtn.disabled = false;
+
+			// 랭킹 등록
+			startBtn.onclick = async () => {
+				const nickname = nicknameInput.value.trim();
+				if (!nickname || nickname.length < 2)
+					return alert("닉네임을 2자 이상 입력해주세요!");
+
+				startBtn.disabled = true;
+				startBtn.innerText = "데이터 확인 중...";
+
+				// gameId는 jigsawpuzzle!
+				const result = await saveGameScore("jigsaw", nickname, finalScore);
+				alert(result.msg);
+
+				if (result.status !== "error") {
+					showStartModal();
+				} else {
+					startBtn.disabled = false;
+					startBtn.innerText = "랭킹 등록";
+				}
+			};
+
+			// 처음으로
+			restartBtn.onclick = () => {
+				showStartModal();
+			};
 		}, 500);
 	}
 };
+
+// 최초 진입
+showStartModal();

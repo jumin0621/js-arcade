@@ -31,10 +31,26 @@
 				<div class="modal-content">
 					<h2 id="modalTitle">BRICK MASTER</h2>
 					<p id="modalDesc">좌우 방향키를 이용해 모든 벽돌을 제거하세요!</p>
-					<button id="startBtn" class="primary-btn">게임 시작</button>
+
+					<div id="rankInputArea" class="rank-input-area">
+						<input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/>
+					</div>
+
+					<div class="modal-buttons">
+						<button id="startBtn" class="primary-btn">게임 시작</button>
+						<button id="restartBtn" class="secondary-btn" style="display: none">
+							다시 시작
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-		<script src="js-brickmaster.js"></script>
+		<script type="module" src="js-brickmaster.js"></script>
 	</body>
 </html>

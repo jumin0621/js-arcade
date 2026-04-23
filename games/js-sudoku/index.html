@@ -8,7 +8,6 @@
 		/>
 		<title>JS-Arcade | 스도쿠</title>
 		<link rel="stylesheet" href="style.css" />
-		<link rel="icon" type="image/png" href="../../assets/img/logo.png" />
 	</head>
 	<body>
 		<div class="game-wrapper">
@@ -24,7 +23,6 @@
 			</div>
 
 			<div id="sudokuBoard" class="sudoku-board"></div>
-
 			<div id="numberPad" class="number-pad"></div>
 
 			<div class="controls-guide">
@@ -37,10 +35,26 @@
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
 				<h2 id="modalTitle">SUDOKU</h2>
-				<p id="modalText">중복 없이 숫자를 가득 채워주세요!</p>
-				<button id="startBtn" class="primary-btn">게임 시작</button>
+				<p id="modalDesc">중복 없이 숫자를 가득 채워주세요!</p>
+
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (3~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다음 단계
+					</button>
+				</div>
 			</div>
 		</div>
-		<script src="js-sudoku.js"></script>
+		<script type="module" src="js-sudoku.js"></script>
 	</body>
 </html>

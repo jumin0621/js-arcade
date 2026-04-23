@@ -1,3 +1,6 @@
+// ✅ 랭킹 저장 함수 임포트 (확장자 주의)
+import { saveGameScore } from "../../common/firebase-config.js";
+
 const canvas = document.getElementById("brickGame");
 const ctx = canvas.getContext("2d");
 
@@ -23,18 +26,25 @@ let bricks = [];
 let rightPressed = false;
 let leftPressed = false;
 
+// 모달 제어 변수
+const modal = document.getElementById("gameModal");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+
 // 게임 초기화 (완전히 처음부터)
 function initGame() {
 	score = 0;
 	currentStage = 0;
-	updateUI(); // UI 업데이트
+	updateUI();
 	resetStageData();
 }
 
-// UI 텍스트 업데이트 함수
+// UI 텍스트 업데이트
 function updateUI() {
 	document.getElementById("score").innerText = score;
-	document.getElementById("stage").innerText = currentStage + 1; // 여기서 화면 갱신
+	document.getElementById("stage").innerText = currentStage + 1;
 }
 
 // 스테이지 데이터만 리셋
@@ -54,26 +64,101 @@ function resetStageData() {
 	}
 }
 
-// 모달 제어
-const modal = document.getElementById("gameModal");
-const startBtn = document.getElementById("startBtn");
+// --- 모달 제어 로직 (3가지 상태) ---
 
-startBtn.onclick = function () {
-	modal.style.display = "none";
-	if (animationId) cancelAnimationFrame(animationId);
-	isGameRunning = true;
-	draw();
-};
-
-function showModal(title, desc, btnText) {
+// 1. 게임 시작 모달
+function showStartModal() {
 	isGameRunning = false;
-	document.getElementById("modalTitle").innerText = title;
-	document.getElementById("modalDesc").innerText = desc;
-	startBtn.innerText = btnText;
+	document.getElementById("modalTitle").innerText = "BRICK MASTER";
+	document.getElementById("modalDesc").innerText =
+		"좌우 방향키를 이용해 모든 벽돌을 제거하세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+		isGameRunning = true;
+		if (animationId) cancelAnimationFrame(animationId);
+		draw();
+	};
 	modal.style.display = "flex";
 }
 
-// 조작 로직 (생략 없이 유지)
+// 2. 스테이지 클리어 모달
+function showStageClearModal() {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = "STAGE CLEAR!";
+	document.getElementById("modalDesc").innerText =
+		`다음은 STAGE ${currentStage + 1}입니다.`;
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "다음 단계로";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		resetStageData();
+		isGameRunning = true;
+		if (animationId) cancelAnimationFrame(animationId);
+		draw();
+	};
+	modal.style.display = "flex";
+}
+
+// 3. 게임 오버 / 올 클리어 모달 (랭킹 등록)
+function showGameOverModal(finalScore, isAllClear = false) {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = isAllClear
+		? "ALL CLEAR!"
+		: "GAME OVER";
+	document.getElementById("modalDesc").innerText = isAllClear
+		? `축하합니다! 벽돌을 모두 부쉈습니다!\n최종 점수: ${finalScore}점`
+		: `아쉽네요! 최종 점수: ${finalScore}점`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 등록 클릭
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		const result = await saveGameScore("brickmaster", nickname, finalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	// 다시 시작 클릭
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+		isGameRunning = true;
+		if (animationId) cancelAnimationFrame(animationId);
+		draw();
+	};
+
+	modal.style.display = "flex";
+}
+
+// --- 조작 및 그리기 로직 ---
+
 document.addEventListener("keydown", (e) => {
 	if (e.key == "Right" || e.key == "ArrowRight") rightPressed = true;
 	else if (e.key == "Left" || e.key == "ArrowLeft") leftPressed = true;
@@ -85,7 +170,6 @@ document.addEventListener("keyup", (e) => {
 
 const leftBtn = document.getElementById("leftBtn");
 const rightBtn = document.getElementById("rightBtn");
-
 leftBtn.onpointerdown = () => (leftPressed = true);
 leftBtn.onpointerup = () => (leftPressed = false);
 leftBtn.onpointerleave = () => (leftPressed = false);
@@ -119,7 +203,9 @@ function draw() {
 	});
 
 	// 공 로직
-	balls.forEach((ball, index) => {
+	for (let index = balls.length - 1; index >= 0; index--) {
+		let ball = balls[index];
+
 		ctx.beginPath();
 		ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
 		ctx.fillStyle = "#fff";
@@ -142,10 +228,11 @@ function draw() {
 				if (Math.random() < 0.1 && balls.length < 3) duplicateBall(ball);
 			} else if (ball.y + ball.dy > canvas.height - ball.radius) {
 				balls.splice(index, 1);
+
+				// 공이 모두 떨어지면 게임 오버 모달 호출
 				if (balls.length === 0) {
-					isGameRunning = false;
-					showModal("GAME OVER", "다시 도전하시겠습니까?", "재시작");
-					initGame();
+					showGameOverModal(score, false);
+					return; // draw 루프 종료
 				}
 			}
 		}
@@ -167,7 +254,7 @@ function draw() {
 				}
 			}),
 		);
-	});
+	}
 
 	// 패들 로직
 	ctx.fillStyle = "#00e5ff";
@@ -177,6 +264,7 @@ function draw() {
 		paddleWidth,
 		paddleHeight,
 	);
+
 	if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 7;
 	else if (leftPressed && paddleX > 0) paddleX -= 7;
 
@@ -191,18 +279,14 @@ function checkStageClear() {
 	if (bricks.every((col) => col.every((b) => b.status === 0))) {
 		currentStage++;
 		if (currentStage < stages.length) {
-			updateUI(); // 클리어 즉시 스테이지 번호 갱신
-			showModal(
-				"STAGE CLEAR!",
-				`다음은 STAGE ${currentStage + 1}입니다.`,
-				"다음 단계로",
-			);
-			resetStageData();
+			updateUI();
+			showStageClearModal(); // 다음 스테이지 안내 모달
 		} else {
-			showModal("BRICK MASTER!", "전체 클리어 성공!", "다시 하기");
-			initGame();
+			showGameOverModal(score, true); // 올 클리어 성공 모달 (랭킹 등록 포함)
 		}
 	}
 }
 
+// 최초 화면 로드 시 시작 모달 띄우기
 initGame();
+showStartModal();

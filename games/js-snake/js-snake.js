@@ -76,7 +76,7 @@ function showGameOverModal(finalScore) {
 		const nickname = nicknameInput.value.trim();
 		// 간단한 유효성 검사
 		if (!nickname || nickname.length < 2) {
-			alert("랭킹에 등록할 닉네임(최소 2자)을 입력해주세요!");
+			alert("닉네임(최소 2자)을 입력해주세요!");
 			return;
 		}
 
@@ -84,13 +84,13 @@ function showGameOverModal(finalScore) {
 		startBtn.innerText = "등록 중...";
 
 		// 파이어베이스 DB 전송
-		const success = await saveGameScore("snake", nickname, finalScore);
+		const result = await saveGameScore("snake", nickname, finalScore);
 
-		if (success) {
-			alert("명예의 전당에 등록되었습니다! 🏆");
-			showStartModal(); // 등록 성공 시 '게임 시작' 모달로 돌아감
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal(); // 에러가 아니면 시작 모달로 복귀
 		} else {
-			alert("등록 실패! 다시 시도해주세요.");
 			startBtn.disabled = false;
 			startBtn.innerText = "랭킹 등록";
 		}

@@ -40,10 +40,26 @@
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
 				<h2 id="modalTitle">CODE BREAKER</h2>
-				<p id="modalText">JS코드를 지닌 적들을 격파하세요!</p>
-				<button id="startBtn" class="primary-btn">게임 시작</button>
+				<p id="modalDesc">JS코드를 지닌 적들을 격파하세요!</p>
+
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (3~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다시 시작
+					</button>
+				</div>
 			</div>
 		</div>
-		<script src="js-invader.js"></script>
+		<script type="module" src="js-invader.js"></script>
 	</body>
 </html>
