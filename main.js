@@ -1,11 +1,11 @@
 import { db } from "./common/firebase-config.js";
-// ✅ 에러 방지를 위해 CDN에서 직접 파이어베이스 함수들을 가져옵니다.
 import {
 	doc,
 	setDoc,
 	increment,
 	collection,
 	getDocs,
+	getDoc,
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const gameData = [
@@ -86,22 +86,18 @@ const gameData = [
 		emoji: "👻",
 		path: "games/js-pixeleater/index.html",
 	},
+	{
+		id: "pixelmatch",
+		title: "픽셀 매치",
+		description: "같은 그림을 매치시키는 게임",
+		emoji: "🍎",
+		path: "games/js-pixelmatch/index.html",
+	},
 ];
 
-// DB에서 불러온 각 게임의 실제 조회수를 담아둘 객체
 let dbViewStats = {};
 
-// 1. 전체 사이트 방문자 수 증가 로직
-async function updateVisitCount() {
-	try {
-		const statsRef = doc(db, "site_stats", "total_visits");
-		await setDoc(statsRef, { count: increment(1) }, { merge: true });
-	} catch (error) {
-		console.error("전체 방문자 업데이트 실패:", error);
-	}
-}
-
-// 2. 파이어베이스에서 '모든 게임의 조회수'를 한 번에 가져오기
+// 파이어베이스에서 '모든 게임의 조회수'를 한 번에 가져오기
 async function fetchGameStats() {
 	try {
 		const snapshot = await getDocs(collection(db, "game_stats"));
@@ -115,13 +111,12 @@ async function fetchGameStats() {
 
 // 3. 게임 리스트 화면에 그리기
 async function renderGames() {
-	updateVisitCount(); // 전체 방문자 +1
-	await fetchGameStats(); // DB 데이터 동기화 완료 대기
+	// ❌ 기존에 있던 updateVisitCount(); 삭제 완료!
+	await fetchGameStats();
 
 	const listContainer = document.getElementById("game-list");
 	listContainer.innerHTML = gameData
 		.map((game) => {
-			// DB에 값이 없으면 0으로 표시
 			const views = dbViewStats[game.id] || 0;
 			return `
     <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')" style="cursor:pointer;">
@@ -136,15 +131,12 @@ async function renderGames() {
 		.join("");
 }
 
-// 4. 게임 입장 시 파이어베이스 조회수 증가 (HTML에서 접근 가능하도록 window 객체에 할당)
+// 4. 게임 입장 시 파이어베이스 조회수 증가
 window.enterGameWithCount = async function (id, path) {
 	const gameRef = doc(db, "game_stats", id);
 
 	try {
-		// 파이어베이스 DB 조회수 +1 업데이트
 		await setDoc(gameRef, { views: increment(1) }, { merge: true });
-
-		// 사용자 화면(DOM)의 숫자도 바로 변경하여 딜레이가 없게 만듦
 		dbViewStats[id] = (dbViewStats[id] || 0) + 1;
 		const viewElement = document.getElementById(`view-${id}`);
 		if (viewElement) {
@@ -154,7 +146,6 @@ window.enterGameWithCount = async function (id, path) {
 		console.error("조회수 증가 에러:", error);
 	}
 
-	// 기존 게임 진입 로직 실행
 	window.enterGame(path);
 };
 
@@ -212,9 +203,8 @@ window.exitGame = function () {
 	document.getElementById("selection-room").style.display = "block";
 	document.getElementById("play-room").style.display = "none";
 	document.getElementById("game-container").src = "";
-	// 로비로 돌아올 때 최신 조회수로 한 번 더 갱신
+	// 로비로 돌아올 때 최신 게임 조회수로 한 번 더 갱신 (전체 방문자 수는 오르지 않음)
 	renderGames();
 };
 
-// 페이지 로드 시 최초 실행
 window.onload = renderGames;

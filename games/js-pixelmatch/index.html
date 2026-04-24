@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | 픽셀 매치</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">SCORE</span>
+					<span id="scoreDisplay" class="info-value">0</span>
+				</div>
+				<div class="info-item">
+					<span class="info-label">STAGE</span>
+					<span id="stageDisplay" class="info-value">1</span>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">TIME</span>
+					<span id="timeDisplay" class="info-value">90</span>
+				</div>
+			</div>
+
+			<div class="canvas-container" id="gameArea">
+				<canvas id="matchCanvas"></canvas>
+			</div>
+
+			<div class="controls-guide">
+				<p>🧩 타일을 클릭해 스택으로 옮기세요!</p>
+				<p>같은 모양 <span>3개</span>가 모이면 코드가 소거됩니다.</p>
+			</div>
+
+			<div id="gameModal" class="modal-overlay">
+				<div class="modal-content">
+					<h2 id="modalTitle">PIXEL MATCH</h2>
+					<p id="modalDesc">픽셀 타일을 맞추고 랭킹에 도전하세요!</p>
+
+					<div id="rankInputArea" class="rank-input-area">
+						<input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/>
+					</div>
+
+					<div class="modal-buttons">
+						<button id="startBtn" class="primary-btn">게임 시작</button>
+						<button id="restartBtn" class="secondary-btn" style="display: none">
+							다시 시작
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="module" src="js-pixelmatch.js"></script>
+	</body>
+</html>

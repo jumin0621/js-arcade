@@ -17,9 +17,10 @@ const games = [
 	{ id: "sudoku", title: "✏️ 스도쿠" },
 	{ id: "invader", title: "👾 코드브레이커" },
 	{ id: "pixelrunner", title: "🏃‍♂️ 픽셀러너" },
-	{ id: "puzzle", title: "🧩 슬라이드퍼즐" },
+	{ id: "puzzle", title: "🖼️ 슬라이드퍼즐" },
 	{ id: "jigsaw", title: "🧩 직소퍼즐" },
 	{ id: "pixeleater", title: "👻 픽셀이터" },
+	{ id: "pixelmatch", title: "🍎 픽셀매치" },
 	// ... 나머지 게임들도 추가
 ];
 

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>브릭 마스터 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트 2D Canvas API를 활용한 브릭 마스터(벽돌 깨기) 게임 개발일지. 공의 물리 반사와 AABB 충돌 감지 알고리즘 구현 과정을 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="브릭 마스터 개발일지: 캔버스 물리 엔진의 기초"
+		/>
+		<meta
+			property="og:description"
+			content="VanillaJS로 구현한 고전 벽돌 깨기 게임! 공이 벽돌에 튕겨 나가는 원리는 무엇일까요?"
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/brick-master.html"
+		/>
+		<meta
+			property="og:image"
+			content="https://JS-Arcade.com/devlog/assets/brickmaster_thumb.png"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "브릭 마스터 개발일지: 캔버스 물리 엔진의 기초",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-04-24",
+				"articleSection": "Game Development",
+				"image": "https://JS-Arcade.com/devlog/assets/brickmaster_thumb.png",
+				"keywords": "Javascript Game, Breakout, Brick Breaker, Canvas API, Collision Detection"
+			}
+		</script>
+
+		<style>
+			body {
+				line-height: 1.7;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #eee;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #2c3e50;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #e74c3c; /* 브릭 마스터에 어울리는 붉은 톤 포인트 */
+				margin-top: 40px;
+				border-left: 5px solid #e74c3c;
+				padding-left: 15px;
+			}
+			.code-block {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				overflow-x: auto;
+			}
+			pre {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				display: block;
+				overflow-x: auto;
+				white-space: pre;
+				word-wrap: normal;
+				-webkit-overflow-scrolling: touch;
+			}
+			pre::-webkit-scrollbar {
+				height: 4px;
+			}
+			pre::-webkit-scrollbar-thumb {
+				background: #666;
+				border-radius: 10px;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1rem;
+				margin-bottom: 25px;
+				letter-spacing: -0.5px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px;
+				flex-wrap: wrap;
+			}
+
+			/* 네온 스타일 버튼 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				background: #e74c3c; /* 붉은 톤 */
+				color: #fff;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				box-shadow: 0 10px 20px rgba(231, 76, 60, 0.2);
+				border: 2px solid transparent;
+			}
+
+			.play-btn:hover {
+				background: #c0392b;
+				transform: translateY(-5px) scale(1.05);
+				box-shadow: 0 15px 30px rgba(231, 76, 60, 0.4);
+				border-color: rgba(255, 255, 255, 0.3);
+			}
+
+			.play-btn:active {
+				transform: translateY(0) scale(0.98);
+			}
+
+			.play-btn.primary {
+				background: #e74c3c;
+				color: #fff;
+				box-shadow: 0 8px 15px rgba(231, 76, 60, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #c0392b;
+				transform: translateY(-3px);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #aaa;
+				color: #aaa;
+				box-shadow: none;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #2c3e50;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-3px);
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Classic Arcade</strong></p>
+			<h1>브릭 마스터(Brick Master) 개발일지</h1>
+			<p>작성일: <time>2026-04-24</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>🧱 프로젝트 개요</h2>
+				<p>
+					'브릭 마스터'는 아케이드 게임의 대명사인 벽돌 깨기(Breakout)를 바닐라
+					자바스크립트로 재현한 프로젝트입니다. 이전 스네이크 게임이 배열 구조에
+					집중했다면, 이번에는 <strong>HTML5 Canvas의 2D 렌더링</strong>과
+					오브젝트 간의
+					<strong>물리 반사 및 충돌 감지(Collision Detection)</strong>를
+					구현하는 데 초점을 맞추었습니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 벽돌과 공의 충돌 감지</h2>
+				<p>
+					<strong>문제 상황:</strong> 공이 벽돌을 통과해버리거나, 닿지도
+					않았는데 벽돌이 부서지는 현상이 발생했습니다. 동그란 공과 네모난
+					벽돌의 교집합을 어떻게 수학적으로 깔끔하게 계산할 것인지가 가장 큰
+					난관이었습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong> 2D 게임 개발에서 가장 널리 쓰이는
+					<code>AABB (Axis-Aligned Bounding Box)</code> 충돌 감지 개념을
+					적용했습니다. 공의 중심 좌표(x, y)가 벽돌의 상하좌우 경계선 내부에
+					들어오는 순간을 포착하고, 충돌 시 공의 Y축 방향(dy)을 반대로 뒤집어
+					튕겨 나가는 효과를 구현했습니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 공과 벽돌의 충돌 감지 로직
+function collisionDetection() {
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            let b = bricks[c][r];
+            // 벽돌이 살아있을 때만 (status === 1) 계산
+            if (b.status === 1) {
+                // 공의 X, Y 좌표가 벽돌의 영역 안에 들어왔는지 검사
+                if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                    dy = -dy;      // 공을 반대 방향으로 튕겨냄
+                    b.status = 0;  // 벽돌 깨짐 상태로 변경
+                    score += 10;   // 점수 증가
+                }
+            }
+        }
+    }
+}</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					프레임마다 화면을 지우고 다시 그리는
+					<code>requestAnimationFrame</code>의 루프 속에서 수많은 오브젝트의
+					상태를 관리하는 방법을 배웠습니다. 좌표를 다루는 수학적 사고가
+					더해지니 순수 코드로만 화면 속 물체에 물리 법칙을 부여할 수 있다는
+					점이 매우 흥미로웠습니다. 다음에는 속도가 점진적으로 빨라지거나
+					아이템이 떨어지는 기믹을 추가해 볼 예정입니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>시원한 타격감과 반사 신경의 앙상블, 브릭 마스터에 도전해보세요!</p>
+				<div class="button-group">
+					<a
+						href="../games/js-brickmaster/"
+						target="_blank"
+						class="play-btn primary"
+					>
+						<span>🎮 지금 바로 플레이</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>

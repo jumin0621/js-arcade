@@ -20,6 +20,15 @@
 			</div>
 
 			<ul class="notice-list">
+				<li class="notice-item" onclick="openNotice('launch-announcement')">
+					<span class="notice-tag notice">NOTICE</span>
+					<div class="notice-info">
+						<span class="notice-title"
+							>JS-Arcade 플랫폼 정식 런칭 및 개발일지 오픈 안내</span
+						>
+						<span class="notice-date">2026.04.20</span>
+					</div>
+				</li>
 				<li class="notice-item" onclick="openNotice('domain')">
 					<span class="notice-tag notice">NOTICE</span>
 					<div class="notice-info">
@@ -28,13 +37,11 @@
 					</div>
 				</li>
 
-				<li class="notice-item" onclick="openNotice('launch-announcement')">
-					<span class="notice-tag notice">NOTICE</span>
+				<li class="notice-item" onclick="openNotice('ranking')">
+					<span class="notice-tag update">UPDATE</span>
 					<div class="notice-info">
-						<span class="notice-title"
-							>JS-Arcade 플랫폼 정식 런칭 및 개발일지 오픈 안내</span
-						>
-						<span class="notice-date">2026.04.20</span>
+						<span class="notice-title">카운터 및 랭킹시스템 추가</span>
+						<span class="notice-date">2026.04.26</span>
 					</div>
 				</li>
 
@@ -57,9 +64,14 @@
 			</div>
 		</div>
 		<script type="module">
-			import { initHeader, initFooter } from "../common/layout.js";
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
 			initHeader();
 			initFooter();
+			initVisitorCounter();
 		</script>
 		<script>
 			function openNotice(slug) {

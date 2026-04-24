@@ -343,7 +343,21 @@
 					<img src="../assets/snake_thumb.png" alt="Vanilla Snake Devlog" />
 					<div class="inner">
 						<span class="tag" style="color: #2ecc71">Classic</span>
-						<h3>바닐라 스네이크 개발일지<br />배열로 구현한 몸통 로직</h3>
+						<h3>바닐라스네이크 개발일지<br />배열로 구현한 몸통 로직</h3>
+						<p>
+							순수 JS로 구현하는 스네이크 게임의 핵심 알고리즘과 트러블슈팅
+							기록입니다.
+						</p>
+					</div>
+				</article>
+				<article class="post-it" onclick="openDevlog('brick-master')">
+					<img
+						src="../assets/brickmaster_thumb.png"
+						alt="Brick Master Devlog"
+					/>
+					<div class="inner">
+						<span class="tag" style="color: #2ecc71">Classic</span>
+						<h3>브릭마스터 개발일지<br />AABB로 구현한 물리반사 로직</h3>
 						<p>
 							순수 JS로 구현하는 스네이크 게임의 핵심 알고리즘과 트러블슈팅
 							기록입니다.
@@ -428,9 +442,14 @@
 			};
 		</script>
 		<script type="module">
-			import { initHeader, initFooter } from "../common/layout.js";
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
 			initHeader();
 			initFooter();
+			initVisitorCounter();
 		</script>
 	</body>
 </html>

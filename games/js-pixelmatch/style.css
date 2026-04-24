@@ -1,0 +1,207 @@
+@charset "utf-8";
+
+/* --- 기본 초기화 --- */
+body {
+	background-color: #121212;
+	margin: 0;
+	color: white;
+	font-family: "Pretendard", sans-serif;
+	overflow: hidden;
+}
+
+/* --- 공통 레이아웃 --- */
+.game-wrapper {
+	width: 100%;
+	max-width: 500px;
+	margin: 0 auto;
+	padding: 20px 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+	height: 100vh;
+}
+
+/* --- 헤더 (SCORE / STAGE / TIME 3등분) --- */
+.game-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 15px;
+	padding: 0 5px;
+	box-sizing: border-box;
+}
+
+.info-item {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+/* 첫 번째(스코어)는 왼쪽, 두 번째(스테이지)는 중앙, 세 번째(타임)는 오른쪽 정렬 */
+.info-item:first-child {
+	align-items: flex-start;
+	text-align: left;
+}
+.info-item:nth-child(2) {
+	align-items: center;
+	text-align: center;
+}
+.info-item:last-child {
+	align-items: flex-end;
+	text-align: right;
+}
+
+.info-label {
+	font-size: 0.8rem;
+	color: #aaa;
+	margin-bottom: 2px;
+}
+
+.info-value {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #00e5ff;
+}
+
+/* --- 캔버스 영역 --- */
+.canvas-container {
+	width: 100%;
+	flex: 1;
+	min-height: 0;
+	background: #111;
+	position: relative;
+	border: 2px solid #333;
+	border-radius: 15px;
+	overflow: hidden;
+	box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	touch-action: none;
+}
+
+/* --- 가이드 텍스트 --- */
+.controls-guide {
+	margin-top: 15px;
+	text-align: center;
+	font-size: 0.9rem;
+	color: #aaa;
+	line-height: 1.6;
+}
+
+.controls-guide span {
+	color: #00e5ff;
+	font-weight: bold;
+}
+
+/* --- 모달 공통 --- */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.modal-content {
+	background: #1e1e1e;
+	padding: 30px 20px;
+	border-radius: 12px;
+	text-align: center;
+	border: 2px solid #444;
+	width: 85%;
+	max-width: 320px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+	margin-top: 0;
+	color: #00e5ff;
+	font-size: 1.8rem;
+	margin-bottom: 10px;
+}
+.modal-content p {
+	color: #ccc;
+	margin-bottom: 20px;
+	line-height: 1.4;
+	font-size: 0.95rem;
+}
+
+/* --- 모달 버튼 및 입력창 --- */
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 20px;
+	width: 100%;
+}
+
+.primary-btn,
+.secondary-btn {
+	flex: 1;
+	padding: 10px 0 !important;
+	font-size: 0.95rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	line-height: 1.4;
+}
+
+.primary-btn {
+	background: #00e5ff;
+	color: #000;
+}
+.primary-btn:hover {
+	background: #00b8cc;
+	transform: translateY(-2px);
+}
+
+.secondary-btn {
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #00e5ff;
+	transform: translateY(-2px);
+}
+
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+}
+.nickname-input:focus {
+	border-color: #00e5ff;
+}
+
+@media (max-width: 768px) {
+	.canvas-container {
+		max-width: 100%;
+		border-radius: 8px;
+	}
+}
