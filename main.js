@@ -116,7 +116,7 @@ const gameData = [
 	{
 		id: "dragoncurve",
 		title: "드래곤 커브",
-		description: "PC전용 횡스크롤 슈팅 게임 ",
+		description: "전통 방식의 횡스크롤 슈팅 게임 ",
 		emoji: "🐉",
 		path: "games/js-dragoncurve/index.html",
 		category: "shooting",

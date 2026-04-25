@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>버그 스위퍼 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트로 구현한 버그 스위퍼(지뢰찾기) 게임 개발일지. 재귀 함수(Recursion)를 활용한 Flood Fill 알고리즘 구현 과정을 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="버그 스위퍼 개발일지: 재귀 함수와 Flood Fill의 마법"
+		/>
+		<meta
+			property="og:description"
+			content="지뢰 대신 버그를 찾아라! 클릭 한 번에 빈 공간이 쫘르륵 열리는 원리는 무엇일까요?"
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/bug-sweeper.html"
+		/>
+		<meta
+			property="og:image"
+			content="https://JS-Arcade.com/devlog/assets/bugsweeper_thumb.png"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "버그 스위퍼 개발일지: 재귀 함수와 Flood Fill의 마법",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-04-25",
+				"articleSection": "Game Development",
+				"image": "https://JS-Arcade.com/devlog/assets/bugsweeper_thumb.png",
+				"keywords": "Javascript Game, Minesweeper, Bug Sweeper, Recursion, Flood Fill, Algorithm"
+			}
+		</script>
+
+		<style>
+			body {
+				line-height: 1.7;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #eee;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #2c3e50;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #e67e22; /* 버그 스위퍼 테마 컬러: 경고의 주황색 */
+				margin-top: 40px;
+				border-left: 5px solid #e67e22;
+				padding-left: 15px;
+			}
+			.code-block {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				overflow-x: auto;
+			}
+			pre {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				display: block;
+				overflow-x: auto;
+				white-space: pre;
+				word-wrap: normal;
+				-webkit-overflow-scrolling: touch;
+			}
+			pre::-webkit-scrollbar {
+				height: 4px;
+			}
+			pre::-webkit-scrollbar-thumb {
+				background: #666;
+				border-radius: 10px;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1rem;
+				margin-bottom: 25px;
+				letter-spacing: -0.5px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px;
+				flex-wrap: wrap;
+			}
+
+			/* 주황색 테마 버튼 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				background: #e67e22;
+				color: #fff;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				box-shadow: 0 10px 20px rgba(230, 126, 34, 0.2);
+				border: 2px solid transparent;
+			}
+
+			.play-btn:hover {
+				background: #d35400;
+				transform: translateY(-5px) scale(1.05);
+				box-shadow: 0 15px 30px rgba(230, 126, 34, 0.4);
+				border-color: rgba(255, 255, 255, 0.3);
+			}
+
+			.play-btn:active {
+				transform: translateY(0) scale(0.98);
+			}
+
+			.play-btn.primary {
+				background: #e67e22;
+				color: #fff;
+				box-shadow: 0 8px 15px rgba(230, 126, 34, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #d35400;
+				transform: translateY(-3px);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #aaa;
+				color: #aaa;
+				box-shadow: none;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #2c3e50;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-3px);
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Puzzle</strong></p>
+			<h1>버그 스위퍼(Bug Sweeper) 개발일지</h1>
+			<p>작성일: <time>2026-04-25</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>👿 프로젝트 개요</h2>
+				<p>
+					'버그 스위퍼'는 윈도우의 근본 게임인 '지뢰찾기'의 룰을 그대로 가져와,
+					숨어있는 치명적인 버그(지뢰)들을 피해 안전한 코드 영역을 확보하는 퍼즐
+					게임입니다. 2차원 배열을 이용한 그리드(Grid) 데이터 관리와, 우클릭을
+					활용한 깃발(디버깅) 시스템을 자바스크립트로 구현했습니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 연쇄적으로 빈칸 열기 (Flood Fill)</h2>
+				<p>
+					<strong>문제 상황:</strong> 유저가 주변에 버그가 하나도 없는 안전한
+					칸(0번 칸)을 클릭했을 때, 단순히 그 칸 하나만 열리는 것이 아니라
+					맞닿아 있는 다른 빈 공간들까지 연쇄적으로 쫘르륵 열리는 시원한 효과를
+					구현해야 했습니다. 단순한 반복문(for)만으로는 주변의 주변까지 끝없이
+					탐색하기가 매우 까다로웠습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong>
+					<strong>재귀 함수(Recursive Function)</strong>를 활용한
+					<code>Flood Fill</code> 알고리즘을 적용했습니다. 클릭한 칸이 0이라면
+					주변 8방향을 검사하고, 아직 방문하지 않은 안전한 칸에 대해 자기
+					자신(함수)을 다시 호출하도록 설계하여 물감이 번지듯 맵이 열리는 로직을
+					완성했습니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 빈 공간을 연쇄적으로 여는 재귀 함수
+function openEmptyCells(r, c) {
+    // 1. 맵 범위를 벗어나거나, 이미 열린 칸, 깃발이 꽂힌 칸은 탐색 종료
+    if (r &lt; 0 || r &gt;= rows || c &lt; 0 || c &gt;= cols || board[r][c].isOpen || board[r][c].isFlagged) {
+        return;
+    }
+
+    // 2. 현재 칸 열기
+    board[r][c].isOpen = true;
+    revealedCount++;
+
+    // 3. 현재 칸 주변에 버그가 하나도 없다면(0이라면) 8방향으로 재귀 호출!
+    if (board[r][c].neighborBugs === 0) {
+        for (let dr = -1; dr &lt;= 1; dr++) {
+            for (let dc = -1; dc &lt;= 1; dc++) {
+                // 제자리(0,0)를 제외한 모든 방향 탐색
+                if (dr !== 0 || dc !== 0) {
+                    openEmptyCells(r + dr, c + dc);
+                }
+            }
+        }
+    }
+}</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					단순히 네모난 칸을 클릭하는 UI 너머에 '재귀 함수'라는 아름다운
+					자료구조 로직이 숨어있다는 것을 깨달은 뜻깊은 프로젝트였습니다. Call
+					Stack(호출 스택)의 한계를 고려해 그리드 사이즈를 설계하는 과정도 좋은
+					경험이 되었습니다. 다음 업데이트에서는 첫 클릭 시 무조건 버그가 걸리지
+					않도록,
+					<strong>'첫 클릭 이후에 지뢰를 배치하는 안전 보장 로직'</strong>을
+					추가해 볼 계획입니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>버그를 밟지 않고 모든 코드를 디버깅하세요!</p>
+				<div class="button-group">
+					<a
+						href="../games/js-bugsweeper/"
+						target="_blank"
+						class="play-btn primary"
+					>
+						<span>🎮 지금 바로 플레이</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>

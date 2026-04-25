@@ -233,16 +233,52 @@ main {
 
 .filter-btn:hover {
 	color: #00e5ff;
-	border-color: #00e5ff;
 	background: rgba(0, 229, 255, 0.05);
 }
 
 .filter-btn.active {
 	background: rgba(0, 229, 255, 0.1);
 	color: #00e5ff;
-	border-color: #00e5ff;
 	font-weight: 700;
 	box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+/* 카테고리별 대표 색상
+	아케이드 #FF2E63 
+	퍼즐 #2ECC71
+	슈팅 #BB86FC
+	탈출 #00E5FF
+*/
+
+[data-category="arcade"]:hover {
+	background: rgba(255, 46, 99, 0.4);
+	/* 
+		아케이드 #FF2E63 
+		퍼즐 #2ECC71
+		슈팅 #BB86FC
+		탈출 #00E5FF
+	*/
+}
+[data-category="puzzle"]:hover {
+	background: rgba(46, 204, 113, 0.4);
+}
+[data-category="shooting"]:hover {
+	background: rgba(187, 134, 252, 0.4);
+}
+[data-category="escape"]:hover {
+	background: rgba(0, 229, 255, 0.4);
+}
+[data-category="arcade"].active {
+	background: rgba(255, 46, 99, 0.4);
+}
+[data-category="puzzle"].active {
+	background: rgba(46, 204, 113, 0.4);
+}
+[data-category="shooting"].active {
+	background: rgba(187, 134, 252, 0.4);
+}
+[data-category="escape"].active {
+	background: rgba(0, 229, 255, 0.4);
 }
 
 /* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
