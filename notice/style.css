@@ -193,6 +193,9 @@
 	margin-bottom: 12px;
 	border: 1px solid rgba(255, 255, 255, 0.05);
 }
+#modalContent li strong {
+	color: #2ecc71;
+}
 
 /* 6. 푸터 및 버튼 그룹 (반응형 대응) */
 #modalContent .article-footer {
