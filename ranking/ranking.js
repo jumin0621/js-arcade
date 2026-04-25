@@ -20,7 +20,8 @@ const games = [
 	{ id: "puzzle", title: "🖼️ 슬라이드퍼즐" },
 	{ id: "jigsaw", title: "🧩 직소퍼즐" },
 	{ id: "pixeleater", title: "👻 픽셀이터" },
-	{ id: "pixelmatch", title: "🍎 픽셀매치" },
+	{ id: "shieldsurvivor", title: "🛡️ 실드서바이버" },
+	{ id: "dragoncurve", title: "🐉 드래곤커브" },
 	// ... 나머지 게임들도 추가
 ];
 

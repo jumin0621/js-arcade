@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JS-Arcade | 드래곤 커브</title>
+		<link rel="stylesheet" href="style.css" />
+		<link rel="icon" type="image/png" href="../../assets/img/logo.png" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">HP</span>
+					<span id="hpDisplay" class="info-value" style="color: #ff1744"
+						>♥♥♥</span
+					>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">SCORE</span>
+					<span id="scoreDisplay" class="info-value">0</span>
+				</div>
+			</div>
+
+			<canvas id="gameCanvas"></canvas>
+
+			<div class="mobile-controls" id="mobileControls">
+				<div class="d-pad">
+					<button class="dir-btn up" id="btnUp">▲</button>
+					<button class="dir-btn left" id="btnLeft">◀</button>
+					<button class="dir-btn right" id="btnRight">▶</button>
+					<button class="dir-btn down" id="btnDown">▼</button>
+				</div>
+				<div class="action-pad">
+					<button class="fire-btn" id="btnFire">FIRE</button>
+				</div>
+			</div>
+
+			<div class="controls-guide">
+				<p>
+					⌨️ <span>방향키</span> 이동 / <span>Space</span> 사격 (꾹 누르면 연사)
+				</p>
+				<p>다가오는 <span>벽(지형)</span>에 부딪히면 데미지를 입습니다!</p>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">DRAGON CURVE</h2>
+				<p id="modalDesc">PC 전용 횡스크롤 슈팅 액션!</p>
+
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (2~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다시 시작
+					</button>
+				</div>
+			</div>
+		</div>
+		<script type="module" src="js-dragoncurve.js"></script>
+	</body>
+</html>

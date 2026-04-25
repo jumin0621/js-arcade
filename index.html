@@ -3,6 +3,10 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="naver-site-verification"
+			content="ce5446f51d48e7772c33afa99a63fac21594412c"
+		/>
 		<title>JS-Arcade | 바닐라JS 웹게임 아카이브</title>
 		<link rel="icon" type="image/png" href="./assets/logo.png" />
 		<link rel="stylesheet" href="style.css" />
@@ -44,7 +48,44 @@
 					</a>
 				</aside>
 
-				<h2 class="visually-hidden">최신 게임 리스트</h2>
+				<h2 class="visually-hidden">최신 고전 게임 리스트</h2>
+				<div class="category-filter">
+					<button
+						class="filter-btn active"
+						data-category="all"
+						onclick="filterCategory('all')"
+					>
+						ALL
+					</button>
+					<button
+						class="filter-btn"
+						data-category="arcade"
+						onclick="filterCategory('arcade')"
+					>
+						🕹️ 아케이드
+					</button>
+					<button
+						class="filter-btn"
+						data-category="puzzle"
+						onclick="filterCategory('puzzle')"
+					>
+						🧩 퍼즐
+					</button>
+					<button
+						class="filter-btn"
+						data-category="action"
+						onclick="filterCategory('shooting')"
+					>
+						👾 슈팅
+					</button>
+					<button
+						class="filter-btn"
+						data-category="action"
+						onclick="filterCategory('escape')"
+					>
+						🏃‍♂️ 탈출
+					</button>
+				</div>
 				<div class="game-grid" id="game-list"></div>
 			</section>
 

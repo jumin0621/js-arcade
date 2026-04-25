@@ -1,0 +1,157 @@
+body {
+	background-color: #121212;
+	margin: 0;
+	color: white;
+	font-family: sans-serif;
+	overflow: hidden;
+	touch-action: none;
+}
+.game-wrapper {
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+}
+.game-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	text-align: center;
+	padding: 0 5px;
+	box-sizing: border-box;
+}
+.info-label {
+	font-size: 0.7rem;
+	color: #888;
+	display: block;
+}
+.info-value {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #ffeb3b; /* 서바이벌 테마 노란색 */
+	text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+}
+
+#gameCanvas {
+	background: #050505;
+	border: 2px solid #aeea00; /* 실드 느낌의 라임색 */
+	border-radius: 8px;
+	width: 100%;
+	max-width: 360px;
+	height: auto;
+	aspect-ratio: 9/10;
+	box-shadow: 0 0 20px rgba(174, 234, 0, 0.3);
+	cursor: crosshair; /* 조준점 커서 */
+}
+
+.controls-guide {
+	text-align: center;
+	font-size: 0.85rem;
+	color: #aaa;
+	line-height: 1.6;
+}
+.controls-guide span {
+	color: #aeea00;
+	font-weight: bold;
+}
+
+/* 통합 모달 스타일 (기존 유지) */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+.modal-content {
+	background: #222;
+	padding: 30px;
+	border-radius: 15px;
+	border: 2px solid #aeea00;
+	text-align: center;
+	width: 80%;
+	max-width: 300px;
+	box-shadow: 0 0 20px rgba(174, 234, 0, 0.2);
+}
+.modal-content h2 {
+	color: #aeea00;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
+.primary-btn {
+	background: #aeea00;
+	color: #000;
+	border: none;
+	padding: 10px 0 !important;
+	font-weight: bold;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 0.95rem;
+	transition: 0.2s;
+	flex: 1;
+}
+.primary-btn:hover {
+	transform: translateY(-2px);
+	background: #c6ff00;
+	box-shadow: 0 0 15px rgba(198, 255, 0, 0.5);
+}
+.secondary-btn {
+	flex: 1;
+	padding: 10px 0 !important;
+	font-size: 0.95rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #aeea00;
+	transform: translateY(-2px);
+}
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 25px;
+	width: 100%;
+}
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+.nickname-input:focus {
+	border-color: #aeea00;
+}

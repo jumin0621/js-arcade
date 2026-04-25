@@ -15,6 +15,7 @@ const gameData = [
 		description: "뱀의 몸통을 늘리는 게임",
 		emoji: "🐍",
 		path: "games/js-snake/index.html",
+		category: "arcade",
 	},
 	{
 		id: "brickmaster",
@@ -22,6 +23,7 @@ const gameData = [
 		description: "벽돌을 부수는 게임",
 		emoji: "🧱",
 		path: "games/js-brickmaster/index.html",
+		category: "arcade",
 	},
 	{
 		id: "bounce",
@@ -29,6 +31,7 @@ const gameData = [
 		description: "공을 튕겨서 탈출시키는 게임",
 		emoji: "☄️",
 		path: "games/js-bounce/index.html",
+		category: "arcade",
 	},
 	{
 		id: "brickstack",
@@ -36,6 +39,7 @@ const gameData = [
 		description: "블록 없애기 게임",
 		emoji: "🟦",
 		path: "games/js-brickstack/index.html",
+		category: "arcade",
 	},
 	{
 		id: "bugsweeper",
@@ -43,20 +47,23 @@ const gameData = [
 		description: "버그를 찾아내는 게임",
 		emoji: "👿",
 		path: "games/js-bugsweeper/index.html",
+		category: "puzzle",
 	},
 	{
 		id: "sudoku",
 		title: "스도쿠",
-		description: "1~9까지 숫자를 충복없이 채우는 게임",
+		description: "1~9까지 숫자를 중복없이 채우는 게임",
 		emoji: "✏️",
 		path: "games/js-sudoku/index.html",
+		category: "puzzle",
 	},
 	{
 		id: "invader",
 		title: "코드 브레이커",
-		description: "바닐라JS로 버그 코드를 격파하는 게임",
+		description: "바닐라JS로 버그를 격파하는 게임",
 		emoji: "👾",
 		path: "games/js-invader/index.html",
+		category: "shooting",
 	},
 	{
 		id: "pixelrunner",
@@ -64,6 +71,7 @@ const gameData = [
 		description: "장애물을 피해서 달리는 게임",
 		emoji: "🏃‍♂️",
 		path: "games/js-pixelrunner/index.html",
+		category: "escape",
 	},
 	{
 		id: "puzzle",
@@ -71,6 +79,7 @@ const gameData = [
 		description: "슬라이드로 완성하는 퍼즐 게임",
 		emoji: "🖼️",
 		path: "games/js-puzzle/index.html",
+		category: "puzzle",
 	},
 	{
 		id: "jigsaw",
@@ -78,13 +87,15 @@ const gameData = [
 		description: "퍼즐 조각을 맞추는 게임",
 		emoji: "🧩",
 		path: "games/js-jigsawpuzzle/index.html",
+		category: "puzzle",
 	},
 	{
 		id: "pixeleater",
 		title: "픽셀 이터",
-		description: "몬스터를 피해 데이터를 먹어치우는 게임",
+		description: "데이터를 먹어치우는 게임",
 		emoji: "👻",
 		path: "games/js-pixeleater/index.html",
+		category: "escape",
 	},
 	{
 		id: "pixelmatch",
@@ -92,6 +103,23 @@ const gameData = [
 		description: "같은 그림을 매치시키는 게임",
 		emoji: "🍎",
 		path: "games/js-pixelmatch/index.html",
+		category: "puzzle",
+	},
+	{
+		id: "shieldsurvivor",
+		title: "실드 서바이버",
+		description: "사방에서 몰려드는 적을 격추하는 게임",
+		emoji: "🛡️",
+		path: "games/js-shieldsurvivor/index.html",
+		category: "shooting",
+	},
+	{
+		id: "dragoncurve",
+		title: "드래곤 커브",
+		description: "PC전용 횡스크롤 슈팅 게임 ",
+		emoji: "🐉",
+		path: "games/js-dragoncurve/index.html",
+		category: "shooting",
 	},
 ];
 
@@ -185,17 +213,56 @@ window.enterGameWithCount = async function (id, path) {
 	window.enterGame(path);
 };
 
-// 5. 검색 기능
+// 5. 검색 및 필터링 기능
+// 현재 선택된 카테고리 상태 저장
+let currentCategory = "all";
+
+// 카테고리 버튼 클릭 시 실행되는 함수
+window.filterCategory = function (category) {
+	currentCategory = category;
+
+	// 버튼 UI 활성화/비활성화 처리
+	document.querySelectorAll(".filter-btn").forEach((btn) => {
+		btn.classList.remove("active");
+		if (btn.dataset.category === category) {
+			btn.classList.add("active");
+		}
+	});
+
+	// 카테고리 + 검색어 연동 필터링 실행
+	applyFilters();
+};
+
 const searchInput = document.getElementById("game-search");
-searchInput.addEventListener("input", (e) => {
-	const searchTerm = e.target.value.toLowerCase();
-	const filteredGames = gameData.filter(
-		(game) =>
-			game.title.toLowerCase().includes(searchTerm) ||
-			game.description.toLowerCase().includes(searchTerm),
-	);
+if (searchInput) {
+	searchInput.addEventListener("input", applyFilters);
+}
+
+// 🔥 카테고리와 검색어를 모두 고려하여 게임을 필터링하는 핵심 함수
+function applyFilters() {
+	const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+
+	let filteredGames = gameData;
+
+	// 1. 카테고리로 먼저 필터링
+	if (currentCategory !== "all") {
+		filteredGames = filteredGames.filter(
+			(game) => game.category === currentCategory,
+		);
+	}
+
+	// 2. 검색어가 있다면 검색어로 2차 필터링
+	if (searchTerm) {
+		filteredGames = filteredGames.filter(
+			(game) =>
+				game.title.toLowerCase().includes(searchTerm) ||
+				game.description.toLowerCase().includes(searchTerm),
+		);
+	}
+
+	// 3. 화면에 다시 그리기
 	renderFilteredGames(filteredGames);
-});
+}
 
 function renderFilteredGames(games) {
 	const listContainer = document.getElementById("game-list");

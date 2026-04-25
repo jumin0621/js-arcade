@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | 실드 서바이버</title>
+		<link rel="stylesheet" href="style.css" />
+		<link rel="icon" type="image/png" href="../../assets/img/logo.png" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">SHIELD</span>
+					<span id="shieldDisplay" class="info-value" style="color: #00ff00"
+						>100%</span
+					>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">SCORE</span>
+					<span id="scoreDisplay" class="info-value">0</span>
+				</div>
+			</div>
+
+			<canvas id="gameCanvas"></canvas>
+
+			<div class="controls-guide">
+				<p>🖱️ <span>마우스 이동</span> / 📱 <span>화면 터치</span>로 조준!</p>
+				<p>
+					사방에서 몰려오는 몬스터로부터 <span>코어(Core)</span>를 지켜내세요.
+				</p>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">SHIELD SURVIVOR</h2>
+				<p id="modalDesc">사방향에서 몰려오는 적들을 막아내세요!</p>
+
+				<div id="rankInputArea" class="rank-input-area">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (2~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다시 시작
+					</button>
+				</div>
+			</div>
+		</div>
+		<script type="module" src="js-shieldsurvivor.js"></script>
+	</body>
+</html>

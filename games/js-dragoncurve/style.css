@@ -1,0 +1,252 @@
+body {
+	background-color: #121212;
+	margin: 0;
+	color: white;
+	font-family: sans-serif;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	/* 🔥 1. 중앙 정렬(center) 대신 위에서부터 배치되도록 수정 */
+	align-items: flex-start;
+	/* 🔥 2. 위쪽에 살짝 여백을 줍니다. */
+	padding-top: 3vh;
+	height: 100vh;
+	box-sizing: border-box;
+}
+.game-wrapper {
+	width: 100%;
+	max-width: 850px; /* PC 와이드 비율을 위해 넓게 설정 */
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+}
+.game-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+.info-label {
+	font-size: 0.8rem;
+	color: #888;
+	display: block;
+}
+.info-value {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #00e5ff;
+	text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+#gameCanvas {
+	background: #000;
+	border: 2px solid #bb86fc;
+	border-radius: 8px;
+	/* 🔥 3. 캔버스 높이가 화면을 뚫고 나가지 않도록 제한 추가 */
+	width: auto;
+	max-width: 100%;
+	max-height: 75vh;
+	aspect-ratio: 16 / 9;
+	box-shadow: 0 0 30px rgba(187, 134, 252, 0.3);
+}
+
+.controls-guide {
+	text-align: center;
+	font-size: 0.9rem;
+	color: #aaa;
+	line-height: 1.6;
+}
+.controls-guide span {
+	color: #bb86fc;
+	font-weight: bold;
+}
+
+/* 통합 모달 스타일 (기존 유지) */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+.modal-content {
+	background: #222;
+	padding: 30px;
+	border-radius: 15px;
+	border: 2px solid #bb86fc;
+	text-align: center;
+	width: 80%;
+	max-width: 350px;
+	box-shadow: 0 0 20px rgba(187, 134, 252, 0.2);
+}
+.modal-content h2 {
+	color: #bb86fc;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
+.primary-btn,
+.secondary-btn {
+	flex: 1;
+	padding: 12px 0 !important;
+	font-size: 1rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+}
+.primary-btn {
+	background: #bb86fc;
+	color: #000;
+}
+.primary-btn:hover {
+	background: #d8b4fe;
+	transform: translateY(-2px);
+	box-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
+}
+.secondary-btn {
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #bb86fc;
+	transform: translateY(-2px);
+}
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 25px;
+}
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+}
+.nickname-input:focus {
+	border-color: #bb86fc;
+}
+
+/* --- 모바일 컨트롤러 (드래곤 커브 전용) --- */
+.mobile-controls {
+	display: none; /* 기본적으로 숨김 (PC용) */
+	width: 100%;
+	max-width: 500px;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 30px;
+	padding: 0 20px;
+	box-sizing: border-box;
+}
+
+/* 십자 방향키(D-Pad) 그리드 레이아웃 */
+.d-pad {
+	display: grid;
+	grid-template-columns: repeat(3, 50px);
+	grid-template-rows: repeat(3, 50px);
+	gap: 5px;
+}
+
+.dir-btn {
+	background: #222;
+	border: 2px solid #bb86fc;
+	color: #bb86fc;
+	border-radius: 10px;
+	font-size: 1.2rem;
+	cursor: pointer;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	box-shadow: 0 4px 0 #7b1fa2;
+}
+.dir-btn:active {
+	transform: translateY(4px);
+	box-shadow: 0 0 0 #7b1fa2;
+	background: #bb86fc;
+	color: #000;
+}
+
+/* 그리드 위치 지정 */
+.dir-btn.up {
+	grid-column: 2;
+	grid-row: 1;
+}
+.dir-btn.left {
+	grid-column: 1;
+	grid-row: 2;
+}
+.dir-btn.right {
+	grid-column: 3;
+	grid-row: 2;
+}
+.dir-btn.down {
+	grid-column: 2;
+	grid-row: 3;
+	border-radius: 10px;
+}
+
+/* 둥근 형태의 발사 버튼 */
+.action-pad {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.fire-btn {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background: rgba(255, 23, 68, 0.1);
+	border: 3px solid #ff1744;
+	color: #ff1744;
+	font-weight: 900;
+	font-size: 1.2rem;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	box-shadow:
+		0 6px 0 #b71c1c,
+		0 0 20px rgba(255, 23, 68, 0.4);
+	transition: all 0.1s;
+}
+.fire-btn:active {
+	transform: translateY(6px);
+	box-shadow: 0 0 0 #b71c1c;
+	background: #ff1744;
+	color: #fff;
+}
+
+/* 화면이 768px 이하(모바일/태블릿)일 때만 컨트롤러 노출 */
+@media (max-width: 768px) {
+	.mobile-controls {
+		display: flex;
+	}
+	.controls-guide {
+		display: none; /* 공간 확보를 위해 텍스트 가이드 숨김 */
+	}
+}
