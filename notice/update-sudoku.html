@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>스도쿠(Sudoku) 난이도별 게임판 시인성 개선 | 공지사항</title>
+		<meta
+			name="description"
+			content="스도쿠 낮은 난이도(1, 2단계)에서 게임판이 작게 보이던 문제를 해결하여 전 단계에서 시원한 화면 구성을 제공합니다."
+		/>
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="스도쿠 난이도별 게임판 크기 및 조작 편의성 개선 안내"
+		/>
+		<meta
+			property="og:description"
+			content="이제 낮은 난이도에서도 9x9 판과 동일한 크기로 쾌적하게 스도쿠를 즐기세요."
+		/>
+		<meta
+			property="og:url"
+			content="https://js-arcade.com/notice/update-sudoku.html"
+		/>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "NewsArticle",
+				"headline": "스도쿠 난이도별 게임판 크기 및 조작 편의성 개선 안내",
+				"datePublished": "2026-04-26",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				}
+			}
+		</script>
+		<style>
+			body {
+				font-family: "Pretendard", sans-serif;
+				background-color: #121212;
+				color: #e0e0e0;
+				line-height: 1.7;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+
+			header {
+				border-bottom: 1px solid #333;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+
+			header p {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 5px;
+			}
+
+			h1 {
+				font-size: 2.2rem;
+				color: #ffffff;
+				line-height: 1.3;
+				margin-bottom: 10px;
+			}
+
+			h2 {
+				color: #00e5ff; /* 포인트 컬러: 스도쿠 테마 블루 */
+				margin-top: 40px;
+				border-left: 5px solid #00e5ff;
+				padding-left: 15px;
+				font-size: 1.5rem;
+			}
+
+			h3 {
+				color: #ffffff;
+				margin-top: 30px;
+				margin-bottom: 15px;
+			}
+
+			.meta-line {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				width: 100%;
+			}
+
+			section p {
+				margin-bottom: 20px;
+				color: #ccc;
+			}
+
+			ul {
+				margin-bottom: 20px;
+				padding: 0;
+				list-style: none;
+			}
+
+			li {
+				margin-bottom: 20px;
+				padding: 20px;
+				background: rgba(255, 255, 255, 0.03);
+				border-radius: 22px;
+				border: 1px solid rgba(255, 255, 255, 0.05);
+				color: #ccc;
+			}
+
+			strong {
+				color: #00e5ff;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 60px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+				background: linear-gradient(to bottom, transparent, #1a1a1a);
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1.1rem;
+				margin-bottom: 30px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 20px;
+				flex-wrap: wrap;
+			}
+
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 18px 40px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.1rem;
+				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				min-width: 220px;
+			}
+
+			.play-btn.primary {
+				background: #00e5ff;
+				color: #000 !important;
+				box-shadow: 0 10px 20px rgba(0, 229, 255, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #00b8cc;
+				transform: translateY(-5px);
+				box-shadow: 0 15px 30px rgba(0, 229, 255, 0.4);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #888 !important;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #fff !important;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-5px);
+			}
+
+			@media (max-width: 600px) {
+				body {
+					padding: 30px 15px;
+				}
+				h1 {
+					font-size: 1.6rem;
+					text-align: center;
+				}
+				.meta-line {
+					flex-direction: column;
+					gap: 8px;
+					text-align: center;
+				}
+				.button-group {
+					flex-direction: column;
+					align-items: center;
+				}
+				.play-btn {
+					width: 100%;
+					min-width: auto;
+				}
+			}
+		</style>
+
+		<main class="notice-body">
+			<header>
+				<div class="meta-line">
+					<p>Category: <strong>Game Update</strong></p>
+					<p>게시일: <time>2026-04-26</time> | 작성자: imgtocode</p>
+				</div>
+				<h1>스도쿠(Sudoku) 난이도별 게임판 크기 및 시인성 최적화</h1>
+			</header>
+
+			<section>
+				<h2>
+					입문자부터 전문가까지, 모든 단계에서 시원한 플레이를 지원합니다.
+				</h2>
+				<p>
+					안녕하세요, <strong>imgtocode</strong> 입니다. 기존 스도쿠 게임의
+					1~2단계(4x4, 6x6) 플레이 시, 게임판이 화면 대비 작게 표시되어 조작이
+					불편했던 점을 개선했습니다. 이제 난이도와 상관없이 일관된 레이아웃으로
+					게임을 즐기실 수 있습니다.
+				</p>
+				<ul>
+					<li>
+						<strong style="font-size: 20px"
+							>동적 셀 크기 조정 (Cell Resizing)</strong
+						><br />
+						- 1~2단계 보드의 칸(Cell) 크기를 9x9 전문가 단계와 유사한 전체
+						너비를 차지하도록 대폭 키웠습니다.<br />
+						- 이제 낮은 단계에서도 빈 여백 없이 꽉 찬 화면으로 몰입감 있게
+						플레이할 수 있습니다.
+					</li>
+					<li>
+						<strong style="font-size: 20px">숫자 시인성 및 가독성 향상</strong
+						><br />
+						- 게임판이 커짐에 따라 내부 숫자 폰트 크기도 최적화되어, 한눈에 판의
+						상황을 파악하기 훨씬 수월해졌습니다.
+					</li>
+					<li>
+						<strong style="font-size: 20px">모바일 터치 편의성 개선</strong
+						><br />
+						- 칸이 커진 만큼 모바일 환경에서의 터치 영역이 넓어져, 작은 숫자를
+						누를 때 발생하는 오타 입력을 획기적으로 줄였습니다.
+					</li>
+				</ul>
+				<p>
+					앞으로도 JS-Arcade는 사소한 불편함까지 놓치지 않고 개선하여 유저분들께
+					최상의 게임 경험을 제공하겠습니다. 지금 바로 개선된 스도쿠를
+					플레이해보세요!
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>더 쾌적해진 스도쿠의 손맛을 느껴보세요!</p>
+				<div class="button-group">
+					<a href="../web-game/js-sudoku/" class="play-btn primary">
+						<span>🎮 스도쿠 플레이하기</span>
+					</a>
+					<a href="../" class="play-btn secondary">
+						<span>🏠 메인 화면 가기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>
