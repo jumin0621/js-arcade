@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>바운스볼 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트 2D Canvas API를 활용한 바운스볼(Bounce Ball) 게임 개발일지. 중력 물리 엔진과 타일 기반의 커스텀 충돌 감지 로직을 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="바운스볼 개발일지: 중력과 슈퍼 점프의 구현"
+		/>
+		<meta
+			property="og:description"
+			content="VanillaJS로 구현한 쫄깃한 플랫폼 게임! 공은 어떻게 특정 블록에서 더 높이 튕겨 오를까요?"
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/bounce-ball.html"
+		/>
+		<meta
+			property="og:image"
+			content="https://JS-Arcade.com/devlog/assets/bounceball_thumb.png"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "바운스볼 개발일지: 중력과 슈퍼 점프의 구현",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-04-25",
+				"articleSection": "Game Development",
+				"image": "https://JS-Arcade.com/devlog/assets/bounceball_thumb.png",
+				"keywords": "Javascript Game, Bounce Ball, Platformer, Canvas API, Collision Detection, Physics Engine"
+			}
+		</script>
+
+		<style>
+			body {
+				line-height: 1.7;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #eee;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #2c3e50;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #8e24aa; /* 바운스볼 공 색상에 맞춘 보라색 포인트 */
+				margin-top: 40px;
+				border-left: 5px solid #8e24aa;
+				padding-left: 15px;
+			}
+			.code-block {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				overflow-x: auto;
+			}
+			pre {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				display: block;
+				overflow-x: auto;
+				white-space: pre;
+				word-wrap: normal;
+				-webkit-overflow-scrolling: touch;
+			}
+			pre::-webkit-scrollbar {
+				height: 4px;
+			}
+			pre::-webkit-scrollbar-thumb {
+				background: #666;
+				border-radius: 10px;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1rem;
+				margin-bottom: 25px;
+				letter-spacing: -0.5px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px;
+				flex-wrap: wrap;
+			}
+
+			/* 보라색 테마의 네온 스타일 버튼 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				background: #8e24aa; /* 메인 보라색 */
+				color: #fff;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				box-shadow: 0 10px 20px rgba(142, 36, 170, 0.2);
+				border: 2px solid transparent;
+			}
+
+			.play-btn:hover {
+				background: #7b1fa2;
+				transform: translateY(-5px) scale(1.05);
+				box-shadow: 0 15px 30px rgba(142, 36, 170, 0.4);
+				border-color: rgba(255, 255, 255, 0.3);
+			}
+
+			.play-btn:active {
+				transform: translateY(0) scale(0.98);
+			}
+
+			.play-btn.primary {
+				background: #8e24aa;
+				color: #fff;
+				box-shadow: 0 8px 15px rgba(142, 36, 170, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #7b1fa2;
+				transform: translateY(-3px);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #aaa;
+				color: #aaa;
+				box-shadow: none;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #2c3e50;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-3px);
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Platformer Action</strong></p>
+			<h1>바운스볼(Bounce Ball) 개발일지</h1>
+			<p>작성일: <time>2026-04-25</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>☄️ 프로젝트 개요</h2>
+				<p>
+					'바운스볼'은 중력과 탄성을 이용해 맵을 탈출하는 정통 플랫폼
+					게임입니다. 이 프로젝트의 핵심은 <code>gravity(중력)</code>와
+					<code>jumpForce(반발력)</code>를 수학적으로 구현하여 공 특유의 쫄깃한
+					움직임을 만드는 것이었습니다. 최근 10단계 맵 리뉴얼을 진행하며,
+					<strong>가시 함정</strong>과 <strong>슈퍼 점프 타일</strong> 등 동적인
+					기믹들을 추가했습니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 타일 종류에 따른 커스텀 반발력 구현</h2>
+				<p>
+					<strong>문제 상황:</strong> 기본 벽돌(1)에서는 일반적인 높이로 튕겨야
+					하지만, 노란색의 슈퍼 점프 타일(3)을 밟았을 때는 훨씬 더 높이 튕겨
+					오르도록 만들어야 했습니다. 기존의 충돌 감지
+					함수(<code>checkWall</code>)는 단순히 벽이 "있다(true) /
+					없다(false)"만을 반환했기 때문에 어떤 타일을 밟았는지 알 수
+					없었습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong> 충돌 감지 함수가 단순한 불리언(Boolean)
+					값이 아닌,
+					<strong>충돌한 타일의 번호를 직접 반환(Return)</strong>하도록
+					업그레이드했습니다. 특히 슈퍼 점프 타일(3)을 밟았을 경우 우선순위를
+					부여하여, 업데이트 루프 안에서 <code>jumpForce</code>에 1.6배의
+					가중치를 곱해주는 방식으로 해결했습니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 1. 타일 번호를 반환하는 충돌 감지
+function checkWall(x, y, map) {
+    let hitType = 0;
+    for (let p of pts) {
+        // ... (좌표를 그리드 인덱스로 변환) ...
+        let t = map[gy][gx];
+        if (t === 1) hitType = 1; // 일반 벽
+        if (t === 3) return 3;    // 슈퍼 점프 타일이면 무조건 즉시 반환!
+    }
+    return hitType;
+}
+
+// 2. 메인 업데이트 루프에서의 분기 처리
+let hitY = checkWall(ball.x, nextY, map);
+if (!hitY) {
+    ball.y = nextY; // 충돌 없으면 낙하
+} else {
+    if (ball.dy > 0) { // 바닥에 닿는 순간
+        // 🔥 타일 종류가 3번(슈퍼 점프)이면 점프력을 1.6배로 증폭!
+        ball.dy = (hitY === 3) ? jumpForce * 1.6 : jumpForce; 
+        ball.dx = 0;
+    }
+}</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					충돌 함수 구조를 조금 바꾼 것만으로도 게임의 레벨 디자인(Level
+					Design)이 무궁무진하게 넓어졌습니다. 좁은 벽 사이를 통통 튕기며
+					올라가는 협곡 지형이나, 슈퍼 점프를 연속으로 밟아야 하는 퍼즐 요소를
+					직접 배열(2D Array)로 찍어내는 과정은 퍼즐을 맞추는 것처럼
+					즐거웠습니다. 플랫폼 게임의 본질인 <strong>'조작감'</strong>과
+					<strong>'충돌 물리'</strong>를 완벽하게 이해할 수 있는
+					프로젝트였습니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>
+					중력을 거스르는 정교한 컨트롤, 바운스볼 10개 스테이지에 도전하세요!
+				</p>
+				<div class="button-group">
+					<a
+						href="../games/js-bounce/"
+						target="_blank"
+						class="play-btn primary"
+					>
+						<span>🎮 지금 바로 플레이</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>

@@ -3,31 +3,37 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>조회수 기능 추가 | 공지사항</title>
+		<title>메인 페이지 스켈레톤 UI 적용 | 공지사항</title>
 		<meta
 			name="description"
-			content="JS-Arcade 게임을 플레이 할 때마다 올라가는 조회수 기능을 추가하였습니다."
+			content="JS-Arcade 메인 페이지의 로딩 속도와 사용자 경험(UX)을 개선하기 위해 스켈레톤 UI를 도입했습니다."
 		/>
 		<meta property="og:type" content="article" />
-		<meta property="og:title" content="게임 조회수 기능 추가" />
+		<meta
+			property="og:title"
+			content="메인 페이지 로딩 대기화면(스켈레톤 UI) 적용 안내"
+		/>
 		<meta
 			property="og:description"
-			content="JS-Arcade 플랫폼 게임 조회수 기능이 추가되었습니다."
+			content="빈 화면 대신 은은하게 빛나는 네온 스켈레톤으로 더 부드러운 로딩을 경험하세요."
 		/>
 		<meta
 			property="og:url"
-			content="https://JS-Arcade.com/notice/view-counter.html"
+			content="https://JS-Arcade.com/notice/update-skeleton.html"
 		/>
-		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
-     crossorigin="anonymous"></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
 	</head>
 	<body>
 		<script type="application/ld+json">
 			{
 				"@context": "https://schema.org",
 				"@type": "NewsArticle",
-				"headline": "JS-Arcade 게임 조회수 기능 추가",
-				"datePublished": "2026-04-22",
+				"headline": "메인 페이지 로딩 대기화면(스켈레톤 UI) 적용 안내",
+				"datePublished": "2026-04-25",
 				"author": {
 					"@type": "Person",
 					"name": "imgtocode"
@@ -92,12 +98,16 @@
 
 			ul {
 				margin-bottom: 20px;
-				padding-left: 20px;
+				padding: 0;
 				list-style: none;
 			}
 
 			li {
-				margin-bottom: 10px;
+				margin-bottom: 20px;
+				padding: 20px;
+				background: rgba(255, 255, 255, 0.03);
+				border-radius: 22px;
+				border: 1px solid rgba(255, 255, 255, 0.05);
 				color: #ccc;
 			}
 
@@ -114,7 +124,7 @@
 				border-radius: 0 10px 10px 0;
 			}
 
-			/* 푸터 영역 (index.html 모달 푸터 스타일 이식) */
+			/* 푸터 영역 */
 			.article-footer {
 				margin-top: 80px;
 				padding: 60px 0;
@@ -177,73 +187,55 @@
 
 			@media (max-width: 600px) {
 				body {
-					padding: 30px 15px; /* 양옆 여백을 줄여 콘텐츠 공간 확보 */
+					padding: 30px 15px;
 				}
-
-				/* 1. 헤더 영역 재배치 */
 				header {
-					margin-bottom: 30px; /* */
-					padding-bottom: 15px; /* */
+					margin-bottom: 30px;
+					padding-bottom: 15px;
 				}
-
-				/* 모바일에서는 3단 배치가 불가능하므로 수직으로 쌓음 */
 				.meta-line {
 					flex-direction: column;
 					align-items: center;
 					gap: 8px;
 					text-align: center;
 				}
-
-				/* 타이틀 크기 축소 (이미지 속 깨짐 방지) */
 				h1 {
 					font-size: 1.4rem;
 					text-align: center;
 					margin: 10px 0;
-					word-break: keep-all; /* 단어 단위 줄바꿈으로 가독성 향상 */
+					word-break: keep-all;
 				}
-
 				header p {
-					font-size: 0.8rem; /* 메타 정보 폰트 축소 */
+					font-size: 0.8rem;
 				}
-
-				/* 2. 본문 요소 조정 */
 				h2 {
 					font-size: 1.25rem;
 					margin-top: 30px;
 				}
-
 				.highlight-box {
-					padding: 20px; /* 내부 여백 축소 */
+					padding: 20px;
 					margin: 25px 0;
 				}
-
 				.highlight-box h3 {
 					font-size: 1.1rem;
 				}
-
-				/* 리스트 아이템 간격 조정 */
 				ul {
 					padding-left: 10px;
 				}
-
 				li {
 					font-size: 0.95rem;
 				}
-
-				/* 3. 하단 버튼 그룹 (세로 배치) */
 				.article-footer {
 					margin-top: 50px;
 					padding: 40px 0;
 				}
-
 				.button-group {
 					flex-direction: column;
 					align-items: center;
 					gap: 12px;
 				}
-
 				.play-btn {
-					width: 100%; /* 버튼이 가로를 꽉 채우도록 변경 */
+					width: 100%;
 					max-width: none;
 					padding: 15px 0;
 					font-size: 1rem;
@@ -253,31 +245,46 @@
 		<main class="notice-body">
 			<header>
 				<div class="meta-line">
-					<p>Category: <strong>Platform Notice</strong></p>
-					<p>게시일: <time>2026-04-22</time> | 작성자: imgtocode</p>
+					<p>Category: <strong>Platform Update</strong></p>
+					<p>게시일: <time>2026-04-25</time> | 작성자: imgtocode</p>
 				</div>
-				<h1>게임별 조회수 기능 추가</h1>
+				<h1>메인 페이지 로딩 속도 및 사용자 경험(UX) 개선</h1>
 			</header>
 
 			<section>
-				<h2>JS-Arcade에서 즐길 수 있는 게임에 조회수가 생겼습니다.</h2>
-				<FireBase를>
-					안녕하세요, <strong>imgtocode</strong> 입니다. JS-Arcade 플랫폼에서
-					<strong>FireBase</strong>를 연동하여, 
-					게임이 얼마나 플레이가 되었는지 눈으로 확인할 수 있는
-					<strong>조회수 기능</strong>이 추가되었습니다.
-					현재 FireBase를 활용한 <strong>랭킹시스템</strong>과 
-					플랫폼 자체 <strong>방문자수 카운터 기능</strong>을
-					구현중이오니 많은 관심 부탁드립니다.
-					<br /><br />감사합니다.
+				<h2>게임 목록 로딩 대기화면에 스켈레톤 UI가 적용되었습니다.</h2>
+				<p>
+					안녕하세요, <strong>imgtocode</strong> 입니다. 메인 페이지 접속 시
+					데이터베이스에서 조회수를 불러오는 잠깐의 대기 시간 동안 빈 화면이
+					노출되던 현상을 개선하고자 업데이트를 진행했습니다. 주요 업데이트
+					내용은 다음과 같습니다.
 				</p>
+				<ul>
+					<li>
+						<strong style="font-size: 20px">스켈레톤(Skeleton) UI 도입</strong
+						><br />
+						- 게임 목록을 로딩하는 동안, 카드의 형태를 띤 뼈대 화면이 먼저
+						표시되도록 개선했습니다.<br />
+						- 다크 테마에 어울리는 부드러운 네온 펄스(Pulse) 애니메이션을
+						적용하여 로딩 상태를 직관적으로 인지할 수 있습니다.
+					</li>
+					<li>
+						<strong style="font-size: 20px">레이아웃 안정성 확보</strong><br />
+						- 카드가 로딩되면서 화면이 순간적으로 밀려나는 현상(Layout Shift)을
+						방지했습니다.<br />
+						- 스켈레톤 카드가 미리 자리를 잡고 있어 시각적으로 훨씬 안정적이고
+						빠른 로딩을 체감하실 수 있습니다.
+					</li>
+				</ul>
+				<br />앞으로도 더 쾌적하고 완성도 높은 플레이 환경을 제공하기 위해
+				디테일한 부분까지 꾸준히 개선해 나가겠습니다. 감사합니다.
 			</section>
 
 			<footer class="article-footer">
-				<p>JS-Arcade의 새로운 시작을 함께 응원해주세요!</p>
+				<p>더욱 부드러워진 JS-Arcade를 지금 바로 확인해보세요!</p>
 				<div class="button-group">
 					<a href="../" class="play-btn primary">
-						<span>🏠 플랫폼 둘러보기</span>
+						<span>🏠 메인 화면 가기</span>
 					</a>
 					<a href="../devlog" class="play-btn secondary">
 						<span>📂 개발일지 읽기</span>

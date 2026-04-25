@@ -111,10 +111,46 @@ async function fetchGameStats() {
 
 // 3. 게임 리스트 화면에 그리기
 async function renderGames() {
-	// ❌ 기존에 있던 updateVisitCount(); 삭제 완료!
 	await fetchGameStats();
 
 	const listContainer = document.getElementById("game-list");
+
+	// 데이터를 기다리는 동안 스켈레톤 카드 6개를 미리 띄워둡니다.
+	const skeletonHTML = Array(6)
+		.fill(0)
+		.map(
+			() => `
+        <div class="skeleton-card">
+            <div class="skeleton-thumb"></div>
+            <div class="skeleton-info">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-desc"></div>
+            </div>
+        </div>
+    `,
+		)
+		.join("");
+
+	listContainer.innerHTML = skeletonHTML;
+	// 파이어베이스에서 조회수 데이터 로딩 (웨이팅 발생 구간)
+	await fetchGameStats();
+
+	// 로딩이 끝나면 스켈레톤을 지우고 진짜 게임 데이터로 덮어씌웁니다.
+	listContainer.innerHTML = gameData
+		.map((game) => {
+			const views = dbViewStats[game.id] || 0;
+			return `
+    <div class="game-card" onclick="enterGameWithCount('${game.id}', '${game.path}')" style="cursor:pointer;">
+        <span class="view-count" id="view-${game.id}">👁️ ${views.toLocaleString()}</span>
+        <div class="thumbnail">${game.emoji}</div>
+        <div class="info">
+            <h3>${game.title}</h3>
+            <p>${game.description}</p>
+        </div>
+    </div>`;
+		})
+		.join("");
+
 	listContainer.innerHTML = gameData
 		.map((game) => {
 			const views = dbViewStats[game.id] || 0;
