@@ -215,7 +215,7 @@ main {
 	display: flex;
 	justify-content: center;
 	gap: 10px;
-	margin: 30px 0 30px;
+
 	flex-wrap: wrap;
 }
 
@@ -380,6 +380,29 @@ main {
 	min-width: 0;
 }
 
+.platform-notice {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	background: rgba(255, 255, 255, 0.05); /* 은은한 배경 */
+	border: 1px solid rgba(0, 229, 255, 0.3); /* 네온 블루 테두리 */
+	padding: 10px 20px;
+	border-radius: 50px;
+	margin: 20px 0 40px 0;
+	font-size: 0.8rem;
+	color: #ccc;
+}
+
+.platform-notice strong {
+	color: #00e5ff; /* 포인트 컬러 강조 */
+	font-weight: 600;
+}
+
+.device-icon {
+	font-size: 1rem;
+	filter: drop-shadow(0 0 5px #00e5ff);
+}
+
 /* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
 @media (max-width: 480px) {
 	header {
@@ -406,5 +429,14 @@ main {
 	}
 	#commentPassword {
 		flex: 0.8;
+	}
+	.platform-notice {
+		font-size: 0.6rem;
+		padding: 8px 15px;
+		flex-direction: column;
+		gap: 5px;
+	}
+	.device-icon {
+		display: none;
 	}
 }
