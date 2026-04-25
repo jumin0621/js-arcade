@@ -59,7 +59,7 @@
 						placeholder="게임 제목을 입력하세요..."
 					/>
 				</div>
-
+				<!-- 
 				<aside class="ad-container">
 					<a
 						href="https://open.kakao.com/o/sSTaIFpi"
@@ -72,7 +72,7 @@
 						</div>
 					</a>
 				</aside>
-
+				-->
 				<h2 class="visually-hidden">최신 고전 게임 리스트</h2>
 				<div class="category-filter">
 					<button
@@ -145,6 +145,53 @@
 						box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 					"
 				></iframe>
+				<div class="comment-section">
+					<h3 style="color: #00e5ff; margin-top: 30px; margin-bottom: 15px">
+						💬 게임 한줄평
+					</h3>
+
+					<div class="comment-layout">
+						<div class="comment-form-left">
+							<div class="comment-inputs-row">
+								<input
+									type="text"
+									id="commentNickname"
+									placeholder="닉네임 (2~8자)"
+									minlength="2"
+									maxlength="8"
+									autocomplete="off"
+								/>
+								<input
+									type="password"
+									id="commentPassword"
+									placeholder="비밀번호 (삭제용)"
+									maxlength="12"
+									autocomplete="new-password"
+								/>
+							</div>
+							<textarea
+								id="commentContent"
+								placeholder="이 게임 어떠셨나요? 자유롭게 남겨주세요! (최대 100자)"
+								maxlength="100"
+							></textarea>
+							<button id="submitComment">등록</button>
+						</div>
+
+						<div class="comment-quick-phrases">
+							<h4>✨ 빠른 추천 문구</h4>
+							<div class="phrase-chips">
+								<button class="chip">꿀잼입니다! 👍</button>
+								<button class="chip">타임킬링용으로 최고네요 🔥</button>
+								<button class="chip">난이도가 너무 매워요 🌶️</button>
+								<button class="chip">조작감이 쫀득해요 🕹️</button>
+								<button class="chip">제 최고 기록 도전해보세요! 🏆</button>
+								<button class="chip">갓겜 인정합니다 👑</button>
+							</div>
+						</div>
+					</div>
+
+					<div id="commentList" class="comment-list"></div>
+				</div>
 			</section>
 		</main>
 

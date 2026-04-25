@@ -110,6 +110,8 @@ export const initFooter = () => {
         <nav class="footer-links">
           <a href="https://github.com/jumin0621" target="_blank">GitHub</a>
           <a href="https://imgtocode.tistory.com" target="_blank">Tistory</a>
+					<a href="privacy.html" style="color: #bb86fc;">개인정보처리방침</a>
+					<a href="https://open.kakao.com/o/sSTaIFpi" target="_blank" rel="noopener noreferrer">문의하기</a>
         </nav>
         <p class="copyright">&copy; 2026 <strong>imgtocode</strong>. All rights reserved.</p>
       </div>

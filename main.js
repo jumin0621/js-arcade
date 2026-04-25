@@ -7,6 +7,7 @@ import {
 	getDocs,
 	getDoc,
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { initCommentSystem } from "./common/comments.js";
 
 const gameData = [
 	{
@@ -197,6 +198,8 @@ async function renderGames() {
 
 // 4. 게임 입장 시 파이어베이스 조회수 증가
 window.enterGameWithCount = async function (id, path) {
+	initCommentSystem(id);
+
 	const gameRef = doc(db, "game_stats", id);
 
 	try {
