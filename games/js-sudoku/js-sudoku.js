@@ -244,8 +244,8 @@ function render(conf) {
 		}
 	}, 0);
 
-	let cellSize = 40;
-	if (conf.size === 6) cellSize = 35;
+	let cellSize = 70;
+	if (conf.size === 6) cellSize = 46;
 	if (conf.size === 9) cellSize = 32;
 
 	boardEl.style.gridTemplateColumns = `repeat(${conf.size}, ${cellSize}px)`;
