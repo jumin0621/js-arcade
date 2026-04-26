@@ -78,7 +78,7 @@ const gameData = [
 		id: "puzzle",
 		title: "슬라이드 퍼즐",
 		description: "슬라이드로 완성하는 퍼즐 게임",
-		emoji: "🪄",
+		emoji: "🌆",
 		path: "games/js-puzzle/index.html",
 		category: "puzzle",
 	},
