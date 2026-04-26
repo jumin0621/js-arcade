@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | 픽셀로직</title>
+		<link rel="stylesheet" href="style.css" />
+		<link rel="icon" type="image/png" href="../../assets/img/logo.png" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="game-header">
+				<div class="info-item">
+					<span class="info-label">STAGE</span>
+					<span id="levelDisplay" class="info-value" style="color: #bb86fc"
+						>1</span
+					>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">TIME</span>
+					<span id="timerDisplay" class="info-value">0</span>
+				</div>
+			</div>
+
+			<div class="logic-container">
+				<div class="logic-grid-layout">
+					<div class="corner-empty"></div>
+					<div id="topHints" class="hints-top"></div>
+					<div id="leftHints" class="hints-left"></div>
+					<div id="gameBoard" class="logic-board"></div>
+				</div>
+			</div>
+
+			<div class="controls-area">
+				<button id="modeToggle" class="mode-btn fill-mode">
+					✏️칠하기 모드
+				</button>
+				<p class="controls-guide">
+					💡 <span>우클릭</span>은 ❌ 표시 (모바일은 버튼 터치로 전환)
+				</p>
+			</div>
+		</div>
+
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">PIXEL LOGIC</h2>
+				<p id="modalDesc">숫자 힌트를 보고 숨겨진 그림을 찾아보세요!</p>
+
+				<div id="rankInputArea" class="rank-input-area" style="display: none">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (2~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">게임 시작</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						다음 단계
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script type="module" src="js-pixellogic.js"></script>
+	</body>
+</html>

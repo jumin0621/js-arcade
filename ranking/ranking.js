@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const games = [
-	{ id: "snake", title: "🐍 스네이크" },
+	{ id: "snake", title: "🐍 바닐라스네이크" },
 	{ id: "brickmaster", title: "🧱 브릭마스터" },
 	{ id: "bounce", title: "☄️ 바운스볼" },
 	{ id: "brickstack", title: "🟦 브릭스택" },
@@ -17,11 +17,13 @@ const games = [
 	{ id: "sudoku", title: "✏️ 스도쿠" },
 	{ id: "invader", title: "👾 코드브레이커" },
 	{ id: "pixelrunner", title: "🏃‍♂️ 픽셀러너" },
-	{ id: "puzzle", title: "🖼️ 슬라이드퍼즐" },
+	{ id: "puzzle", title: "🪄 슬라이드퍼즐" },
 	{ id: "jigsaw", title: "🧩 직소퍼즐" },
 	{ id: "pixeleater", title: "👻 픽셀이터" },
+	{ id: "pixelmatch", title: "🀄 픽셀매치" },
 	{ id: "shieldsurvivor", title: "🛡️ 실드서바이버" },
-	{ id: "dragoncurve", title: "🐉 드래곤커브" },
+	{ id: "dragoncurve", title: "🐲 드래곤커브" },
+	{ id: "pixellogic", title: "❤️ 픽셀로직" },
 	// ... 나머지 게임들도 추가
 ];
 
