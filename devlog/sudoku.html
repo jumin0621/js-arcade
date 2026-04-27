@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>스도쿠(Sudoku) 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트로 구현한 스도쿠(Sudoku) 게임 개발일지. 백트래킹(Backtracking) 알고리즘을 활용한 퍼즐 생성 및 검증 과정을 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="스도쿠 개발일지: 백트래킹 알고리즘으로 논리 퍼즐 정복하기"
+		/>
+		<meta
+			property="og:description"
+			content="가로, 세로, 3x3 박스의 규칙! 무작위로 숫자를 채우는 것을 넘어 완벽한 퍼즐을 만드는 원리를 알아봅니다."
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/sudoku.html"
+		/>
+		<meta
+			property="og:image"
+			content="https://JS-Arcade.com/devlog/assets/sudoku_thumb.png"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "스도쿠 개발일지: 백트래킹 알고리즘으로 논리 퍼즐 정복하기",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-04-27",
+				"articleSection": "Game Development",
+				"image": "https://JS-Arcade.com/devlog/assets/sudoku_thumb.png",
+				"keywords": "Javascript Game, Sudoku, Backtracking, Algorithm, Web Puzzle"
+			}
+		</script>
+
+		<style>
+			body {
+				line-height: 1.7;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #eee;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #2c3e50;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #3498db; /* 스도쿠 테마 컬러: 논리적이고 차분한 블루 */
+				margin-top: 40px;
+				border-left: 5px solid #3498db;
+				padding-left: 15px;
+			}
+			.code-block {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				overflow-x: auto;
+			}
+			pre {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				display: block;
+				overflow-x: auto;
+				white-space: pre;
+				word-wrap: normal;
+				-webkit-overflow-scrolling: touch;
+			}
+			pre::-webkit-scrollbar {
+				height: 4px;
+			}
+			pre::-webkit-scrollbar-thumb {
+				background: #666;
+				border-radius: 10px;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 8px;
+				margin: 20px 0;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1rem;
+				margin-bottom: 25px;
+				letter-spacing: -0.5px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px;
+				flex-wrap: wrap;
+			}
+
+			/* 블루 테마 버튼 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				background: #3498db;
+				color: #fff;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				box-shadow: 0 10px 20px rgba(52, 152, 219, 0.2);
+				border: 2px solid transparent;
+			}
+
+			.play-btn:hover {
+				background: #2980b9;
+				transform: translateY(-5px) scale(1.05);
+				box-shadow: 0 15px 30px rgba(52, 152, 219, 0.4);
+				border-color: rgba(255, 255, 255, 0.3);
+			}
+
+			.play-btn:active {
+				transform: translateY(0) scale(0.98);
+			}
+
+			.play-btn.primary {
+				background: #3498db;
+				color: #fff;
+				box-shadow: 0 8px 15px rgba(52, 152, 219, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #2980b9;
+				transform: translateY(-3px);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #aaa;
+				color: #aaa;
+				box-shadow: none;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #2c3e50;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-3px);
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Logic Puzzle</strong></p>
+			<h1>스도쿠(Sudoku) 개발일지</h1>
+			<p>작성일: <time>2026-04-27</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>🧠 프로젝트 개요</h2>
+				<p>
+					'스도쿠'는 전 세계적으로 사랑받는 9x9 논리 퍼즐 게임입니다. 가로,
+					세로, 그리고 3x3의 작은 박스 안에 1부터 9까지의 숫자를 중복 없이 채워
+					넣는 것이 목표입니다. 이번 프로젝트에서는 단순한 UI 구현을 넘어,
+					<strong
+						>랜덤하면서도 규칙에 완벽하게 맞는 퍼즐 맵을 동적으로 생성</strong
+					>하고 유저의 입력을 실시간으로 검증하는 로직을 자바스크립트로
+					구현했습니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 백트래킹(Backtracking)과 유효성 검사</h2>
+				<p>
+					<strong>문제 상황:</strong> 초기에는 무작위로 빈칸에 숫자를 채워 넣는
+					방식을 시도했지만, 빈칸이 채워질수록 규칙이 꼬이면서 아예 풀 수
+					없는(Unsolvable) 상태의 스도쿠 보드가 만들어지는 문제가 발생했습니다.
+					무지성 랜덤 배치가 아닌, '규칙을 확인하고 아니면 되돌아가는' 똑똑한
+					알고리즘이 필요했습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong>
+					<strong>백트래킹(Backtracking)</strong> 알고리즘을 도입했습니다. 특정
+					칸에 숫자를 놓아보고, 그 숫자가 스도쿠 규칙(가로, 세로, 3x3 박스 내
+					중복 없음)에 맞는지 검사합니다. 만약 막힌다면 다시 이전 단계로 돌아가
+					다른 숫자를 시도하는 방식입니다. 아래는 그 핵심이 되는
+					<code>isValid</code> (유효성 검사) 로직입니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 특정 위치(row, col)에 숫자(num)를 놓을 수 있는지 검사하는 함수
+function isValid(board, row, col, num) {
+    // 1. 가로(Row) 및 세로(Column) 중복 검사
+    for (let i = 0; i < 9; i++) {
+        if (board[row][i] === num || board[i][col] === num) {
+            return false; // 중복 발견 시 배치 불가
+        }
+    }
+
+    // 2. 3x3 서브 그리드(Box) 중복 검사
+    // 현재 좌표가 속한 3x3 박스의 좌측 상단 시작점을 계산
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[startRow + i][startCol + j] === num) {
+                return false; // 박스 내 중복 발견 시 배치 불가
+            }
+        }
+    }
+
+    // 모든 조건을 통과했다면 배치 가능!
+    return true; 
+}</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					시각적인 UI 작업도 중요하지만, 게임의 뼈대가 되는 '백트래킹' 같은
+					알고리즘을 직접 코드로 구현해 보니 논리적인 퍼즐이 풀려나가는 쾌감을
+					느낄 수 있었습니다. 특히 2차원 배열의 데이터를 다루고 깊은 복사(Deep
+					Copy)를 처리하는 과정에서 자바스크립트의 참조 타입에 대한 이해도가
+					훨씬 높아졌습니다.
+				</p>
+				<p>
+					다음 업데이트에서는 구멍(빈칸)을 뚫는 개수를 조절하여
+					<strong>'쉬움/보통/어려움' 난이도를 세분화</strong>하고, 퍼즐의 정답이
+					오직 하나뿐인지 검증하는 '유일해(Unique Solution)' 검증 로직을
+					고도화해 볼 계획입니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>당신의 논리력을 테스트해 보세요!</p>
+				<div class="button-group">
+					<a
+						href="../games/js-sudoku/"
+						target="_blank"
+						class="play-btn primary"
+					>
+						<span>🧩 지금 바로 플레이</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>
