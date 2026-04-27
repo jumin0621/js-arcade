@@ -128,7 +128,7 @@ const gameData = [
 		description: "픽셀로 그림을 그리는 퍼즐 게임",
 		emoji: "❤️",
 		path: "games/js-pixellogic/index.html",
-		category: "shooting",
+		category: "puzzle",
 	},
 ];
 

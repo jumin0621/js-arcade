@@ -183,7 +183,8 @@ class Terrain {
 		// type: 0(위쪽 기둥만), 1(아래쪽 기둥만), 2(위아래 통로형)
 		this.type = Math.floor(Math.random() * 3);
 
-		let gap = Math.max(150, 250 - score * 0.02);
+		// 🔥 난이도(간격) 기준을 score에서 frameCount(생존 시간)로 변경
+		let gap = Math.max(150, 250 - frameCount * 0.02);
 		this.topHeight = Math.random() * (canvas.height - gap - 50) + 20;
 		this.bottomY = this.topHeight + gap;
 		this.bottomHeight = canvas.height - this.bottomY;
@@ -263,9 +264,12 @@ function update() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	frameCount++;
-	score += 1;
+	// 🔥 1프레임당 1점씩 오르던 자동 점수 획득 삭제 (score += 1; 제거)
+
 	if (frameCount % 60 === 0) updateHUD();
-	gameSpeed = 3 + score * 0.0005;
+
+	// 🔥 게임 속도 기준을 score에서 frameCount(생존 시간)로 변경하여 텐션 유지
+	gameSpeed = 3 + frameCount * 0.0005;
 
 	bgX -= gameSpeed * 0.3;
 	if (bgX <= -canvas.width) bgX = 0;
@@ -286,10 +290,7 @@ function update() {
 		}
 	}
 
-	// --- 🔥 수정된 장애물 생성 로직 ---
-	// 프레임마다 일정 주기로 기둥이 간헐적으로 등장함
 	if (frameCount % 120 === 0) {
-		// 약 2초마다 1개씩 스폰
 		terrains.push(new Terrain(canvas.width + 50));
 	}
 
@@ -298,7 +299,6 @@ function update() {
 		t.update();
 		t.draw();
 
-		// 지형 충돌 감지 (해당 타입의 기둥이 있을 때만 충돌)
 		if (player.x + player.width - 15 > t.x && player.x + 15 < t.x + t.width) {
 			if (t.type === 0 || t.type === 2) {
 				if (player.y < t.topHeight) player.hit();
@@ -308,7 +308,6 @@ function update() {
 			}
 		}
 
-		// 화면 밖으로 나가면 배열에서 삭제
 		if (t.x + t.width < 0) {
 			terrains.splice(i, 1);
 		}
@@ -340,7 +339,9 @@ function update() {
 							new Particle(e.x + e.width / 2, e.y + e.height / 2, e.color),
 						);
 					enemies.splice(ei, 1);
-					score += 100;
+
+					// 🔥 적 격추 시 기존 100점에서 10점 획득으로 변경
+					score += 10;
 					updateHUD();
 				}
 			}
