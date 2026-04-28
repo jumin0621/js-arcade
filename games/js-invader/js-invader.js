@@ -37,7 +37,7 @@ let enemyDirection = 1;
 let enemyMoveTimer = 0;
 let lastFireTime = 0;
 
-// [클래스 및 게임 데이터 설정] (기존 코드 유지)
+// 클래스 및 게임 데이터 설정
 const enemyPixel = [
 	[0, 1, 1, 1, 0],
 	[1, 1, 0, 1, 1],
@@ -129,7 +129,7 @@ class Enemy {
 		this.isBoss = isBoss;
 		this.width = isBoss ? 60 : 25;
 		this.height = isBoss ? 40 : 20;
-		this.hp = isBoss ? stage * 3 : 1;
+		this.hp = isBoss ? stage * 4 : 1;
 		this.color = isBoss ? "#ff00ff" : "#00e5ff";
 	}
 	draw() {
@@ -137,7 +137,31 @@ class Enemy {
 		if (this.isBoss) {
 			ctx.shadowBlur = 10;
 			ctx.shadowColor = this.color;
-			ctx.fillRect(this.x, this.y, this.width, this.height);
+			const bossPixel = [
+				[0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+				[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+				[1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1],
+				[1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1],
+				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+				[0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0],
+				[0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+				[0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
+			];
+			const pWidth = this.width / 12;
+			const pHeight = this.height / 8;
+			bossPixel.forEach((row, ri) => {
+				row.forEach((col, ci) => {
+					if (col) {
+						ctx.fillRect(
+							this.x + ci * pWidth,
+							this.y + ri * pHeight,
+							pWidth,
+							pHeight,
+						);
+					}
+				});
+			});
+
 			ctx.shadowBlur = 0;
 			ctx.fillStyle = "#333";
 			ctx.fillRect(this.x, this.y - 15, this.width, 4);

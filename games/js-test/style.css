@@ -1,110 +1,114 @@
 body {
 	background-color: #121212;
 	margin: 0;
-	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	color: white;
+	font-family: sans-serif;
+	overflow: hidden;
+	touch-action: none;
 }
-
 .game-wrapper {
 	width: 100%;
-	max-width: 480px;
+	max-width: 400px;
 	margin: 0 auto;
+	padding: 10px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 20px 10px;
 	box-sizing: border-box;
 }
-
-/* 1. 헤더 스타일링 (청록색 네온) */
 .game-header {
 	width: 100%;
-	margin-bottom: 20px; /* 캔버스와 간격 */
 	display: flex;
-	justify-content: center; /* 가운데 정렬 */
-	padding: 0 10px;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	text-align: center;
+	padding: 0 5px;
+	box-sizing: border-box;
 }
-.stage-container {
-	background-color: transparent;
-	border-radius: 8px;
-	border: none; /* 테두리 제거 */
-	box-shadow: none; /* 그림자 제거 */
-	display: flex;
-	align-items: baseline; /* 글자 아래 기준선 맞춤 */
-	gap: 12px;
-}
-.stage-container .label {
-	color: rgba(255, 255, 255, 0.7); /* 흰색 투명도로 흐릿하게 */
-	font-size: 1rem; /* 사진 크기에 맞춰 조정 */
-	font-weight: bold;
-	letter-spacing: 2px; /* 자간을 벌려서 고급스럽게 */
-	text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); /* 은은한 백색광 */
-}
-.stage-container .value {
-	color: #00e5ff; /* 선명한 청록색 */
-	font-size: 1.2rem; /* 숫자는 크게 */
-	font-weight: bold;
-	font-family: "Courier New", Courier, monospace; /* 디지털 느낌 */
-	text-shadow: 0 0 10px rgba(0, 229, 255, 0.7); /* 선명한 네온 효과 */
-}
-
-.canvas-container {
-	width: 100%;
-	position: relative;
-	overflow: hidden;
-	border: 3px solid #333;
-	border-radius: 12px;
-	box-shadow: 0 0 30px rgba(0, 0, 0, 0.7); /* 무거운 그림자 */
-	background-color: #1a1a1a;
-}
-
-canvas {
-	width: 100% !important;
-	height: auto !important;
-	/* 1. 하단 짤림 방지: 캔버스 비율을 1:1로 고정 */
-	aspect-ratio: 1 / 1;
-	background-color: #1a1a1a;
+.info-label {
+	font-size: 0.7rem;
+	color: #888;
 	display: block;
+}
+.info-value {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #00e5ff;
+	text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+#gameCanvas {
+	background: #050505;
+	border: 2px solid #00e5ff;
+	border-radius: 8px;
+	width: 100%;
+	max-width: 360px;
+	height: auto;
+	aspect-ratio: 9/10;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .mobile-controls {
 	display: none;
-	justify-content: center;
-	gap: 40px;
+	gap: 10px;
 	margin-top: 20px;
+	width: 100%;
+	max-width: 360px;
 }
-
-.mobile-controls button {
-	width: 70px;
-	height: 70px;
-	background: #252525;
-	border: 2px solid #00e5ff;
-	border-radius: 50%;
+.ctrl-btn {
+	flex: 1;
+	padding: 15px 0;
+	background: #222;
+	border: 1px solid #444;
 	color: #00e5ff;
-	font-size: 1.5rem;
+	font-size: 1.2rem;
+	border-radius: 10px;
 	cursor: pointer;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+.ctrl-btn.fire {
+	flex: 1.5;
+	background: #00e5ff;
+	color: #000;
+	font-weight: bold;
 }
 
+.controls-guide {
+	margin-top: 10px;
+	text-align: center;
+	font-size: 0.75rem;
+	color: #666;
+	line-height: 1.5;
+}
+.controls-guide span {
+	color: #00e5ff;
+	font-weight: bold;
+}
+
+/* 통합 모달 스타일 */
 .modal-overlay {
-	position: absolute; /* 캔버스 컨테이너 기준 */
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.9);
+	background: rgba(0, 0, 0, 0.85);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	z-index: 100;
 }
-
 .modal-content {
 	background: #222;
 	padding: 30px;
 	border-radius: 15px;
 	border: 2px solid #00e5ff;
 	text-align: center;
+	width: 80%;
+	max-width: 300px;
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
 }
-
 .modal-content h2 {
 	color: #00e5ff;
 	margin-top: 0;
@@ -121,17 +125,17 @@ canvas {
 	color: #000;
 	border: none;
 	padding: 12px 30px;
-	font-size: 1.1rem;
 	font-weight: bold;
 	border-radius: 8px;
 	cursor: pointer;
+	font-size: 1rem;
+	transition: 0.2s;
 }
 .primary-btn:hover {
 	transform: scale(1.05);
 	background: #00b2cc;
 	box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
 }
-
 .primary-btn:active {
 	transform: scale(0.98);
 }
@@ -148,7 +152,7 @@ canvas {
 .primary-btn,
 .secondary-btn {
 	flex: 1;
-	padding: 10px 0;
+	padding: 10px 0 !important;
 	font-size: 0.95rem;
 	font-weight: 700;
 	border-radius: 6px;
@@ -204,58 +208,52 @@ canvas {
 	border-color: #00e5ff;
 }
 
-@media (pointer: coarse) {
-	.mobile-controls {
-		display: flex;
-	}
+/* --- 🔥 기존 .game-wrapper 에 position: relative 추가 필요 --- */
+.game-wrapper {
+	position: relative; /* 추가된 속성 */
 }
 
-/* 🔥 유튜브 녹화용 코드 오버레이 스타일 */
+/* --- 디렉터 모드 코드 오버레이 (하단 배치 버전) --- */
 .code-overlay {
 	position: absolute;
-	top: 15%;
+	/* 🔥 기존 top: 15% 대신 bottom으로 변경 */
+	bottom: 20%;
 	left: 5%;
-	width: 80%;
-	background: rgba(30, 30, 30, 0.95); /* VS Code 다크 테마 배경 */
-	border-left: 4px solid #00e5ff;
-	border-radius: 6px;
-	padding: 15px 20px;
+	width: 90%;
+	background: rgba(30, 30, 30, 0.95);
+	border: 1px solid #00e5ff;
+	border-left: 4px solid #ff00ff;
 	color: #d4d4d4;
-	font-family: "Consolas", "Courier New", monospace;
-	font-size: 1rem;
-	z-index: 10;
-	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
-	pointer-events: none; /* 클릭 방해 금지 */
-	animation: slideIn 0.3s ease-out forwards;
-}
-
-.code-overlay pre {
-	margin: 0;
+	font-family: "Consolas", "Monaco", monospace;
+	padding: 15px;
+	border-radius: 5px;
+	font-size: 0.85rem;
+	display: none; /* 기본 숨김 */
+	z-index: 50;
+	box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8); /* 그림자 방향도 위쪽으로 수정 */
 	white-space: pre-wrap;
-	line-height: 1.4;
+	pointer-events: none;
+	box-sizing: border-box;
 }
 
-.code-overlay .keyword {
+/* 코드 하이라이트 스타일은 기존과 동일 */
+.kd-keyword {
 	color: #569cd6;
-} /* 파란색 키워드 */
-.code-overlay .variable {
-	color: #9cdcfe;
-} /* 하늘색 변수 */
-.code-overlay .number {
-	color: #b5cea8;
-} /* 연두색 숫자 */
-.code-overlay .comment {
+	font-weight: bold;
+}
+.kd-string {
+	color: #ce9178;
+}
+.kd-comment {
 	color: #6a9955;
 	font-style: italic;
-} /* 초록색 주석 */
+}
+.kd-func {
+	color: #dcdcaa;
+}
 
-@keyframes slideIn {
-	from {
-		opacity: 0;
-		transform: translateX(-20px);
-	}
-	to {
-		opacity: 1;
-		transform: translateX(0);
+@media (max-width: 480px) {
+	.mobile-controls {
+		display: flex;
 	}
 }

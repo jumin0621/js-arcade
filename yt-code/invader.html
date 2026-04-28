@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Source Code | 코드 브레이커</title>
+		<style>
+			:root {
+				--bg-color: #0f172a;
+				--card-bg: #1e293b;
+				--accent-color: #00e5ff;
+				--text-main: #f8fafc;
+				--code-bg: #000000;
+			}
+
+			body {
+				background-color: var(--bg-color);
+				color: var(--text-main);
+				font-family: "Pretendard", sans-serif;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.container {
+				max-width: 900px;
+				margin: 0 auto;
+			}
+
+			.back-link {
+				text-decoration: none;
+				color: var(--accent-color);
+				font-weight: bold;
+				display: inline-block;
+				margin-bottom: 20px;
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 30px;
+			}
+
+			/* 아코디언 스타일 */
+			.accordion-item {
+				background: var(--card-bg);
+				border-radius: 12px;
+				margin-bottom: 15px;
+				border: 1px solid #334155;
+				overflow: hidden;
+			}
+
+			.accordion-header {
+				padding: 18px 24px;
+				cursor: pointer;
+				font-weight: bold;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				user-select: none;
+			}
+
+			.accordion-header:hover {
+				background: #243147;
+			}
+
+			.accordion-content {
+				display: none; /* 기본 숨김 */
+				background: var(--code-bg);
+				padding: 0;
+				border-top: 1px solid #334155;
+				position: relative;
+			}
+
+			/* 코드 복사 버튼 */
+			.copy-btn {
+				position: absolute;
+				top: 10px;
+				right: 15px;
+				background: #334155;
+				color: #fff;
+				border: none;
+				padding: 5px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 0.8rem;
+			}
+			.copy-btn:hover {
+				background: var(--accent-color);
+				color: #000;
+			}
+
+			pre {
+				margin: 0;
+				padding: 30px 20px 20px;
+				overflow-x: auto;
+				color: #d1d5db;
+				font-family: "Consolas", "Monaco", monospace;
+				line-height: 1.5;
+				font-size: 0.95rem;
+			}
+
+			/* 활성화 상태 */
+			.accordion-item.active .accordion-content {
+				display: block;
+			}
+			.accordion-item.active .accordion-header {
+				border-bottom: 1px solid var(--accent-color);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<a href="index.html" class="back-link">← 리스트로 돌아가기</a>
+			<h1>🎮 코드 브레이커 (Source Code)</h1>
+
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					📄 index.html <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>&lt;!doctype html&gt;
+&lt;html lang="ko"&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8" /&gt;
+		&lt;meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/&gt;
+		&lt;title&gt;JS-Arcade | 코드 브레이커&lt;/title&gt;
+		&lt;link rel="stylesheet" href="style.css" /&gt;
+		&lt;link rel="icon" type="image/png" href="../../assets/img/logo.png" /&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;!-- [전체 래퍼] --&gt;
+		&lt;div class="game-wrapper"&gt;
+			
+			&lt;!-- [상단 UI] 스테이지 및 점수 표시 --&gt;
+			&lt;div class="game-header"&gt;
+				&lt;div class="info-item"&gt;
+					&lt;span class="info-label"&gt;STAGE&lt;/span&gt;
+					&lt;span id="stageDisplay" class="info-value"&gt;1&lt;/span&gt;
+				&lt;/div&gt;
+				&lt;div class="info-item right"&gt;
+					&lt;span class="info-label"&gt;SCORE&lt;/span&gt;
+					&lt;span id="scoreDisplay" class="info-value"&gt;0&lt;/span&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [메인 화면] 게임 렌더링 캔버스 --&gt;
+			&lt;canvas id="gameCanvas"&gt;&lt;/canvas&gt;
+
+			&lt;!-- [디렉터 모드] 코드 오버레이 팝업 (1~4번 키 입력 시 노출) --&gt;
+			&lt;div id="codeOverlay" class="code-overlay"&gt;&lt;/div&gt;
+
+			&lt;!-- [모바일 UI] 터치 환경 전용 좌우 조작 및 연사 버튼 --&gt;
+			&lt;div class="mobile-controls"&gt;
+				&lt;button id="btnLeft" class="ctrl-btn"&gt;◀&lt;/button&gt;
+				&lt;button id="btnRight" class="ctrl-btn"&gt;▶&lt;/button&gt;
+				&lt;button id="btnFire" class="ctrl-btn fire"&gt;FIRE&lt;/button&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [가이드] 조작법 안내 --&gt;
+			&lt;div class="controls-guide"&gt;
+				&lt;p&gt;⌨️ &lt;span&gt;방향키&lt;/span&gt; 이동 / &lt;span&gt;Space(꾹)&lt;/span&gt; 연사&lt;/p&gt;
+				&lt;p&gt;📱 적을 격파하면 &lt;span&gt;코드 파편&lt;/span&gt;이 튀어나옵니다!&lt;/p&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+		&lt;!-- [팝업 UI] 게임 시작, 종료, 랭킹 등록 모달창 --&gt;
+		&lt;div id="gameModal" class="modal-overlay"&gt;
+			&lt;div class="modal-content"&gt;
+				&lt;h2 id="modalTitle"&gt;CODE BREAKER&lt;/h2&gt;
+				&lt;p id="modalDesc"&gt;JS코드를 지닌 적들을 격파하세요!&lt;/p&gt;
+
+				&lt;!-- 랭킹 등록용 닉네임 입력 영역 --&gt;
+				&lt;div id="rankInputArea" class="rank-input-area"&gt;
+					&lt;input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (3~8자)"
+						maxlength="8"
+					/&gt;
+				&lt;/div&gt;
+
+				&lt;!-- 모달 액션 버튼 --&gt;
+				&lt;div class="modal-buttons"&gt;
+					&lt;button id="startBtn" class="primary-btn"&gt;게임 시작&lt;/button&gt;
+					&lt;button id="restartBtn" class="secondary-btn" style="display: none"&gt;
+						다시 시작
+					&lt;/button&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;script type="module" src="js-invader.js"&gt;&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+				</div>
+			</div>
+
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					🎨 style.css <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>/* =========================================
+   1. 기본 레이아웃 및 폰트 설정
+========================================= */
+body {
+	background-color: #121212;
+	margin: 0;
+	color: white;
+	font-family: sans-serif;
+	overflow: hidden;
+	touch-action: none;
+}
+
+.game-wrapper {
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+	position: relative; /* 디렉터 모드 오버레이 기준점 */
+}
+
+/* =========================================
+   2. 상단 헤더 (스테이지 & 점수 UI)
+========================================= */
+.game-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	text-align: center;
+	padding: 0 5px;
+	box-sizing: border-box;
+}
+
+.info-label {
+	font-size: 0.7rem;
+	color: #888;
+	display: block;
+}
+
+.info-value {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #00e5ff;
+	text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+/* =========================================
+   3. 메인 게임 캔버스
+========================================= */
+#gameCanvas {
+	background: #050505;
+	border: 2px solid #00e5ff;
+	border-radius: 8px;
+	width: 100%;
+	max-width: 360px;
+	height: auto;
+	aspect-ratio: 9/10; /* 세로형 아케이드 비율 */
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   4. 디렉터 모드 코드 오버레이 (슬로우 모션 팝업)
+========================================= */
+.code-overlay {
+	position: absolute;
+	bottom: 20%;
+	left: 5%;
+	width: 90%;
+	background: rgba(30, 30, 30, 0.95);
+	border: 1px solid #00e5ff;
+	border-left: 4px solid #ff00ff;
+	color: #d4d4d4;
+	font-family: 'Consolas', 'Monaco', monospace;
+	padding: 15px;
+	border-radius: 5px;
+	font-size: 0.85rem;
+	display: none;
+	z-index: 50;
+	box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
+	white-space: pre-wrap;
+	pointer-events: none;
+	box-sizing: border-box;
+}
+
+.kd-keyword { color: #569cd6; font-weight: bold; }
+.kd-string { color: #ce9178; }
+.kd-comment { color: #6a9955; font-style: italic; }
+.kd-func { color: #dcdcaa; }
+
+/* =========================================
+   5. 모바일 전용 조작 컨트롤러
+========================================= */
+.mobile-controls {
+	display: none;
+	gap: 10px;
+	margin-top: 20px;
+	width: 100%;
+	max-width: 360px;
+}
+
+.ctrl-btn {
+	flex: 1;
+	padding: 15px 0;
+	background: #222;
+	border: 1px solid #444;
+	color: #00e5ff;
+	font-size: 1.2rem;
+	border-radius: 10px;
+	cursor: pointer;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.ctrl-btn.fire {
+	flex: 1.5;
+	background: #00e5ff;
+	color: #000;
+	font-weight: bold;
+}
+
+.controls-guide {
+	margin-top: 10px;
+	text-align: center;
+	font-size: 0.75rem;
+	color: #666;
+	line-height: 1.5;
+}
+
+.controls-guide span {
+	color: #00e5ff;
+	font-weight: bold;
+}
+
+/* 포인터 환경(터치 디바이스)일 경우 노출 */
+@media (max-width: 480px) {
+	.mobile-controls {
+		display: flex;
+	}
+}
+
+/* =========================================
+   6. 모달 (게임 팝업창 & 랭킹 등록)
+========================================= */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+
+.modal-content {
+	background: #222;
+	padding: 30px;
+	border-radius: 15px;
+	border: 2px solid #00e5ff;
+	text-align: center;
+	width: 80%;
+	max-width: 300px;
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
+
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 25px;
+	width: 100%;
+}
+
+.primary-btn,
+.secondary-btn {
+	flex: 1;
+	padding: 10px 0 !important;
+	font-size: 0.95rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	line-height: 1.4;
+}
+
+.primary-btn {
+	background: #00e5ff;
+	color: #000;
+	margin-top: 0 !important;
+}
+
+.primary-btn:hover {
+	background: #00b8cc;
+	transform: translateY(-2px);
+}
+
+.secondary-btn {
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #00e5ff;
+	transform: translateY(-2px);
+}
+
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.nickname-input:focus {
+	border-color: #00e5ff;
+}</code></pre>
+				</div>
+			</div>
+
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					⚡ js-invader.js <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>// ==========================================
+// DB 연동 및 초기 설정
+// ==========================================
+import { saveGameScore } from "../../common/firebase-config.js";
+
+// 방향키 입력 시 브라우저 스크롤 방지
+window.addEventListener("keydown", function (e) {
+	if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+		e.preventDefault();
+	}
+}, false);
+
+// ==========================================
+// 1. 전역 상태 변수 및 DOM 캐싱
+// ==========================================
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("scoreDisplay");
+const stageEl = document.getElementById("stageDisplay");
+
+// 디렉터 모드 오버레이 컨테이너
+const codeOverlay = document.getElementById("codeOverlay");
+
+const modal = document.getElementById("gameModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+
+canvas.width = 360;
+canvas.height = 400;
+
+let stage = 1;
+let score = 0;
+let gameActive = false;
+let player, enemies, bullets, enemyBullets, particles;
+let keys = {};
+let enemyDirection = 1;
+let enemyMoveTimer = 0;
+let lastFireTime = 0;
+
+// 🔥 슬로우 모션을 위한 전역 시간 배율 변수 (1.0 = 정상속도, 0.2 = 슬로우 모션)
+let timeScale = 1.0; 
+
+// ==========================================
+// 2. 픽셀 아트 데이터 (2차원 배열 구조)
+// ==========================================
+const enemyPixel = [
+	[0, 1, 1, 1, 0],
+	[1, 1, 0, 1, 1],
+	[1, 1, 1, 1, 1],
+	[0, 1, 0, 1, 0],
+];
+const playerPixel = [
+	[0, 0, 1, 0, 0],
+	[0, 1, 1, 1, 0],
+	[1, 1, 1, 1, 1],
+	[1, 1, 0, 1, 1],
+];
+
+// 파티클(파편)용 JS 코드 조각들
+const codeFragments = ["<div>", "</span>", ";", "err", "404", "{}", "=>", "let", "const"];
+
+// ==========================================
+// 3. 디렉터 모드 오버레이 템플릿 (1~4번 단축키)
+// ==========================================
+const overlayCodes = {
+	'1': `<span class="kd-comment">// 1. 이미지 없이 0과 1로 그리는 픽셀 몬스터</span>\n<span class="kd-keyword">const</span> enemyPixel = [\n  [0, 1, 1, 1, 0],\n  [1, 1, 0, 1, 1],\n  [1, 1, 1, 1, 1],\n  [0, 1, 0, 1, 0],\n];\n<span class="kd-comment">// 배열을 순회하며 1인 영역만 색칠합니다.</span>`,
+	'2': `<span class="kd-comment">// 2. 적 격파 시 코드 파편(Particle) 효과</span>\n<span class="kd-keyword">class</span> Particle {\n  <span class="kd-func">constructor</span>(x, y) {\n    <span class="kd-keyword">this</span>.text = codeFragments[Math.random()];\n    <span class="kd-keyword">this</span>.vx = (Math.random() - 0.5) * 4;\n    <span class="kd-keyword">this</span>.vy = (Math.random() - 0.5) * 4;\n  }\n}`,
+	'3': `<span class="kd-comment">// 3. 가장 완벽한 타격감: AABB 충돌 감지 알고리즘</span>\n<span class="kd-keyword">if</span> (\n  b.x > e.x && \n  b.x < e.x + e.width && \n  b.y < e.y + e.height && \n  b.y > e.y\n) {\n  e.hp--; <span class="kd-comment">// 적 체력 삭감</span>\n  bullets.splice(bi, 1); <span class="kd-comment">// 총알 소멸</span>\n}`,
+	'4': `<span class="kd-comment">// 4. 극강 난이도의 거대 보스 출현 분기점</span>\n<span class="kd-keyword">if</span> (stage % 5 === 0) {\n  <span class="kd-comment">// 5스테이지 단위로 체력이 높은 보스 생성</span>\n  enemies.push(<span class="kd-keyword">new</span> Enemy(center, 60, <span class="kd-keyword">true</span>));\n} <span class="kd-keyword">else</span> {\n  <span class="kd-comment">// 일반 적 부대 생성 로직</span>\n}`
+};
+
+// ==========================================
+// 4. 객체(Class) 정의
+// ==========================================
+
+// 적 파괴 시 흩뿌려지는 파티클 클래스
+class Particle {
+	constructor(x, y, color) {
+		this.x = x;
+		this.y = y;
+		this.text = codeFragments[Math.floor(Math.random() * codeFragments.length)];
+		this.vx = (Math.random() - 0.5) * 4;
+		this.vy = (Math.random() - 0.5) * 4;
+		this.alpha = 1;
+		this.color = color;
+	}
+	update() {
+		// timeScale을 곱하여 디렉터 모드 시 속도 제어
+		this.x += this.vx * timeScale;
+		this.y += this.vy * timeScale;
+		this.alpha -= 0.02 * timeScale;
+	}
+	draw() {
+		ctx.save();
+		ctx.globalAlpha = this.alpha < 0 ? 0 : this.alpha;
+		ctx.fillStyle = this.color;
+		ctx.font = "10px monospace";
+		ctx.fillText(this.text, this.x, this.y);
+		ctx.restore();
+	}
+}
+
+// 플레이어 비행기 클래스
+class Player {
+	constructor() {
+		this.width = 30;
+		this.height = 24;
+		this.x = canvas.width / 2 - this.width / 2;
+		this.y = canvas.height - 40;
+		this.speed = 4;
+		this.color = "#bb86fc";
+	}
+	draw() {
+		ctx.fillStyle = this.color;
+		const pSize = this.width / 5;
+		// 2차원 배열을 순회하며 픽셀 렌더링
+		playerPixel.forEach((row, ri) => {
+			row.forEach((col, ci) => {
+				if (col) ctx.fillRect(this.x + ci * pSize, this.y + ri * pSize, pSize, pSize);
+			});
+		});
+		ctx.fillStyle = "rgba(0, 229, 255, 0.5)";
+		ctx.font = "bold 10px monospace";
+		ctx.textAlign = "center";
+		ctx.fillText("JS", this.x + this.width / 2, this.y + this.height + 12);
+	}
+	move() {
+		if ((keys["ArrowLeft"] || keys["leftBtn"]) && this.x > 0)
+			this.x -= this.speed * timeScale;
+		if ((keys["ArrowRight"] || keys["rightBtn"]) && this.x < canvas.width - this.width)
+			this.x += this.speed * timeScale;
+	}
+}
+
+// 몬스터 및 보스 클래스
+class Enemy {
+	constructor(x, y, isBoss = false) {
+		this.x = x;
+		this.y = y;
+		this.isBoss = isBoss;
+		this.width = isBoss ? 60 : 25;
+		this.height = isBoss ? 40 : 20;
+		this.hp = isBoss ? stage * 4 : 1;
+		this.color = isBoss ? "#ff00ff" : "#00e5ff";
+	}
+	draw() {
+		ctx.fillStyle = this.color;
+		if (this.isBoss) {
+			ctx.shadowBlur = 10;
+			ctx.shadowColor = this.color;
+			const bossPixel = [
+				[0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+				[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+				[1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1],
+				[1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1],
+				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+				[0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0],
+				[0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+				[0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
+			];
+			const pWidth = this.width / 12;
+			const pHeight = this.height / 8;
+			bossPixel.forEach((row, ri) => {
+				row.forEach((col, ci) => {
+					if (col) ctx.fillRect(this.x + ci * pWidth, this.y + ri * pHeight, pWidth, pHeight);
+				});
+			});
+
+			ctx.shadowBlur = 0;
+			// 보스 체력바(HP) 렌더링
+			ctx.fillStyle = "#333";
+			ctx.fillRect(this.x, this.y - 15, this.width, 4);
+			ctx.fillStyle = this.color;
+			ctx.fillRect(this.x, this.y - 15, this.width * (this.hp / (stage * 3)), 4);
+		} else {
+			const pSize = this.width / 5;
+			enemyPixel.forEach((row, ri) => {
+				row.forEach((col, ci) => {
+					if (col) ctx.fillRect(this.x + ci * pSize, this.y + ri * pSize, pSize, pSize);
+				});
+			});
+		}
+	}
+}
+
+// 총알 클래스 (플레이어 & 적 공용)
+class Bullet {
+	constructor(x, y, isEnemy = false) {
+		this.x = x;
+		this.y = y;
+		this.isEnemy = isEnemy;
+		this.speed = isEnemy ? 2.5 + stage * 0.1 : -6;
+		this.width = isEnemy ? 4 : 2;
+		this.height = isEnemy ? 10 : 8;
+	}
+	update() {
+		this.y += this.speed * timeScale;
+	}
+	draw() {
+		if (this.isEnemy) {
+			ctx.save();
+			ctx.shadowBlur = 8;
+			ctx.shadowColor = "#ff1744";
+			ctx.fillStyle = "#ff1744";
+			ctx.fillRect(this.x, this.y, this.width, this.height);
+			ctx.restore();
+		} else {
+			ctx.fillStyle = "#fff";
+			ctx.fillRect(this.x, this.y, this.width, this.height);
+		}
+	}
+}
+
+// ==========================================
+// 5. 핵심 게임 로직 (스폰 & 업데이트)
+// ==========================================
+function spawnEnemies() {
+	enemies = [];
+	bullets = [];
+	enemyBullets = [];
+	particles = [];
+	enemyDirection = 1;
+	
+	// 스테이지 5 배수마다 거대 보스 출현
+	if (stage % 5 === 0) {
+		enemies.push(new Enemy(canvas.width / 2 - 30, 60, true));
+	} else {
+		const rows = 3 + Math.floor(stage / 6);
+		const cols = 7;
+		const xOff = (canvas.width - cols * 40) / 2;
+		for (let r = 0; r < rows; r++) {
+			for (let c = 0; c < cols; c++) {
+				enemies.push(new Enemy(xOff + c * 40, 60 + r * 30));
+			}
+		}
+	}
+}
+
+function initGame() {
+	player = new Player();
+	spawnEnemies();
+	gameActive = true;
+	requestAnimationFrame(update);
+}
+
+function update() {
+	if (!gameActive) return;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	player.move();
+	player.draw();
+
+	// 총알 연사 로직 (딜레이 타임 180ms 적용)
+	if (keys[" "] || keys["fireBtn"]) {
+		const now = Date.now();
+		if (now - lastFireTime > 180) {
+			bullets.push(new Bullet(player.x + player.width / 2 - 1, player.y - 15));
+			lastFireTime = now;
+		}
+	}
+
+	// 적군 무빙 로직 (timeScale 적용하여 딜레이 계산)
+	enemyMoveTimer += 1 * timeScale;
+	let threshold = Math.max(4, 40 - stage * 2);
+	if (enemyMoveTimer > threshold) {
+		let reachEdge = false;
+		enemies.forEach((e) => {
+			e.x += 6 * enemyDirection;
+			if (e.x > canvas.width - e.width || e.x < 0) reachEdge = true;
+		});
+		if (reachEdge) {
+			enemyDirection *= -1;
+			enemies.forEach((e) => {
+				e.y += 15;
+				if (e.y > player.y) gameOver(); // 적군이 플레이어 라인 도달 시 패배
+			});
+		}
+		enemyMoveTimer = 0;
+	}
+
+	particles.forEach((p, i) => {
+		p.update();
+		p.draw();
+		if (p.alpha <= 0) particles.splice(i, 1);
+	});
+
+	// 플레이어 총알과 적의 충돌 처리 (AABB Algorithm)
+	bullets.forEach((b, bi) => {
+		b.update();
+		b.draw();
+		if (b.y < 0) bullets.splice(bi, 1);
+		
+		enemies.forEach((e, ei) => {
+			if (b.x > e.x && b.x < e.x + e.width && b.y < e.y + e.height && b.y > e.y) {
+				bullets.splice(bi, 1);
+				e.hp--;
+				if (e.hp <= 0) {
+					// 적 파괴 시 파티클 스폰
+					for (let k = 0; k < 6; k++) {
+						particles.push(new Particle(e.x + e.width / 2, e.y + e.height / 2, e.color));
+					}
+					enemies.splice(ei, 1);
+					score += e.isBoss ? 500 : 10;
+					scoreEl.innerText = score;
+				}
+			}
+		});
+	});
+
+	// 적군 총알 발사 확률 (timeScale 적용하여 슬로우 시 탄막 뭉침 방지)
+	if (enemies.length > 0 && Math.random() < (0.006 + stage * 0.001) * timeScale) {
+		const s = enemies[Math.floor(Math.random() * enemies.length)];
+		enemyBullets.push(new Bullet(s.x + s.width / 2, s.y + s.height, true));
+	}
+	
+	// 적 총알과 플레이어 충돌 처리
+	enemyBullets.forEach((eb, i) => {
+		eb.update();
+		eb.draw();
+		if (eb.y > canvas.height) enemyBullets.splice(i, 1);
+		if (eb.x > player.x && eb.x < player.x + player.width && eb.y > player.y - 15 && eb.y < player.y) {
+			gameOver();
+		}
+	});
+
+	enemies.forEach((e) => e.draw());
+
+	// 스테이지 클리어 로직
+	if (enemies.length === 0 && gameActive) {
+		if (stage >= 20) gameWin();
+		else {
+			stage++;
+			stageEl.innerText = stage;
+			spawnEnemies();
+		}
+	}
+	requestAnimationFrame(update);
+}
+
+// ==========================================
+// 6. 모달(UI) 제어 및 랭킹 시스템
+// ==========================================
+function showStartModal() {
+	gameActive = false;
+	modalTitle.innerText = "CODE BREAKER";
+	modalDesc.innerText = "JS코드를 지닌 적들을 격파하세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		stage = 1;
+		score = 0;
+		scoreEl.innerText = 0;
+		stageEl.innerText = 1;
+		initGame();
+	};
+	modal.style.display = "flex";
+}
+
+function showGameOverModal(finalScore, isAllClear = false) {
+	gameActive = false;
+	modalTitle.innerText = isAllClear ? "ALL COMPILED" : "SYSTEM CRASHED";
+	modalDesc.innerText = isAllClear
+		? `완벽한 최적화!\n최종 점수: ${finalScore}점`
+		: `에러 코드에게 침투 당했습니다.\n최종 점수: ${finalScore}점`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2) return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+		
+		const result = await saveGameScore("invader", nickname, finalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") showStartModal();
+		else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		stage = 1;
+		score = 0;
+		scoreEl.innerText = 0;
+		stageEl.innerText = 1;
+		initGame();
+	};
+	modal.style.display = "flex";
+}
+
+function gameOver() { showGameOverModal(score, false); }
+function gameWin() { showGameOverModal(score, true); }
+
+// ==========================================
+// 7. 디렉터 모드 & 조작 이벤트 바인딩
+// ==========================================
+window.addEventListener("keydown", (e) => {
+	keys[e.key] = true;
+
+	// 1~4 키 입력 시 디렉터 모드 발동 (0.2배속 슬로우 모션 + 오버레이)
+	if (['1', '2', '3', '4'].includes(e.key)) {
+		if(codeOverlay) {
+			timeScale = 0.2; 
+			codeOverlay.innerHTML = overlayCodes[e.key];
+			codeOverlay.style.display = 'block';
+		}
+	} 
+	// 0 키 입력 시 정상 속도 복귀
+	else if (e.key === '0') {
+		if(codeOverlay) {
+			timeScale = 1.0; 
+			codeOverlay.style.display = 'none';
+		}
+	}
+});
+
+window.addEventListener("keyup", (e) => (keys[e.key] = false));
+
+const bLeft = document.getElementById("btnLeft"),
+	  bRight = document.getElementById("btnRight"),
+	  bFire = document.getElementById("btnFire");
+
+const prevent = (e) => e.preventDefault();
+if(bLeft) {
+	bLeft.addEventListener("touchstart", (e) => { prevent(e); keys["leftBtn"] = true; });
+	bLeft.addEventListener("touchend", () => (keys["leftBtn"] = false));
+}
+if(bRight) {
+	bRight.addEventListener("touchstart", (e) => { prevent(e); keys["rightBtn"] = true; });
+	bRight.addEventListener("touchend", () => (keys["rightBtn"] = false));
+}
+if(bFire) {
+	bFire.addEventListener("touchstart", (e) => { prevent(e); keys["fireBtn"] = true; });
+	bFire.addEventListener("touchend", () => (keys["fireBtn"] = false));
+}
+
+// 최초 진입 
+if(document.getElementById("gameCanvas")) showStartModal();</code></pre>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// 아코디언 토글 함수
+			function toggleAccordion(header) {
+				const item = header.parentElement;
+				item.classList.toggle("active");
+				const arrow = header.querySelector("span");
+				arrow.innerText = item.classList.contains("active") ? "▲" : "▼";
+			}
+
+			// 클립보드 복사 함수
+			function copyCode(btn) {
+				const code = btn.nextElementSibling.innerText;
+				navigator.clipboard.writeText(code).then(() => {
+					const originalText = btn.innerText;
+					btn.innerText = "COPIED!";
+					btn.style.background = "#00e5ff";
+					setTimeout(() => {
+						btn.innerText = originalText;
+						btn.style.background = "#334155";
+					}, 1500);
+				});
+			}
+		</script>
+	</body>
+</html>

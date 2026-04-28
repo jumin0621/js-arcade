@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Source Code | 바운스볼</title>
+		<style>
+			:root {
+				--bg-color: #0f172a;
+				--card-bg: #1e293b;
+				--accent-color: #00e5ff;
+				--text-main: #f8fafc;
+				--code-bg: #000000;
+			}
+
+			body {
+				background-color: var(--bg-color);
+				color: var(--text-main);
+				font-family: "Pretendard", sans-serif;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.container {
+				max-width: 900px;
+				margin: 0 auto;
+			}
+
+			.back-link {
+				text-decoration: none;
+				color: var(--accent-color);
+				font-weight: bold;
+				display: inline-block;
+				margin-bottom: 20px;
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 30px;
+			}
+
+			/* 아코디언 스타일 */
+			.accordion-item {
+				background: var(--card-bg);
+				border-radius: 12px;
+				margin-bottom: 15px;
+				border: 1px solid #334155;
+				overflow: hidden;
+			}
+
+			.accordion-header {
+				padding: 18px 24px;
+				cursor: pointer;
+				font-weight: bold;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				user-select: none;
+			}
+
+			.accordion-header:hover {
+				background: #243147;
+			}
+
+			.accordion-content {
+				display: none; /* 기본 숨김 */
+				background: var(--code-bg);
+				padding: 0;
+				border-top: 1px solid #334155;
+				position: relative;
+			}
+
+			/* 코드 복사 버튼 */
+			.copy-btn {
+				position: absolute;
+				top: 10px;
+				right: 15px;
+				background: #334155;
+				color: #fff;
+				border: none;
+				padding: 5px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 0.8rem;
+			}
+			.copy-btn:hover {
+				background: var(--accent-color);
+				color: #000;
+			}
+
+			pre {
+				margin: 0;
+				padding: 30px 20px 20px;
+				overflow-x: auto;
+				color: #d1d5db;
+				font-family: "Consolas", "Monaco", monospace;
+				line-height: 1.5;
+				font-size: 0.95rem;
+			}
+
+			/* 활성화 상태 */
+			.accordion-item.active .accordion-content {
+				display: block;
+			}
+			.accordion-item.active .accordion-header {
+				border-bottom: 1px solid var(--accent-color);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<a href="index.html" class="back-link">← 리스트로 돌아가기</a>
+			<h1>🎮 바운스볼 (Source Code)</h1>
+
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					📄 index.html <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>&lt;!doctype html&gt;
+&lt;html lang="ko"&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8" /&gt;
+		&lt;meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/&gt;
+		&lt;title&gt;JS-Arcade | 바운스볼&lt;/title&gt;
+		&lt;link rel="stylesheet" href="style.css" /&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;div class="game-wrapper"&gt;
+			&lt;div class="game-header"&gt;
+				&lt;div class="stage-container"&gt;
+					&lt;span class="label"&gt;STAGE&lt;/span&gt;
+					&lt;span id="stage" class="value"&gt;1&lt;/span&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;div class="canvas-container"&gt;
+				&lt;canvas id="bounceGame" width="400" height="400"&gt;&lt;/canvas&gt;
+			&lt;/div&gt;
+
+			&lt;div class="mobile-controls"&gt;
+				&lt;button id="leftBtn"&gt;◀&lt;/button&gt;
+				&lt;button id="rightBtn"&gt;▶&lt;/button&gt;
+			&lt;/div&gt;
+
+			&lt;div id="gameModal" class="modal-overlay"&gt;
+				&lt;div class="modal-content"&gt;
+					&lt;h2 id="modalTitle"&gt;BOUNCE BALL&lt;/h2&gt;
+					&lt;p id="modalDesc"&gt;좌우 방향키로 다음 세상으로 나아가세요!&lt;/p&gt;
+
+					&lt;div id="rankInputArea" class="rank-input-area"&gt;
+						&lt;input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/&gt;
+					&lt;/div&gt;
+
+					&lt;div class="modal-buttons"&gt;
+						&lt;button id="startBtn" class="primary-btn"&gt;게임 시작&lt;/button&gt;
+						&lt;button id="restartBtn" class="secondary-btn" style="display: none"&gt;
+							다시 시작
+						&lt;/button&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;script type="module" src="js-bounce.js"&gt;&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+				</div>
+			</div>
+
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					🎨 style.css <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>/* =========================================
+   1. 기본 레이아웃 및 폰트 설정
+========================================= */
+body {
+	background-color: #121212;
+	margin: 0;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.game-wrapper {
+	width: 100%;
+	max-width: 480px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px 10px;
+	box-sizing: border-box;
+}
+
+/* =========================================
+   2. 상단 헤더 (스테이지 표시 UI)
+========================================= */
+.game-header {
+	width: 100%;
+	margin-bottom: 20px;
+	display: flex;
+	justify-content: center;
+	padding: 0 10px;
+}
+
+.stage-container {
+	background-color: transparent;
+	border-radius: 8px;
+	border: none;
+	box-shadow: none;
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+}
+
+.stage-container .label {
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 1rem;
+	font-weight: bold;
+	letter-spacing: 2px;
+	text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.stage-container .value {
+	color: #00e5ff;
+	font-size: 1.2rem;
+	font-weight: bold;
+	font-family: "Courier New", Courier, monospace;
+	text-shadow: 0 0 10px rgba(0, 229, 255, 0.7);
+}
+
+/* =========================================
+   3. 메인 게임 캔버스
+========================================= */
+.canvas-container {
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+	border: 3px solid #333;
+	border-radius: 12px;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+	background-color: #1a1a1a;
+}
+
+canvas {
+	width: 100% !important;
+	height: auto !important;
+	aspect-ratio: 1 / 1; /* 캔버스 하단 잘림 방지용 가로세로 1:1 고정 */
+	background-color: #1a1a1a;
+	display: block;
+}
+
+/* =========================================
+   4. 모바일 전용 조작 컨트롤러
+========================================= */
+.mobile-controls {
+	display: none;
+	justify-content: center;
+	gap: 40px;
+	margin-top: 20px;
+}
+
+.mobile-controls button {
+	width: 70px;
+	height: 70px;
+	background: #252525;
+	border: 2px solid #00e5ff;
+	border-radius: 50%;
+	color: #00e5ff;
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+
+/* 포인터 환경(터치 디바이스)일 경우에만 노출 */
+@media (pointer: coarse) {
+	.mobile-controls {
+		display: flex;
+	}
+}
+
+/* =========================================
+   5. 모달 (게임 팝업창)
+========================================= */
+.modal-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.9);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+
+.modal-content {
+	background: #222;
+	padding: 30px;
+	border-radius: 15px;
+	border: 2px solid #00e5ff;
+	text-align: center;
+}
+
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
+
+/* =========================================
+   6. 랭킹 입력 및 버튼 스타일
+========================================= */
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 25px;
+	width: 100%;
+}
+
+.primary-btn,
+.secondary-btn {
+	flex: 1;
+	padding: 10px 0;
+	font-size: 0.95rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	line-height: 1.4;
+}
+
+.primary-btn {
+	background: #00e5ff;
+	color: #000;
+	margin-top: 0 !important;
+}
+
+.primary-btn:hover {
+	background: #00b8cc;
+	transform: translateY(-2px);
+}
+
+.primary-btn:active {
+	transform: scale(0.98);
+}
+
+.secondary-btn {
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #00e5ff;
+	transform: translateY(-2px);
+}
+
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.nickname-input:focus {
+	border-color: #00e5ff;
+}</code></pre>
+				</div>
+			</div>
+
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					⚡ js-bounce.js <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>// ==========================================
+// DB 연동 및 초기 설정
+// ==========================================
+import { saveGameScore } from "../../common/firebase-config.js";
+
+const canvas = document.getElementById("bounceGame");
+const ctx = canvas.getContext("2d");
+
+// ==========================================
+// 1. 전역 상태 변수
+// ==========================================
+let leftPressed = false;
+let rightPressed = false;
+let currentStage = 0;
+let isGameRunning = false;
+let animationId;
+let cameraX = 0;
+let targetCameraX = 0;
+let isTransitioning = false;
+
+// ==========================================
+// 2. 물리 엔진 환경 변수 
+// ==========================================
+const boxCount = 20;
+const box = canvas.width / boxCount; // 타일 1개의 픽셀 크기 (20px)
+const gravity = 0.08;                // 중력 가속도
+const jumpForce = -2.2;              // 기본 점프 반발력
+const moveSpeed = 1.4;               // 좌우 이동 속도
+
+// 공(Player) 객체 상태
+let ball = { x: 0, y: 0, r: 3, dx: 0, dy: 0, trail: [] };
+
+// ==========================================
+// 3. 맵 데이터 세팅 (20x20 Grid)
+// [Tile Index] 0: 빈공간, 1: 벽, 2: 가시, 3: 슈퍼점프 타일, 4: 출구, 5: 시작점
+// ==========================================
+const maps = [
+	// ... (이곳에 기존 파일의 Stage 1 ~ Stage 10 맵 배열 데이터를 그대로 복사해 넣으세요) ...
+];
+
+// ==========================================
+// 4. 모달 및 UI DOM 요소 캐싱
+// ==========================================
+const modal = document.getElementById("gameModal");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+
+// ==========================================
+// 5. 게임 상태 제어 로직 (시작, 종료, 트랜지션)
+// ==========================================
+function initStage(stageIdx) {
+	const map = maps[stageIdx];
+	const yOffset = canvas.height - map.length * box;
+	ball.dy = 0;
+	ball.trail = [];
+	isTransitioning = false;
+
+	// 맵 데이터에서 시작점(5) 위치를 찾아 공의 초기 좌표 세팅
+	for (let r = 0; r < map.length; r++) {
+		for (let c = 0; c < map[r].length; c++) {
+			if (map[r][c] === 5) {
+				ball.x = c * box + box / 2 + stageIdx * canvas.width;
+				ball.y = r * box + box / 2 + yOffset;
+				return;
+			}
+		}
+	}
+}
+
+function showStartModal() {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = "BOUNCE BALL";
+	document.getElementById("modalDesc").innerText = "좌우 방향키로 다음 세상으로 나아가세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+
+	startBtn.onclick = function () {
+		modal.style.display = "none";
+		currentStage = 0;
+		cameraX = 0;
+		targetCameraX = 0;
+		initStage(currentStage);
+		document.getElementById("stage").innerText = currentStage + 1;
+		isGameRunning = true;
+		update();
+	};
+	modal.style.display = "flex";
+}
+
+function showGameOverModal(stageScore, isAllClear = false) {
+	isGameRunning = false;
+	ball.dx = 0;
+	cancelAnimationFrame(animationId);
+
+	document.getElementById("modalTitle").innerText = isAllClear ? "ALL CLEAR!" : "GAME OVER";
+	document.getElementById("modalDesc").innerText = isAllClear 
+		? "축하합니다! 모든 스테이지를 정복했습니다!" 
+		: `아쉽네요! 최고 도달: STAGE ${stageScore}`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 DB 저장 처리
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2) return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		const result = await saveGameScore("bounce", nickname, stageScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	// 다시 시작 처리
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		currentStage = 0;
+		cameraX = 0;
+		targetCameraX = 0;
+		initStage(currentStage);
+		document.getElementById("stage").innerText = currentStage + 1;
+		isGameRunning = true;
+		update();
+	};
+
+	modal.style.display = "flex";
+}
+
+// 다음 스테이지 이동 연출
+function startTransition() {
+	if (currentStage < maps.length - 1) {
+		currentStage++;
+		isTransitioning = true;
+		targetCameraX += canvas.width; // 카메라 우측 이동
+
+		const nextMap = maps[currentStage];
+		const yOff = canvas.height - nextMap.length * box;
+		for (let r = 0; r < nextMap.length; r++) {
+			for (let c = 0; c < nextMap[r].length; c++) {
+				if (nextMap[r][c] === 5) {
+					ball.x = c * box + box / 2 + currentStage * canvas.width;
+					ball.y = r * box + box / 2 + yOff;
+					ball.dx = 0;
+					break;
+				}
+			}
+		}
+		document.getElementById("stage").innerText = currentStage + 1;
+	} else {
+		showGameOverModal(10, true);
+	}
+}
+
+function gameOver() {
+	showGameOverModal(currentStage + 1, false);
+}
+
+// ==========================================
+// 6. 사용자 입력 이벤트 감지 (PC/Mobile)
+// ==========================================
+window.addEventListener("keydown", (e) => {
+	if (e.key === "ArrowLeft") leftPressed = true;
+	if (e.key === "ArrowRight") rightPressed = true;
+	if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
+});
+window.addEventListener("keyup", (e) => {
+	if (e.key === "ArrowLeft") leftPressed = false;
+	if (e.key === "ArrowRight") rightPressed = false;
+});
+
+const lBtn = document.getElementById("leftBtn");
+const rBtn = document.getElementById("rightBtn");
+if (lBtn && rBtn) {
+	lBtn.onpointerdown = () => (leftPressed = true);
+	lBtn.onpointerup = () => (leftPressed = false);
+	rBtn.onpointerdown = () => (rightPressed = true);
+	rBtn.onpointerup = () => (rightPressed = false);
+}
+
+// ==========================================
+// 7. 핵심 물리 엔진 & 업데이트 루프
+// ==========================================
+function update() {
+	if (!isGameRunning) return;
+
+	if (!isTransitioning) {
+		ball.dy += gravity; // 매 프레임 중력 적용
+		
+		let inputDx = rightPressed ? moveSpeed : leftPressed ? -moveSpeed : 0;
+		let nextX = ball.x + inputDx + ball.dx;
+		let nextY = ball.y + ball.dy;
+		const map = maps[currentStage];
+
+		// X축(좌우) 벽 충돌 검증
+		let hitX = checkWall(nextX, ball.y, map);
+		if (!hitX) {
+			ball.x = nextX;
+			ball.dx *= 0.95; // 마찰력 적용 (자연스러운 감속)
+		} else {
+			// 벽타기 로직: 벽에 충돌 시 반대 방향으로 강하게 튕김
+			if (nextX > ball.x) ball.dx = -moveSpeed * 2.3;
+			else ball.dx = moveSpeed * 2.3;
+			ball.dy = jumpForce * 0.8;
+			ball.x += ball.dx; 
+		}
+
+		// Y축(상하) 충돌 검증 및 점프
+		let hitY = checkWall(ball.x, nextY, map);
+		if (!hitY) {
+			ball.y = nextY;
+		} else {
+			if (ball.dy > 0) {
+				// 바닥에 닿았을 때 타일 종류(3=슈퍼점프)에 따라 점프력 차등 적용
+				ball.dy = hitY === 3 ? jumpForce * 1.6 : jumpForce;
+				ball.dx = 0;
+			} else {
+				ball.dy = 0; // 천장 충돌 시 상승 정지
+			}
+		}
+
+		// 잔상(Trail) 효과를 위한 이전 좌표 저장
+		ball.trail.push({ x: ball.x, y: ball.y });
+		if (ball.trail.length > 12) ball.trail.shift();
+		checkTiles(map);
+	} else {
+		// 스테이지 전환 시 카메라 패닝 효과
+		cameraX += (targetCameraX - cameraX) * 0.08;
+		if (Math.abs(cameraX - targetCameraX) < 1) {
+			cameraX = targetCameraX;
+			isTransitioning = false;
+		}
+	}
+	draw();
+	animationId = requestAnimationFrame(update);
+}
+
+// 충돌 타일 판별 함수: 충돌 시 해당 타일의 번호를 리턴
+function checkWall(x, y, map) {
+	const yOffset = canvas.height - map.length * box;
+	const xOff = currentStage * canvas.width;
+	
+	// 공의 상하좌우 4포인트를 기준으로 충돌 검사
+	const pts = [
+		{ x: x - ball.r, y: y - ball.r },
+		{ x: x + ball.r, y: y - ball.r },
+		{ x: x - ball.r, y: y + ball.r },
+		{ x: x + ball.r, y: y + ball.r },
+	];
+
+	let hitType = 0;
+	for (let p of pts) {
+		let gx = Math.floor((p.x - xOff) / box);
+		let gy = Math.floor((p.y - yOffset) / box);
+		if (gy >= 0 && gy < map.length && gx >= 0 && gx < map[gy].length) {
+			let t = map[gy][gx];
+			if (t === 1) hitType = 1; // 일반 벽
+			if (t === 3) return 3;    // 슈퍼 점프 타일은 즉각 반환 (우선순위)
+		}
+	}
+	return hitType;
+}
+
+// 특수 타일(가시, 출구) 밟음 판별 및 낙사 체크
+function checkTiles(map) {
+	const yOffset = canvas.height - map.length * box;
+	const xOff = currentStage * canvas.width;
+	let gx = Math.floor((ball.x - xOff) / box);
+	let gy = Math.floor((ball.y - yOffset) / box);
+
+	if (gy >= 0 && gy < map.length && gx >= 0 && gx < map[gy].length) {
+		let tile = map[gy][gx];
+		if (tile === 2) gameOver(); // 가시 밟음
+		if (tile === 4 && !isTransitioning) startTransition(); // 출구 도달
+	}
+	
+	if (ball.y > canvas.height + 100) gameOver(); // 바닥 밑으로 추락 (낙사)
+}
+
+// ==========================================
+// 8. 캔버스 그래픽 렌더링
+// ==========================================
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.save();
+	ctx.translate(-cameraX, 0); // 카메라 위치에 따른 캔버스 이동
+
+	// 전체 스테이지 맵 렌더링
+	for (let s = 0; s < maps.length; s++) {
+		const m = maps[s],
+			xOff = s * canvas.width,
+			yOff = canvas.height - m.length * box;
+			
+		for (let r = 0; r < m.length; r++) {
+			for (let c = 0; c < m[r].length; c++) {
+				let t = m[r][c],
+					tx = c * box + xOff,
+					ty = r * box + yOff;
+
+				if (t === 1) {
+					// 일반 벽돌 렌더링
+					ctx.fillStyle = "#a82020";
+					ctx.fillRect(tx, ty, box, box);
+					ctx.fillStyle = "#444";
+					ctx.fillRect(tx + 1, ty + 1, box - 2, box - 2);
+				} else if (t === 2) {
+					// 가시 함정 렌더링 (삼각형)
+					ctx.fillStyle = "#ff4444";
+					ctx.beginPath();
+					ctx.moveTo(tx, ty + box);
+					ctx.lineTo(tx + box / 2, ty);
+					ctx.lineTo(tx + box, ty + box);
+					ctx.fill();
+				} else if (t === 3) {
+					// 슈퍼 점프 타일 렌더링
+					ctx.fillStyle = "#ffeb3b";
+					ctx.fillRect(tx, ty, box, box);
+					ctx.fillStyle = "#fbc02d";
+					ctx.fillRect(tx + 2, ty + 2, box - 4, box - 4);
+					ctx.fillStyle = "#f57f17";
+					ctx.fillRect(tx + 4, ty + box / 2 - 2, box - 8, 4);
+				}
+			}
+		}
+	}
+
+	// 1. 공의 꼬리(잔상) 렌더링 - 투명도 연산
+	ball.trail.forEach((p, i) => {
+		ctx.beginPath();
+		ctx.arc(p.x, p.y, ball.r, 0, Math.PI * 2);
+		ctx.fillStyle = `rgba(142, 36, 170, ${i / ball.trail.length})`;
+		ctx.fill();
+	});
+
+	// 2. 실제 공(Player) 렌더링
+	ctx.fillStyle = "#8e24aa";
+	ctx.beginPath();
+	ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+	ctx.fill();
+	ctx.strokeStyle = "#fff";
+	ctx.lineWidth = 1;
+	ctx.stroke();
+	
+	ctx.restore();
+}
+
+// 최초 로드 실행
+initStage(0);
+showStartModal();</code></pre>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// 아코디언 토글 함수
+			function toggleAccordion(header) {
+				const item = header.parentElement;
+				item.classList.toggle("active");
+				const arrow = header.querySelector("span");
+				arrow.innerText = item.classList.contains("active") ? "▲" : "▼";
+			}
+
+			// 클립보드 복사 함수
+			function copyCode(btn) {
+				const code = btn.nextElementSibling.innerText;
+				navigator.clipboard.writeText(code).then(() => {
+					const originalText = btn.innerText;
+					btn.innerText = "COPIED!";
+					btn.style.background = "#00e5ff";
+					setTimeout(() => {
+						btn.innerText = originalText;
+						btn.style.background = "#334155";
+					}, 1500);
+				});
+			}
+		</script>
+	</body>
+</html>

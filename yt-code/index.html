@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>JS-Arcade | Premium Code Lounge</title>
+		<style>
+			:root {
+				--bg-color: #0f172a;
+				--card-bg: #1e293b;
+				--accent-color: #00e5ff;
+				--text-main: #f8fafc;
+				--text-dim: #94a3b8;
+			}
+
+			body {
+				background-color: var(--bg-color);
+				color: var(--text-main);
+				font-family: "Pretendard", sans-serif;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.container {
+				max-width: 1000px;
+				margin: 0 auto;
+			}
+
+			header {
+				text-align: center;
+				margin-bottom: 50px;
+			}
+			header h1 {
+				color: var(--accent-color);
+				font-size: 2.5rem;
+				letter-spacing: -1px;
+			}
+			header p {
+				color: var(--text-dim);
+			}
+
+			/* 카드 그리드 레이아웃 */
+			.game-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				gap: 25px;
+			}
+
+			.game-card {
+				background: var(--card-bg);
+				border: 1px solid #334155;
+				border-radius: 16px;
+				padding: 24px;
+				text-decoration: none;
+				color: inherit;
+				transition: all 0.3s ease;
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+
+			.game-card:hover {
+				transform: translateY(-8px);
+				border-color: var(--accent-color);
+				box-shadow: 0 10px 30px rgba(0, 229, 255, 0.1);
+			}
+
+			.game-card h2 {
+				margin: 0 0 12px 0;
+				font-size: 1.4rem;
+				color: var(--text-main);
+			}
+			.game-card p {
+				margin: 0;
+				color: var(--text-dim);
+				font-size: 0.95rem;
+				line-height: 1.6;
+			}
+
+			.btn-view {
+				margin-top: 20px;
+				display: inline-block;
+				color: var(--accent-color);
+				font-weight: bold;
+				font-size: 0.9rem;
+			}
+
+			/* 배지 스타일 */
+			.badge {
+				position: absolute;
+				top: 15px;
+				right: 15px;
+				background: rgba(0, 229, 255, 0.1);
+				color: var(--accent-color);
+				padding: 4px 10px;
+				border-radius: 20px;
+				font-size: 0.75rem;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>💎 Premium Code Lounge</h1>
+				<p>신주의 AI 오락실 멤버십 전용 소스코드 보관소입니다.</p>
+			</header>
+
+			<div class="game-grid">
+				<a href="bounce.html" class="game-card">
+					<span class="badge">V1.0</span>
+					<div>
+						<h2>바운스볼</h2>
+						<p>
+							자바스크립트 캔버스로 구현한 물리 엔진 리마스터 버전입니다. 중력
+							및 충돌 로직 포함.
+						</p>
+					</div>
+					<span class="btn-view">코드 보기 →</span>
+				</a>
+
+				<a href="invader.html" class="game-card">
+					<span class="badge">V1.0</span>
+					<div>
+						<h2>코드브레이커</h2>
+						<p>
+							갤러그 게임 웹 리마스터 버전입니다. 파티클 및 AABB충돌 로직포함.
+						</p>
+					</div>
+					<span class="btn-view">코드 보기 →</span>
+				</a>
+			</div>
+		</div>
+	</body>
+</html>
