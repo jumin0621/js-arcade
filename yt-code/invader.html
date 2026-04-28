@@ -150,9 +150,6 @@
 			&lt;!-- [메인 화면] 게임 렌더링 캔버스 --&gt;
 			&lt;canvas id="gameCanvas"&gt;&lt;/canvas&gt;
 
-			&lt;!-- [디렉터 모드] 코드 오버레이 팝업 (1~4번 키 입력 시 노출) --&gt;
-			&lt;div id="codeOverlay" class="code-overlay"&gt;&lt;/div&gt;
-
 			&lt;!-- [모바일 UI] 터치 환경 전용 좌우 조작 및 연사 버튼 --&gt;
 			&lt;div class="mobile-controls"&gt;
 				&lt;button id="btnLeft" class="ctrl-btn"&gt;◀&lt;/button&gt;
@@ -270,36 +267,7 @@ body {
 }
 
 /* =========================================
-   4. 디렉터 모드 코드 오버레이 (슬로우 모션 팝업)
-========================================= */
-.code-overlay {
-	position: absolute;
-	bottom: 20%;
-	left: 5%;
-	width: 90%;
-	background: rgba(30, 30, 30, 0.95);
-	border: 1px solid #00e5ff;
-	border-left: 4px solid #ff00ff;
-	color: #d4d4d4;
-	font-family: 'Consolas', 'Monaco', monospace;
-	padding: 15px;
-	border-radius: 5px;
-	font-size: 0.85rem;
-	display: none;
-	z-index: 50;
-	box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
-	white-space: pre-wrap;
-	pointer-events: none;
-	box-sizing: border-box;
-}
-
-.kd-keyword { color: #569cd6; font-weight: bold; }
-.kd-string { color: #ce9178; }
-.kd-comment { color: #6a9955; font-style: italic; }
-.kd-func { color: #dcdcaa; }
-
-/* =========================================
-   5. 모바일 전용 조작 컨트롤러
+   4. 모바일 전용 조작 컨트롤러
 ========================================= */
 .mobile-controls {
 	display: none;
@@ -350,7 +318,7 @@ body {
 }
 
 /* =========================================
-   6. 모달 (게임 팝업창 & 랭킹 등록)
+   5. 모달 (게임 팝업창 & 랭킹 등록)
 ========================================= */
 .modal-overlay {
 	position: fixed;
@@ -483,10 +451,6 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("scoreDisplay");
 const stageEl = document.getElementById("stageDisplay");
-
-// 디렉터 모드 오버레이 컨테이너
-const codeOverlay = document.getElementById("codeOverlay");
-
 const modal = document.getElementById("gameModal");
 const modalTitle = document.getElementById("modalTitle");
 const modalDesc = document.getElementById("modalDesc");
@@ -530,17 +494,7 @@ const playerPixel = [
 const codeFragments = ["<div>", "</span>", ";", "err", "404", "{}", "=>", "let", "const"];
 
 // ==========================================
-// 3. 디렉터 모드 오버레이 템플릿 (1~4번 단축키)
-// ==========================================
-const overlayCodes = {
-	'1': `<span class="kd-comment">// 1. 이미지 없이 0과 1로 그리는 픽셀 몬스터</span>\n<span class="kd-keyword">const</span> enemyPixel = [\n  [0, 1, 1, 1, 0],\n  [1, 1, 0, 1, 1],\n  [1, 1, 1, 1, 1],\n  [0, 1, 0, 1, 0],\n];\n<span class="kd-comment">// 배열을 순회하며 1인 영역만 색칠합니다.</span>`,
-	'2': `<span class="kd-comment">// 2. 적 격파 시 코드 파편(Particle) 효과</span>\n<span class="kd-keyword">class</span> Particle {\n  <span class="kd-func">constructor</span>(x, y) {\n    <span class="kd-keyword">this</span>.text = codeFragments[Math.random()];\n    <span class="kd-keyword">this</span>.vx = (Math.random() - 0.5) * 4;\n    <span class="kd-keyword">this</span>.vy = (Math.random() - 0.5) * 4;\n  }\n}`,
-	'3': `<span class="kd-comment">// 3. 가장 완벽한 타격감: AABB 충돌 감지 알고리즘</span>\n<span class="kd-keyword">if</span> (\n  b.x > e.x && \n  b.x < e.x + e.width && \n  b.y < e.y + e.height && \n  b.y > e.y\n) {\n  e.hp--; <span class="kd-comment">// 적 체력 삭감</span>\n  bullets.splice(bi, 1); <span class="kd-comment">// 총알 소멸</span>\n}`,
-	'4': `<span class="kd-comment">// 4. 극강 난이도의 거대 보스 출현 분기점</span>\n<span class="kd-keyword">if</span> (stage % 5 === 0) {\n  <span class="kd-comment">// 5스테이지 단위로 체력이 높은 보스 생성</span>\n  enemies.push(<span class="kd-keyword">new</span> Enemy(center, 60, <span class="kd-keyword">true</span>));\n} <span class="kd-keyword">else</span> {\n  <span class="kd-comment">// 일반 적 부대 생성 로직</span>\n}`
-};
-
-// ==========================================
-// 4. 객체(Class) 정의
+// 3. 객체(Class) 정의
 // ==========================================
 
 // 적 파괴 시 흩뿌려지는 파티클 클래스
@@ -682,7 +636,7 @@ class Bullet {
 }
 
 // ==========================================
-// 5. 핵심 게임 로직 (스폰 & 업데이트)
+// 4. 핵심 게임 로직 (스폰 & 업데이트)
 // ==========================================
 function spawnEnemies() {
 	enemies = [];
@@ -808,7 +762,7 @@ function update() {
 }
 
 // ==========================================
-// 6. 모달(UI) 제어 및 랭킹 시스템
+// 7. 모달(UI) 제어 및 랭킹 시스템
 // ==========================================
 function showStartModal() {
 	gameActive = false;
@@ -874,29 +828,6 @@ function showGameOverModal(finalScore, isAllClear = false) {
 
 function gameOver() { showGameOverModal(score, false); }
 function gameWin() { showGameOverModal(score, true); }
-
-// ==========================================
-// 7. 디렉터 모드 & 조작 이벤트 바인딩
-// ==========================================
-window.addEventListener("keydown", (e) => {
-	keys[e.key] = true;
-
-	// 1~4 키 입력 시 디렉터 모드 발동 (0.2배속 슬로우 모션 + 오버레이)
-	if (['1', '2', '3', '4'].includes(e.key)) {
-		if(codeOverlay) {
-			timeScale = 0.2; 
-			codeOverlay.innerHTML = overlayCodes[e.key];
-			codeOverlay.style.display = 'block';
-		}
-	} 
-	// 0 키 입력 시 정상 속도 복귀
-	else if (e.key === '0') {
-		if(codeOverlay) {
-			timeScale = 1.0; 
-			codeOverlay.style.display = 'none';
-		}
-	}
-});
 
 window.addEventListener("keyup", (e) => (keys[e.key] = false));
 
