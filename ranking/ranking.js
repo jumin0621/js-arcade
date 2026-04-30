@@ -24,6 +24,7 @@ const games = [
 	{ id: "shieldsurvivor", title: "🛡️ 실드서바이버" },
 	{ id: "dragoncurve", title: "🐲 드래곤커브" },
 	{ id: "pixellogic", title: "❤️ 픽셀로직" },
+	{ id: "pixelclimber", title: "🧗‍♀️ 픽셀클라이머" },
 	// ... 나머지 게임들도 추가
 ];
 

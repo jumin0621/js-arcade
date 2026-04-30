@@ -130,6 +130,14 @@ const gameData = [
 		path: "games/js-pixellogic/index.html",
 		category: "puzzle",
 	},
+	{
+		id: "pixelclimber",
+		title: "픽셀 클라이머",
+		description: "무한으로 픽셀 계단을 올라가는 게임",
+		emoji: "🧗‍♀️",
+		path: "games/js-pixelclimber/index.html",
+		category: "puzzle",
+	},
 ];
 
 let dbViewStats = {};
