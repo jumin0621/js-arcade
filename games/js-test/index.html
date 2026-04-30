@@ -6,49 +6,68 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		/>
-		<title>JS-Arcade | 코드 브레이커</title>
+		<title>JS-Arcade | 픽셀 클라이머</title>
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
 		<div class="game-wrapper">
 			<div class="game-header">
 				<div class="info-item">
-					<span class="info-label">STAGE</span>
-					<span id="stageDisplay" class="info-value">1</span>
-				</div>
-				<div class="info-item right">
 					<span class="info-label">SCORE</span>
 					<span id="scoreDisplay" class="info-value">0</span>
 				</div>
+				<div class="combo-container">
+					<span id="comboDisplay" class="combo-value"></span>
+				</div>
+				<div class="info-item right">
+					<span class="info-label">FEVER</span>
+					<span id="feverDisplay" class="info-value" style="color: #ff2e63"
+						>OFF</span
+					>
+				</div>
 			</div>
 
-			<canvas id="gameCanvas"></canvas>
+			<!-- 타임 게이지 영역 -->
+			<div class="gauge-wrapper">
+				<div id="gaugeBar" class="gauge-bar"></div>
+			</div>
+
+			<div class="canvas-container" id="gameArea">
+				<canvas id="gameCanvas"></canvas>
+			</div>
 
 			<div id="codeOverlay" class="code-overlay"></div>
 
-			<div class="mobile-controls">
-				<button id="btnLeft" class="ctrl-btn">◀</button>
-				<button id="btnRight" class="ctrl-btn">▶</button>
-				<button id="btnFire" class="ctrl-btn fire">FIRE</button>
-			</div>
-
-			<div class="controls-guide">
-				<p>⌨️ <span>방향키</span> 이동 / <span>Space(꾹)</span> 연사</p>
-				<p>📱 적을 격파하면 <span>코드 파편</span>이 튀어나옵니다!</p>
+			<!-- 하단 2버튼 컨트롤 영역 -->
+			<div class="controls-area">
+				<button class="control-btn turn-btn" id="btnTurn">
+					<span class="btn-icon">🔁</span>
+					<span class="btn-title">방향전환</span>
+					<span class="btn-key">(Left / Z)</span>
+				</button>
+				<button class="control-btn climb-btn" id="btnClimb">
+					<span class="btn-icon">⬆️</span>
+					<span class="btn-title">오르기</span>
+					<span class="btn-key">(Right / X)</span>
+				</button>
 			</div>
 		</div>
 
+		<!-- 공통 모달 -->
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
-				<h2 id="modalTitle">CODE BREAKER</h2>
-				<p id="modalDesc">JS코드를 지닌 적들을 격파하세요!</p>
+				<h2 id="modalTitle">PIXEL CLIMBER</h2>
+				<p id="modalDesc">
+					버튼 두 개로 무한히 계단을 오르세요!<br />빠르게 올라가면 피버 타임이
+					발동합니다.
+				</p>
 
-				<div id="rankInputArea" class="rank-input-area">
+				<div id="rankInputArea" class="rank-input-area" style="display: none">
 					<input
 						type="text"
 						id="nicknameInput"
 						class="nickname-input"
-						placeholder="닉네임 (3~8자)"
+						placeholder="닉네임 (2~8자)"
 						maxlength="8"
 					/>
 				</div>
@@ -56,11 +75,12 @@
 				<div class="modal-buttons">
 					<button id="startBtn" class="primary-btn">게임 시작</button>
 					<button id="restartBtn" class="secondary-btn" style="display: none">
-						다시 시작
+						처음으로
 					</button>
 				</div>
 			</div>
 		</div>
-		<script type="module" src="js-invader.js"></script>
+
+		<script type="module" src="js-pixelclimber.js"></script>
 	</body>
 </html>

@@ -136,7 +136,7 @@ const gameData = [
 		description: "무한으로 픽셀 계단을 올라가는 게임",
 		emoji: "🧗‍♀️",
 		path: "games/js-pixelclimber/index.html",
-		category: "puzzle",
+		category: "arcade",
 	},
 ];
 
