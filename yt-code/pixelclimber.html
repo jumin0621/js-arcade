@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Source Code | 픽셀 클라이머</title>
+		<style>
+			:root {
+				--bg-color: #0f172a;
+				--card-bg: #1e293b;
+				--accent-color: #00e5ff;
+				--text-main: #f8fafc;
+				--code-bg: #000000;
+			}
+
+			body {
+				background-color: var(--bg-color);
+				color: var(--text-main);
+				font-family: "Pretendard", sans-serif;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.container {
+				max-width: 900px;
+				margin: 0 auto;
+			}
+
+			.back-link {
+				text-decoration: none;
+				color: var(--accent-color);
+				font-weight: bold;
+				display: inline-block;
+				margin-bottom: 20px;
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 30px;
+			}
+
+			/* 아코디언 스타일 */
+			.accordion-item {
+				background: var(--card-bg);
+				border-radius: 12px;
+				margin-bottom: 15px;
+				border: 1px solid #334155;
+				overflow: hidden;
+			}
+
+			.accordion-header {
+				padding: 18px 24px;
+				cursor: pointer;
+				font-weight: bold;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				user-select: none;
+			}
+
+			.accordion-header:hover {
+				background: #243147;
+			}
+
+			.accordion-content {
+				display: none;
+				background: var(--code-bg);
+				padding: 0;
+				border-top: 1px solid #334155;
+				position: relative;
+			}
+
+			/* 코드 복사 버튼 */
+			.copy-btn {
+				position: absolute;
+				top: 10px;
+				right: 15px;
+				background: #334155;
+				color: #fff;
+				border: none;
+				padding: 5px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 0.8rem;
+			}
+			.copy-btn:hover {
+				background: var(--accent-color);
+				color: #000;
+			}
+
+			pre {
+				margin: 0;
+				padding: 30px 20px 20px;
+				overflow-x: auto;
+				color: #d1d5db;
+				font-family: "Consolas", "Monaco", monospace;
+				line-height: 1.5;
+				font-size: 0.95rem;
+			}
+
+			/* 활성화 상태 */
+			.accordion-item.active .accordion-content {
+				display: block;
+			}
+			.accordion-item.active .accordion-header {
+				border-bottom: 1px solid var(--accent-color);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<a href="index.html" class="back-link">← 라운지 메인으로 돌아가기</a>
+			<h1>🎮 픽셀 클라이머 (Source Code)</h1>
+
+			<!-- ============================== HTML 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					📄 index.html <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>&lt;!doctype html&gt;
+&lt;html lang="ko"&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8" /&gt;
+		&lt;meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/&gt;
+		&lt;title&gt;JS-Arcade | 픽셀 클라이머&lt;/title&gt;
+		&lt;link rel="stylesheet" href="style.css" /&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;!-- [전체 래퍼] --&gt;
+		&lt;div class="game-wrapper"&gt;
+			
+			&lt;!-- [상단 UI] 점수, 콤보, 피버타임 상태 표시 --&gt;
+			&lt;div class="game-header"&gt;
+				&lt;div class="info-item"&gt;
+					&lt;span class="info-label"&gt;SCORE&lt;/span&gt;
+					&lt;span id="scoreDisplay" class="info-value"&gt;0&lt;/span&gt;
+				&lt;/div&gt;
+				&lt;div class="combo-container"&gt;
+					&lt;span id="comboDisplay" class="combo-value"&gt;&lt;/span&gt;
+				&lt;/div&gt;
+				&lt;div class="info-item right"&gt;
+					&lt;span class="info-label"&gt;FEVER&lt;/span&gt;
+					&lt;span id="feverDisplay" class="info-value" style="color: #ff2e63"&gt;OFF&lt;/span&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [타임 게이지] 시간이 지날수록 줄어드는 체력바 --&gt;
+			&lt;div class="gauge-wrapper"&gt;
+				&lt;div id="gaugeBar" class="gauge-bar"&gt;&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [메인 화면] 게임 렌더링 캔버스 --&gt;
+			&lt;div class="canvas-container" id="gameArea"&gt;
+				&lt;canvas id="gameCanvas"&gt;&lt;/canvas&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [컨트롤러] 모바일 터치 및 마우스 클릭용 하단 2버튼 --&gt;
+			&lt;div class="controls-area"&gt;
+				&lt;button class="control-btn turn-btn" id="btnTurn"&gt;
+					&lt;span class="btn-icon"&gt;🔁&lt;/span&gt;
+					&lt;span class="btn-title"&gt;방향전환&lt;/span&gt;
+					&lt;span class="btn-key"&gt;(Left / Z)&lt;/span&gt;
+				&lt;/button&gt;
+				&lt;button class="control-btn climb-btn" id="btnClimb"&gt;
+					&lt;span class="btn-icon"&gt;⬆️&lt;/span&gt;
+					&lt;span class="btn-title"&gt;오르기&lt;/span&gt;
+					&lt;span class="btn-key"&gt;(Right / X)&lt;/span&gt;
+				&lt;/button&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+		&lt;!-- [모달 UI] 게임 시작, 종료, 랭킹 등록 --&gt;
+		&lt;div id="gameModal" class="modal-overlay"&gt;
+			&lt;div class="modal-content"&gt;
+				&lt;h2 id="modalTitle"&gt;PIXEL CLIMBER&lt;/h2&gt;
+				&lt;p id="modalDesc"&gt;
+					버튼 두 개로 무한히 계단을 오르세요!&lt;br /&gt;빠르게 올라가면 피버 타임이
+					발동합니다.
+				&lt;/p&gt;
+
+				&lt;div id="rankInputArea" class="rank-input-area" style="display: none"&gt;
+					&lt;input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (2~8자)"
+						maxlength="8"
+					/&gt;
+				&lt;/div&gt;
+
+				&lt;div class="modal-buttons"&gt;
+					&lt;button id="startBtn" class="primary-btn"&gt;게임 시작&lt;/button&gt;
+					&lt;button id="restartBtn" class="secondary-btn" style="display: none"&gt;
+						처음으로
+					&lt;/button&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+		&lt;script type="module" src="js-pixelclimber.js"&gt;&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+				</div>
+			</div>
+
+			<!-- ============================== CSS 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					🎨 style.css <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>/* =========================================
+   1. 기본 레이아웃 & 폰트
+========================================= */
+body {
+	background-color: #121212;
+	margin: 0;
+	color: white;
+	font-family: "Pretendard", sans-serif;
+	overflow: hidden;
+	touch-action: none;
+}
+
+.game-wrapper {
+	width: 100%;
+	max-width: 500px;
+	margin: 0 auto;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+	height: 100vh;
+}
+
+/* =========================================
+   2. 상단 헤더 (점수, 콤보, 피버 상태)
+========================================= */
+.game-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 5px;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+
+.info-label {
+	font-size: 0.65rem;
+	color: #888;
+	display: block;
+	letter-spacing: 1px;
+	text-align: center;
+}
+
+.info-value {
+	font-size: 1.4rem;
+	font-weight: 900;
+	color: #00e5ff;
+	display: block;
+	text-align: center;
+}
+
+/* 콤보 애니메이션 처리 */
+.combo-container {
+	flex: 1;
+	text-align: center;
+	min-height: 30px;
+}
+.combo-value {
+	font-size: 1.5rem;
+	font-weight: 900;
+	color: #bb86fc;
+	text-shadow: 0 0 15px rgba(187, 134, 252, 0.8);
+	opacity: 0;
+	transform: scale(0.8);
+	transition: all 0.1s ease-out;
+	display: inline-block;
+}
+.combo-value.active {
+	opacity: 1;
+	transform: scale(1.2);
+}
+
+/* =========================================
+   3. 타임 게이지바 UI
+========================================= */
+.gauge-wrapper {
+	width: 100%;
+	height: 12px;
+	background: #222;
+	border-radius: 6px;
+	border: 1px solid #444;
+	margin-bottom: 15px;
+	overflow: hidden;
+	box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+.gauge-bar {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, #00ff88, #00e5ff);
+	transition: width 0.1s linear, background 0.3s;
+}
+
+/* =========================================
+   4. 메인 캔버스 영역
+========================================= */
+.canvas-container {
+	width: 100%;
+	flex: 1;
+	background: #1a1a2e; /* 깊은 밤하늘 느낌 */
+	border: 2px solid #333;
+	border-radius: 12px 12px 0 0;
+	position: relative;
+	overflow: hidden;
+	box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7);
+}
+canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	touch-action: none;
+}
+
+/* =========================================
+   5. 하단 2버튼 컨트롤 영역
+========================================= */
+.controls-area {
+	width: 100%;
+	height: 120px;
+	display: flex;
+	border-radius: 0 0 12px 12px;
+	overflow: hidden;
+	border: 2px solid #333;
+	border-top: none;
+}
+.control-btn {
+	flex: 1;
+	border: none;
+	background: #1a1a1a;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.1s, transform 0.05s;
+	user-select: none;
+}
+.control-btn:active {
+	background: #2a2a2a;
+	transform: scale(0.98);
+}
+.turn-btn {
+	border-right: 1px solid #333;
+}
+.btn-icon {
+	font-size: 2rem;
+	margin-bottom: 5px;
+}
+.btn-title {
+	font-size: 1.1rem;
+	font-weight: 800;
+}
+.turn-btn .btn-title {
+	color: #bb86fc;
+}
+.climb-btn .btn-title {
+	color: #ff2e63;
+}
+.btn-key {
+	font-size: 0.7rem;
+	color: #666;
+	margin-top: 5px;
+}
+
+/* =========================================
+   6. 모달 팝업창 공통 스타일
+========================================= */
+.modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+.modal-content {
+	background: #222;
+	padding: 30px;
+	border-radius: 15px;
+	border: 2px solid #00e5ff;
+	text-align: center;
+	width: 80%;
+	max-width: 300px;
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+}
+.modal-content p {
+	color: #bbb;
+	margin: 15px 0 25px;
+	line-height: 1.5;
+	font-size: 0.9rem;
+}
+.modal-buttons {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 100%;
+}
+
+.primary-btn,
+.secondary-btn {
+	padding: 12px 0;
+	font-size: 1rem;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	border: none;
+	transition: 0.2s;
+	width: 100%;
+}
+.primary-btn {
+	background: #00e5ff;
+	color: #000;
+}
+.primary-btn:hover {
+	background: #00b8cc;
+	transform: translateY(-2px);
+}
+.secondary-btn {
+	background: #2a2a2a;
+	color: #ccc;
+	border: 1px solid #444;
+}
+.secondary-btn:hover {
+	background: #3a3a3a;
+	color: #fff;
+	border-color: #00e5ff;
+}
+
+.rank-input-area {
+	margin: 15px 0;
+}
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #111;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+}
+.nickname-input:focus {
+	border-color: #00e5ff;
+}</code></pre>
+				</div>
+			</div>
+
+			<!-- ============================== JS 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					⚡ js-pixelclimber.js <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>// ==========================================
+// DB 연동 (Firebase 랭킹 시스템)
+// ==========================================
+import { saveGameScore } from "../../common/firebase-config.js";
+
+// 마우스 우클릭 시 컨텍스트 메뉴 방지 (모바일 터치 최적화)
+window.addEventListener("contextmenu", (e) => e.preventDefault());
+
+// ==========================================
+// 1. 전역 상태 및 DOM 캐싱
+// ==========================================
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const scoreEl = document.getElementById("scoreDisplay");
+const comboEl = document.getElementById("comboDisplay");
+const feverEl = document.getElementById("feverDisplay");
+const gaugeBar = document.getElementById("gaugeBar");
+
+const modal = document.getElementById("gameModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+
+const btnTurn = document.getElementById("btnTurn");
+const btnClimb = document.getElementById("btnClimb");
+
+// ==========================================
+// 2. 픽셀 아트 데이터 (이미지 파일 대체)
+// ==========================================
+// 0: 투명 | 1~6: 하단 colors 객체에 매핑된 색상
+const charArtRight = [
+	[0, 1, 1, 1, 1, 0, 0],
+	[1, 1, 2, 2, 2, 2, 0],
+	[1, 2, 2, 2, 1, 2, 0],
+	[0, 1, 2, 2, 2, 2, 0],
+	[0, 0, 3, 3, 3, 0, 0],
+	[0, 0, 4, 0, 4, 0, 0],
+	[0, 1, 1, 0, 1, 1, 0],
+];
+
+const charArtLeft = [
+	[0, 0, 1, 1, 1, 1, 0],
+	[0, 2, 2, 2, 2, 1, 1],
+	[0, 2, 1, 2, 2, 2, 1],
+	[0, 2, 2, 2, 2, 1, 0],
+	[0, 0, 3, 3, 3, 0, 0],
+	[0, 0, 4, 0, 4, 0, 0],
+	[0, 1, 1, 0, 1, 1, 0],
+];
+
+// 배경용 구름 픽셀 데이터
+const cloudArt = [
+	[0, 0, 1, 1, 0, 0, 0],
+	[0, 1, 1, 1, 1, 0, 0],
+	[1, 1, 1, 1, 1, 1, 0],
+	[0, 1, 1, 1, 1, 1, 1],
+];
+
+// 컬러 팔레트 딕셔너리
+const colors = {
+	1: "#000",      // 테두리
+	2: "#ffccaa",   // 피부톤
+	3: "#00e5ff",   // 상의
+	4: "#ff2e63",   // 신발
+	5: "#444",      // 그림자
+	6: "#fff",      // 피버 타임 발광
+};
+
+const stairWidth = 70;
+const stairHeight = 45;
+
+// ==========================================
+// 3. 게임 상태 변수 세팅
+// ==========================================
+let score = 0;
+let combo = 0;
+let lastStepTime = 0;
+let gauge = 100;
+let isFever = false;
+let feverTimer = 0;
+let gameActive = false;
+let animationId;
+let stairs = [];
+let particles = [];
+let clouds = [];
+
+// 플레이어 물리 엔진 및 카메라 추적 데이터
+let player = { idx: 0, dir: 1, x: 0, y: 0, vY: 0, isFalling: false };
+let camera = { x: 0, y: 0, targetX: 0, targetY: 0 };
+
+// 캔버스 리사이징 처리
+function resizeCanvas() {
+	canvas.width = canvas.parentElement.clientWidth;
+	canvas.height = canvas.parentElement.clientHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+// ==========================================
+// 4. 게임 초기화 및 시작
+// ==========================================
+function initGame() {
+	score = 0;
+	combo = 0;
+	gauge = 100;
+	isFever = false;
+	feverTimer = 0;
+	stairs = [];
+	particles = [];
+	clouds = [];
+	player = { idx: 0, dir: 1, x: 0, y: 0, vY: 0, isFalling: false };
+	camera = { x: 0, y: 0, targetX: 0, targetY: 0 };
+
+	scoreEl.innerText = score;
+	updateCombo(0);
+	feverEl.innerText = "OFF";
+	feverEl.style.color = "#ff2e63";
+
+	// 무한 스크롤 배경용 구름 스폰
+	for (let i = 0; i < 8; i++) {
+		clouds.push({
+			x: Math.random() * canvas.width,
+			y: Math.random() * canvas.height,
+			speed: Math.random() * 0.5 + 0.2,
+			size: Math.floor(Math.random() * 4) + 4,
+		});
+	}
+
+	// 초기 계단 50개 미리 생성
+	stairs.push({ x: 0, y: 0, dir: 1 });
+	for (let i = 0; i < 50; i++) generateNextStair();
+
+	player.x = stairs[0].x;
+	player.y = stairs[0].y;
+	camera.x = player.x;
+	camera.y = player.y - canvas.height * 0.3;
+
+	lastStepTime = Date.now();
+	gameActive = true;
+	requestAnimationFrame(update);
+}
+
+// ==========================================
+// 5. 맵(계단) 무한 생성 알고리즘
+// ==========================================
+function generateNextStair() {
+	const last = stairs[stairs.length - 1];
+	let nextDir = Math.random() > 0.5 ? last.dir : -last.dir;
+
+	// 계단이 캔버스 밖으로 나가지 않도록 방향 강제 보정
+	if (last.x > 180) nextDir = -1;
+	if (last.x < -180) nextDir = 1;
+
+	stairs.push({
+		x: last.x + nextDir * stairWidth,
+		y: last.y - stairHeight,
+		dir: nextDir,
+	});
+}
+
+// ==========================================
+// 6. 조작 입력 처리 및 성공/실패 판별
+// ==========================================
+function handleAction(action) {
+	if (!gameActive || player.isFalling) return;
+
+	lastStepTime = Date.now();
+	const nextStair = stairs[player.idx + 1];
+
+	// 방향키 조작에 따른 유저의 시도 방향 계산
+	let attemptDir = action === "climb" ? player.dir : -player.dir;
+
+	if (action === "turn") player.dir = attemptDir;
+
+	// 생성된 계단의 방향과 일치하면 성공, 다르면 추락
+	if (attemptDir === nextStair.dir) {
+		successStep();
+	} else {
+		failFall(attemptDir);
+	}
+}
+
+// ==========================================
+// 7. 시스템 로직 (성공, 실패, 피버타임)
+// ==========================================
+function successStep() {
+	player.idx++;
+	player.x = stairs[player.idx].x;
+	player.y = stairs[player.idx].y;
+
+	score += isFever ? 2 : 1;
+	scoreEl.innerText = score;
+
+	combo++;
+	updateCombo(combo);
+
+	// 게이지 회복 로직
+	gauge = Math.min(100, gauge + (isFever ? 10 : 5));
+
+	// 발자국 파티클 효과
+	createParticles(player.x, player.y, 5);
+
+	// 🔥 피버 타임 (Fever Time) 발동 조건 (50콤보 달성 시)
+	if (combo > 0 && combo % 50 === 0 && !isFever) {
+		isFever = true;
+		feverTimer = 300;
+		feverEl.innerText = "ON!";
+		feverEl.style.color = "#00ff88";
+		createParticles(player.x, player.y, 30);
+	}
+
+	generateNextStair();
+}
+
+function failFall(fallDir) {
+	player.isFalling = true;
+	player.vY = -12; // 위로 살짝 튀어 올랐다가 추락하는 물리 효과
+	player.x += fallDir * 35;
+	setTimeout(gameOver, 1000);
+}
+
+function updateCombo(c) {
+	if (c > 1) {
+		comboEl.innerText = `${c} COMBO!`;
+		comboEl.classList.add("active");
+		setTimeout(() => comboEl.classList.remove("active"), 100);
+	} else {
+		comboEl.innerText = "";
+	}
+}
+
+// ==========================================
+// 8. 파티클 및 픽셀 렌더링 클래스
+// ==========================================
+class Particle {
+	constructor(x, y, isFeverEffect) {
+		this.x = x;
+		this.y = y;
+		this.vx = (Math.random() - 0.5) * (isFeverEffect ? 15 : 8);
+		this.vy = (Math.random() - 0.5) * (isFeverEffect ? 15 : 8);
+		this.life = 1;
+		this.color = isFeverEffect
+			? ["#bb86fc", "#00e5ff", "#ff2e63", "#ffeb3b"][Math.floor(Math.random() * 4)]
+			: ["#ffffff", "#dddddd", "#aaaaaa"][Math.floor(Math.random() * 3)];
+	}
+	update() {
+		this.x += this.vx;
+		this.y += this.vy;
+		this.life -= 0.02;
+	}
+	draw(ctx) {
+		ctx.globalAlpha = Math.max(0, this.life);
+		ctx.fillStyle = this.color;
+		ctx.fillRect(this.x, this.y, 6, 6);
+		ctx.globalAlpha = 1;
+	}
+}
+
+function createParticles(x, y, count) {
+	for (let i = 0; i < count; i++) {
+		particles.push(new Particle(x, y, isFever));
+	}
+}
+
+function drawGenericPixelArt(art, x, y, size, color) {
+	ctx.fillStyle = color;
+	for (let r = 0; r < art.length; r++) {
+		for (let c = 0; c < art[r].length; c++) {
+			if (art[r][c] === 1) {
+				ctx.fillRect(x + c * size, y + r * size, size, size);
+			}
+		}
+	}
+}
+
+// ==========================================
+// 9. 매 프레임 그리기 (Update Loop)
+// ==========================================
+function update() {
+	if (!gameActive && !player.isFalling) return;
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	// 게이지 관리 및 게임 오버 판정
+	if (gameActive && !player.isFalling) {
+		if (Date.now() - lastStepTime > 1000) {
+			combo = 0;
+			updateCombo(0);
+		}
+
+		if (!isFever) {
+			const dropRate = 0.1 + score * 0.002;
+			gauge -= dropRate;
+		}
+
+		gaugeBar.style.width = `${Math.max(0, gauge)}%`;
+
+		// 피버/일반 상태에 따른 게이지바 그라데이션 변화
+		if (isFever) gaugeBar.style.background = "linear-gradient(90deg, #ffeb3b, #ff2e63)";
+		else if (gauge > 50) gaugeBar.style.background = "linear-gradient(90deg, #00ff88, #00e5ff)";
+		else if (gauge > 20) gaugeBar.style.background = "linear-gradient(90deg, #ffeb3b, #ff9800)";
+		else gaugeBar.style.background = "linear-gradient(90deg, #ff2e63, #ff0000)";
+
+		// 타임아웃 추락
+		if (gauge <= 0 && !isFever) {
+			player.isFalling = true;
+			player.vY = 0;
+			setTimeout(gameOver, 500);
+		}
+
+		if (isFever) {
+			feverTimer--;
+			if (feverTimer <= 0) {
+				isFever = false;
+				feverEl.innerText = "OFF";
+				feverEl.style.color = "#ff2e63";
+			}
+		}
+	}
+
+	// 부드러운 카메라 추적 (Lerp 알고리즘)
+	camera.targetX = player.x * 0.5;
+	camera.targetY = player.y - canvas.height * 0.25;
+
+	camera.x += (camera.targetX - camera.x) * 0.15;
+	camera.y += (camera.targetY - camera.y) * 0.15;
+
+	// 구름 그리기 (Parallax 스크롤 적용)
+	clouds.forEach((c) => {
+		c.x -= c.speed;
+		if (c.x < -100) c.x = canvas.width + 100;
+
+		let parallaxY = (c.y - camera.y * 0.1) % (canvas.height + 200);
+		if (parallaxY < -100) parallaxY += canvas.height + 200;
+		if (parallaxY > canvas.height + 100) parallaxY -= canvas.height + 200;
+
+		drawGenericPixelArt(cloudArt, c.x, parallaxY, c.size, "rgba(255, 255, 255, 0.05)");
+	});
+
+	ctx.save();
+	ctx.translate(canvas.width / 2 - camera.x, canvas.height / 2 - camera.y);
+
+	// 피버 타임 화면 점멸 효과
+	if (isFever && Math.random() > 0.5) {
+		ctx.fillStyle = "rgba(187, 134, 252, 0.1)";
+		ctx.fillRect(camera.x - canvas.width, camera.y - canvas.height, canvas.width * 2, canvas.height * 2);
+	}
+
+	// 렌더링 최적화: 화면 안의 계단만 그리기 (Culling)
+	stairs.forEach((s, i) => {
+		if (s.y > camera.y + canvas.height / 2 + 100) return;
+		if (s.y < camera.y - canvas.height / 2 - 100) return;
+
+		// 지나온 계단은 어둡게 처리
+		ctx.fillStyle = i === player.idx ? "#00e5ff" : i < player.idx ? "#222" : "#444";
+		ctx.fillRect(s.x - stairWidth / 2, s.y, stairWidth, 15);
+		ctx.fillStyle = i === player.idx ? "#008b99" : i < player.idx ? "#111" : "#2a2a2a";
+		ctx.fillRect(s.x - stairWidth / 2, s.y + 15, stairWidth, stairHeight - 15);
+	});
+
+	particles.forEach((p, i) => {
+		p.update();
+		p.draw(ctx);
+		if (p.life <= 0) particles.splice(i, 1);
+	});
+
+	if (player.isFalling) {
+		player.y += player.vY;
+		player.vY += 0.8;
+	}
+
+	drawPixelChar(player.x, player.y, player.dir, isFever);
+
+	ctx.restore();
+
+	if (gameActive || player.isFalling) {
+		animationId = requestAnimationFrame(update);
+	}
+}
+
+// 플레이어 픽셀 아트 렌더링 함수
+function drawPixelChar(x, y, dir, fever) {
+	const pixelSize = 5;
+	const art = dir === 1 ? charArtRight : charArtLeft;
+	const width = art[0].length * pixelSize;
+	const height = art.length * pixelSize;
+
+	ctx.save();
+	ctx.translate(x, y - height);
+
+	for (let row = 0; row < art.length; row++) {
+		for (let col = 0; col < art[row].length; col++) {
+			const colorCode = art[row][col];
+			if (colorCode !== 0) {
+				if (fever && colorCode === 6) {
+					ctx.shadowBlur = 10;
+					ctx.shadowColor = "#fff";
+				}
+				ctx.fillStyle = colors[colorCode];
+				ctx.fillRect(col * pixelSize - width / 2, row * pixelSize, pixelSize, pixelSize);
+			}
+		}
+	}
+	ctx.restore();
+}
+
+// ==========================================
+// 10. UI 모달 및 키 바인딩
+// ==========================================
+function showStartModal() {
+	modalTitle.innerText = "PIXEL CLIMBER";
+	modalDesc.innerHTML = "버튼 두 개로 무한히 계단을 오르세요!<br>빠르게 올라가면 피버 타임이 발동합니다.";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+	};
+	modal.style.display = "flex";
+}
+
+function gameOver() {
+	gameActive = false;
+	cancelAnimationFrame(animationId);
+
+	modalTitle.innerText = "GAME OVER";
+	modalDesc.innerHTML = `발을 헛디뎠습니다!<br>최종 기록: <strong style="color:#00e5ff; font-size:1.2rem;">${score}</strong> 계단`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+	restartBtn.innerText = "처음으로";
+
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2) return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 등록 중...";
+
+		const result = await saveGameScore("pixelclimber", nickname, score);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	restartBtn.onclick = () => showStartModal();
+
+	modal.style.display = "flex";
+}
+
+// 모바일 및 PC 클릭 대응 하단 버튼 바인딩
+const bindControl = (elem, action) => {
+	if (!elem) return;
+	elem.addEventListener("mousedown", (e) => {
+		e.preventDefault();
+		handleAction(action);
+	});
+	elem.addEventListener("touchstart", (e) => {
+		e.preventDefault();
+		handleAction(action);
+	}, { passive: false });
+};
+
+bindControl(btnTurn, "turn");
+bindControl(btnClimb, "climb");
+
+// 키보드 입력 바인딩 (Z, X 및 방향키)
+window.addEventListener("keydown", (e) => {
+	if (!gameActive) return;
+	if (e.key === "ArrowLeft" || e.key === "z" || e.key === "Z") handleAction("turn");
+	if (e.key === "ArrowRight" || e.key === "x" || e.key === "X") handleAction("climb");
+});
+
+showStartModal();</code></pre>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// 아코디언 토글 함수
+			function toggleAccordion(header) {
+				const item = header.parentElement;
+				item.classList.toggle("active");
+				const arrow = header.querySelector("span");
+				arrow.innerText = item.classList.contains("active") ? "▲" : "▼";
+			}
+
+			// 클립보드 복사 함수
+			function copyCode(btn) {
+				const code = btn.nextElementSibling.innerText;
+				navigator.clipboard.writeText(code).then(() => {
+					const originalText = btn.innerText;
+					btn.innerText = "COPIED!";
+					btn.style.background = "#00e5ff";
+					setTimeout(() => {
+						btn.innerText = originalText;
+						btn.style.background = "#334155";
+					}, 1500);
+				});
+			}
+		</script>
+	</body>
+</html>
