@@ -72,7 +72,7 @@ const gameData = [
 		description: "장애물을 피해서 달리는 게임",
 		emoji: "🏃‍♂️",
 		path: "games/js-pixelrunner/index.html",
-		category: "escape",
+		category: "racing",
 	},
 	{
 		id: "puzzle",
@@ -96,7 +96,7 @@ const gameData = [
 		description: "데이터를 먹어치우는 게임",
 		emoji: "👻",
 		path: "games/js-pixeleater/index.html",
-		category: "escape",
+		category: "arcade",
 	},
 	{
 		id: "pixelmatch",
@@ -137,6 +137,14 @@ const gameData = [
 		emoji: "🧗‍♀️",
 		path: "games/js-pixelclimber/index.html",
 		category: "arcade",
+	},
+	{
+		id: "retroracing",
+		title: "레트로 레이싱",
+		description: "앞차를 추월하는 고전 레이싱 게임",
+		emoji: "🚗",
+		path: "games/js-retroracing/index.html",
+		category: "racing",
 	},
 ];
 

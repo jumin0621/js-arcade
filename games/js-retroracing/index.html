@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>JS-Arcade | 로드 파이터</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="game-wrapper">
+			<div class="hud">
+				<div class="hud-box">
+					<div class="hud-label">SCORE</div>
+					<div id="scoreDisplay" class="hud-value">0</div>
+				</div>
+				<div
+					class="hud-box"
+					style="border-color: #00e5ff; box-shadow: 0 4px 0 #0096a6"
+				>
+					<div class="hud-label" style="color: #00e5ff">SPEED</div>
+					<div id="speedDisplay" class="hud-value">0</div>
+				</div>
+			</div>
+
+			<canvas id="gameCanvas"></canvas>
+
+			<!-- 모바일 전용 미니멀 화살표 컨트롤 -->
+			<div class="controls">
+				<div class="btn" id="btnLeft">◀</div>
+				<div class="btn" id="btnRight">▶</div>
+			</div>
+		</div>
+
+		<!-- 시작/종료 모달 -->
+		<div id="gameModal" class="modal-overlay">
+			<div class="modal-content">
+				<h2 id="modalTitle">RETRO RACING</h2>
+				<p id="modalDesc">
+					앞차를 추월할 때마다
+					<strong style="color: #ffeb3b">10점</strong>!<br /><span
+						style="color: #d500f9; font-weight: bold"
+						>보라색 차</span
+					>는 갑자기 끼어드니<br />항상 주의하세요.
+				</p>
+
+				<!-- 랭킹 등록 영역 추가 -->
+				<div id="rankInputArea" class="rank-input-area" style="display: none">
+					<input
+						type="text"
+						id="nicknameInput"
+						class="nickname-input"
+						placeholder="닉네임 (2~8자)"
+						maxlength="8"
+					/>
+				</div>
+
+				<div class="modal-buttons">
+					<button id="startBtn" class="primary-btn">START ENGINE</button>
+					<button id="restartBtn" class="secondary-btn" style="display: none">
+						처음으로
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script type="module" src="js-retroracing.js"></script>
+	</body>
+</html>
