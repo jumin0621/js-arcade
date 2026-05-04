@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Source Code | 브릭 마스터</title>
+		<style>
+			:root {
+				--bg-color: #0f172a;
+				--card-bg: #1e293b;
+				--accent-color: #00e5ff;
+				--text-main: #f8fafc;
+				--code-bg: #000000;
+			}
+
+			body {
+				background-color: var(--bg-color);
+				color: var(--text-main);
+				font-family: "Pretendard", sans-serif;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.container {
+				max-width: 900px;
+				margin: 0 auto;
+			}
+
+			.back-link {
+				text-decoration: none;
+				color: var(--accent-color);
+				font-weight: bold;
+				display: inline-block;
+				margin-bottom: 20px;
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 30px;
+			}
+
+			/* 아코디언 스타일 */
+			.accordion-item {
+				background: var(--card-bg);
+				border-radius: 12px;
+				margin-bottom: 15px;
+				border: 1px solid #334155;
+				overflow: hidden;
+			}
+
+			.accordion-header {
+				padding: 18px 24px;
+				cursor: pointer;
+				font-weight: bold;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				user-select: none;
+			}
+
+			.accordion-header:hover {
+				background: #243147;
+			}
+
+			.accordion-content {
+				display: none;
+				background: var(--code-bg);
+				padding: 0;
+				border-top: 1px solid #334155;
+				position: relative;
+			}
+
+			/* 코드 복사 버튼 */
+			.copy-btn {
+				position: absolute;
+				top: 10px;
+				right: 15px;
+				background: #334155;
+				color: #fff;
+				border: none;
+				padding: 5px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 0.8rem;
+			}
+			.copy-btn:hover {
+				background: var(--accent-color);
+				color: #000;
+			}
+
+			pre {
+				margin: 0;
+				padding: 30px 20px 20px;
+				overflow-x: auto;
+				color: #d1d5db;
+				font-family: "Consolas", "Monaco", monospace;
+				line-height: 1.5;
+				font-size: 0.95rem;
+			}
+
+			/* 활성화 상태 */
+			.accordion-item.active .accordion-content {
+				display: block;
+			}
+			.accordion-item.active .accordion-header {
+				border-bottom: 1px solid var(--accent-color);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<a href="index.html" class="back-link">← 라운지 메인으로 돌아가기</a>
+			<h1>🎮 브릭 마스터 (Source Code)</h1>
+
+			<!-- ============================== HTML 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					📄 index.html <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>&lt;!doctype html&gt;
+&lt;html lang="ko"&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8" /&gt;
+		&lt;meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/&gt;
+		&lt;title&gt;JS-Arcade | 브릭 마스터&lt;/title&gt;
+		&lt;link rel="stylesheet" href="style.css" /&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;div class="game-wrapper"&gt;
+			&lt;!-- [상단 UI] 스테이지 및 스코어 표시 --&gt;
+			&lt;div class="game-header"&gt;
+				&lt;div class="stage-info"&gt;STAGE &lt;span id="stage"&gt;1&lt;/span&gt;&lt;/div&gt;
+				&lt;div class="score-container"&gt;SCORE: &lt;span id="score"&gt;0&lt;/span&gt;&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [메인 캔버스] 벽돌깨기 렌더링 영역 --&gt;
+			&lt;canvas id="brickGame" width="480" height="400"&gt;&lt;/canvas&gt;
+
+			&lt;!-- [모바일 컨트롤러] 터치 환경 대응 좌우 버튼 --&gt;
+			&lt;div class="mobile-controls"&gt;
+				&lt;button id="leftBtn"&gt;◀&lt;/button&gt;
+				&lt;button id="rightBtn"&gt;▶&lt;/button&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [데스크탑 가이드] --&gt;
+			&lt;div class="controls-guide"&gt;
+				&lt;p&gt;방향키(← →)로 조작하세요&lt;/p&gt;
+			&lt;/div&gt;
+
+			&lt;!-- [공통 모달 UI] 게임 시작 / 오버 / 클리어 창 --&gt;
+			&lt;div id="gameModal" class="modal-overlay"&gt;
+				&lt;div class="modal-content"&gt;
+					&lt;h2 id="modalTitle"&gt;BRICK MASTER&lt;/h2&gt;
+					&lt;p id="modalDesc"&gt;좌우 방향키를 이용해 모든 벽돌을 제거하세요!&lt;/p&gt;
+
+					&lt;!-- 파이어베이스 랭킹 연동용 닉네임 입력란 --&gt;
+					&lt;div id="rankInputArea" class="rank-input-area"&gt;
+						&lt;input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/&gt;
+					&lt;/div&gt;
+
+					&lt;div class="modal-buttons"&gt;
+						&lt;button id="startBtn" class="primary-btn"&gt;게임 시작&lt;/button&gt;
+						&lt;button id="restartBtn" class="secondary-btn" style="display: none"&gt;
+							다시 시작
+						&lt;/button&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;script type="module" src="js-brickmaster.js"&gt;&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+				</div>
+			</div>
+
+			<!-- ============================== CSS 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					🎨 style.css <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>/* =========================================
+   1. 기본 레이아웃 및 폰트
+========================================= */
+body {
+	background-color: #121212;
+	color: #fff;
+	font-family: "Pretendard", sans-serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+}
+
+.game-wrapper {
+	width: 100vw;
+	max-width: 480px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 0 15px;
+	box-sizing: border-box;
+}
+
+/* =========================================
+   2. 상단 헤더 UI (스테이지, 스코어)
+========================================= */
+.game-header {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	margin-bottom: 15px;
+	padding: 0 5px;
+}
+
+.stage-info {
+	color: #00e5ff;
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+.score-container {
+	color: #bb86fc;
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+
+/* =========================================
+   3. 메인 캔버스 영역
+========================================= */
+canvas {
+	width: 100% !important;
+	height: auto !important;
+	aspect-ratio: 480 / 400; /* 반응형 비율 유지 */
+	background-color: #1e1e1e;
+	border: 3px solid #333;
+	border-radius: 12px;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+}
+
+/* =========================================
+   4. 컨트롤러 및 가이드
+========================================= */
+.controls-guide {
+	margin-top: 15px;
+	color: #666;
+	font-size: 0.9rem;
+}
+
+.mobile-controls {
+	display: none; /* 데스크탑에서는 숨김 */
+	margin-top: 20px;
+	gap: 30px;
+	justify-content: center;
+}
+
+.mobile-controls button {
+	width: 80px;
+	height: 60px;
+	background: #2c2c2c;
+	border: 2px solid #00e5ff;
+	border-radius: 15px;
+	color: #00e5ff;
+	font-size: 1.5rem;
+}
+
+/* =========================================
+   5. 모달 및 버튼 공통 스타일
+========================================= */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+}
+.modal-content {
+	background: #252525;
+	padding: 30px;
+	border-radius: 20px;
+	text-align: center;
+	border: 2px solid #00e5ff;
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+.modal-content p {
+	color: #bbb;
+	line-height: 1.5;
+}
+
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 20px;
+}
+
+.primary-btn {
+	background: #00e5ff;
+	color: #000;
+	border: none;
+	padding: 12px 30px;
+	font-size: 1.1rem;
+	font-weight: bold;
+	border-radius: 8px;
+	cursor: pointer;
+}
+.primary-btn:hover {
+	transform: scale(1.05);
+	background: #00b2cc;
+	box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+.primary-btn:active {
+	transform: scale(0.98);
+}
+
+.secondary-btn {
+	padding: 12px 24px;
+	background: #333;
+	color: #fff;
+	border: 1px solid #444;
+	border-radius: 8px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 1rem;
+}
+.secondary-btn:hover {
+	background: #444;
+	border-color: #666;
+}
+
+/* 랭킹 닉네임 입력창 */
+.rank-input-area {
+	display: none;
+	margin: 15px 0;
+}
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+.nickname-input:focus {
+	border-color: #00e5ff;
+}
+
+/* 모바일 뷰포트 대응 */
+@media (max-width: 768px) {
+	.mobile-controls {
+		display: flex;
+	}
+	.controls-guide {
+		display: none;
+	}
+	canvas {
+		width: 95vw;
+		height: auto;
+	}
+}</code></pre>
+				</div>
+			</div>
+
+			<!-- ============================== JS 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					⚡ js-brickmaster.js <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>// ==========================================
+// DB 연동 및 캔버스 초기화
+// ==========================================
+// ✅ 랭킹 저장 함수 임포트 (Firebase 연동)
+import { saveGameScore } from "../../common/firebase-config.js";
+
+const canvas = document.getElementById("brickGame");
+const ctx = canvas.getContext("2d");
+
+// ==========================================
+// 1. 전역 상태 및 물리 설정 관리
+// ==========================================
+let score = 0;
+let currentStage = 0;
+let isGameRunning = false;
+let animationId = null;
+
+// 패들(유저 조작바) 및 공 초기 설정
+const paddleHeight = 10;
+let paddleWidth = 90;
+let paddleX = (canvas.width - paddleWidth) / 2;
+let balls = [];
+
+// 맵 렌더링용 다차원 배열 데이터 (스테이지별 난이도 조정)
+const stages = [
+	{ rows: 3, cols: 6, color: "#00e5ff" }, // Stage 1
+	{ rows: 4, cols: 7, color: "#bb86fc" }, // Stage 2
+	{ rows: 5, cols: 8, color: "#ff007b" }, // Stage 3
+];
+
+let bricks = [];
+let rightPressed = false;
+let leftPressed = false;
+
+// DOM 캐싱 (모달 및 UI 제어용)
+const modal = document.getElementById("gameModal");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+
+// ==========================================
+// 2. 게임 초기화 및 스테이지 데이터 리셋
+// ==========================================
+function initGame() {
+	score = 0;
+	currentStage = 0;
+	updateUI();
+	resetStageData();
+}
+
+function updateUI() {
+	document.getElementById("score").innerText = score;
+	document.getElementById("stage").innerText = currentStage + 1;
+}
+
+// 다음 스테이지 진입 시 공과 벽돌 배열을 재구성합니다.
+function resetStageData() {
+	paddleX = (canvas.width - paddleWidth) / 2;
+	
+	// 다중 공 처리를 위해 공을 객체 배열로 관리합니다.
+	balls = [
+		{ x: canvas.width / 2, y: canvas.height - 30, dx: 3, dy: -3, radius: 7 },
+	];
+
+	const s = stages[currentStage];
+	bricks = [];
+	// [핵심] 이중 반복문을 통해 벽돌의 행렬(2D Array) 데이터 구조를 생성합니다.
+	for (let c = 0; c < s.cols; c++) {
+		bricks[c] = [];
+		for (let r = 0; r < s.rows; r++) {
+			bricks[c][r] = { x: 0, y: 0, status: 1 }; // status 1: 생존, 0: 파괴됨
+		}
+	}
+}
+
+// ==========================================
+// 3. 모달 제어 로직 (게임의 흐름 제어)
+// ==========================================
+
+// [상태 1] 게임 최초 시작
+function showStartModal() {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = "BRICK MASTER";
+	document.getElementById("modalDesc").innerText =
+		"좌우 방향키를 이용해 모든 벽돌을 제거하세요!";
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+		isGameRunning = true;
+		if (animationId) cancelAnimationFrame(animationId);
+		draw(); // 렌더링 루프 시작
+	};
+	modal.style.display = "flex";
+}
+
+// [상태 2] 스테이지 클리어
+function showStageClearModal() {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = "STAGE CLEAR!";
+	document.getElementById("modalDesc").innerText =
+		`다음은 STAGE ${currentStage + 1}입니다.`;
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+
+	startBtn.innerText = "다음 단계로";
+	startBtn.disabled = false;
+	startBtn.onclick = () => {
+		modal.style.display = "none";
+		resetStageData();
+		isGameRunning = true;
+		if (animationId) cancelAnimationFrame(animationId);
+		draw();
+	};
+	modal.style.display = "flex";
+}
+
+// [상태 3] 게임 오버 또는 올 클리어 (Firebase 랭킹 등록 연동)
+function showGameOverModal(finalScore, isAllClear = false) {
+	isGameRunning = false;
+	document.getElementById("modalTitle").innerText = isAllClear
+		? "ALL CLEAR!"
+		: "GAME OVER";
+	document.getElementById("modalDesc").innerText = isAllClear
+		? `축하합니다! 벽돌을 모두 부쉈습니다!\n최종 점수: ${finalScore}점`
+		: `아쉽네요! 최종 점수: ${finalScore}점`;
+
+	rankInputArea.style.display = "block";
+	restartBtn.style.display = "block";
+	nicknameInput.value = "";
+
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// Firebase 데이터베이스에 스코어 기록
+	startBtn.onclick = async () => {
+		const nickname = nicknameInput.value.trim();
+		if (!nickname || nickname.length < 2)
+			return alert("닉네임을 2자 이상 입력해주세요!");
+
+		startBtn.disabled = true;
+		startBtn.innerText = "데이터 확인 중...";
+
+		const result = await saveGameScore("brickmaster", nickname, finalScore);
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal();
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+
+	restartBtn.onclick = () => {
+		modal.style.display = "none";
+		initGame();
+		isGameRunning = true;
+		if (animationId) cancelAnimationFrame(animationId);
+		draw();
+	};
+
+	modal.style.display = "flex";
+}
+
+// ==========================================
+// 4. 입력 제어 (키보드 및 모바일 터치)
+// ==========================================
+document.addEventListener("keydown", (e) => {
+	if (e.key == "Right" || e.key == "ArrowRight") rightPressed = true;
+	else if (e.key == "Left" || e.key == "ArrowLeft") leftPressed = true;
+});
+document.addEventListener("keyup", (e) => {
+	if (e.key == "Right" || e.key == "ArrowRight") rightPressed = false;
+	else if (e.key == "Left" || e.key == "ArrowLeft") leftPressed = false;
+});
+
+const leftBtn = document.getElementById("leftBtn");
+const rightBtn = document.getElementById("rightBtn");
+leftBtn.onpointerdown = () => (leftPressed = true);
+leftBtn.onpointerup = () => (leftPressed = false);
+leftBtn.onpointerleave = () => (leftPressed = false);
+rightBtn.onpointerdown = () => (rightPressed = true);
+rightBtn.onpointerup = () => (rightPressed = false);
+rightBtn.onpointerleave = () => (rightPressed = false);
+
+// ==========================================
+// 5. 핵심 렌더링 및 물리 엔진 (Update Loop)
+// ==========================================
+function draw() {
+	if (!isGameRunning) return;
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	const s = stages[currentStage];
+	const bW = canvas.width / s.cols - 10; // 캔버스 너비에 비례한 벽돌 크기 연산
+	const bH = 20;
+
+	// [1] 벽돌 렌더링
+	bricks.forEach((col, c) => {
+		col.forEach((b, r) => {
+			if (b.status === 1) {
+				let bX = c * (bW + 10) + 5;
+				let bY = r * (bH + 10) + 30;
+				b.x = bX;
+				b.y = bY;
+				ctx.fillStyle = s.color;
+				ctx.beginPath();
+				ctx.roundRect(bX, bY, bW, bH, 5); // 모서리가 둥근 벽돌
+				ctx.fill();
+			}
+		});
+	});
+
+	// [2] 공 물리 연산 (다중 공 처리)
+	for (let index = balls.length - 1; index >= 0; index--) {
+		let ball = balls[index];
+
+		// 공 그리기
+		ctx.beginPath();
+		ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+		ctx.fillStyle = "#fff";
+		ctx.fill();
+		ctx.closePath();
+
+		// 위치 업데이트
+		ball.x += ball.dx;
+		ball.y += ball.dy;
+
+		// 벽면 충돌 처리 (좌/우/상단 튕기기)
+		if (
+			ball.x + ball.dx > canvas.width - ball.radius ||
+			ball.x + ball.dx < ball.radius
+		)
+			ball.dx = -ball.dx;
+		if (ball.y + ball.dy < ball.radius) ball.dy = -ball.dy;
+
+		// 하단 충돌 처리 (패들 방어 or 추락)
+		if (ball.y + ball.dy > canvas.height - ball.radius - paddleHeight) {
+			if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+				// 패들에 맞고 튕겨나감
+				ball.dy = -ball.dy;
+				
+				// 🔥 [핵심 로직] 다중 공 증식 (Multi-ball)
+				// 패들에 맞을 때마다 10% 확률로 최대 3개까지 공이 복제됩니다.
+				if (Math.random() < 0.1 && balls.length < 3) duplicateBall(ball);
+			} else if (ball.y + ball.dy > canvas.height - ball.radius) {
+				// 패들을 놓쳐 바닥으로 추락
+				balls.splice(index, 1);
+
+				// 모든 공이 떨어지면 게임 오버
+				if (balls.length === 0) {
+					showGameOverModal(score, false);
+					return;
+				}
+			}
+		}
+
+		// 🔥 [핵심 로직] AABB(Axis-Aligned Bounding Box) 충돌 알고리즘
+		// 공과 2D 배열 상의 벽돌 간의 교차 판정을 수행합니다.
+		bricks.forEach((col) =>
+			col.forEach((b) => {
+				if (
+					b.status === 1 && // 살아있는 벽돌이고,
+					ball.x > b.x && ball.x < b.x + bW && // X축이 교차하며,
+					ball.y > b.y && ball.y < b.y + bH    // Y축이 교차하면 타격!
+				) {
+					ball.dy = -ball.dy; // 공 반사
+					b.status = 0;       // 벽돌 파괴
+					score += 10;
+					document.getElementById("score").innerText = score;
+					checkStageClear();
+				}
+			}),
+		);
+	}
+
+	// [3] 패들 렌더링 및 조작 처리
+	ctx.fillStyle = "#00e5ff";
+	ctx.fillRect(
+		paddleX,
+		canvas.height - paddleHeight,
+		paddleWidth,
+		paddleHeight,
+	);
+
+	if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 7;
+	else if (leftPressed && paddleX > 0) paddleX -= 7;
+
+	// 프레임 루프 지속
+	animationId = requestAnimationFrame(draw);
+}
+
+// ==========================================
+// 6. 이벤트 함수 (공 복제, 스테이지 클리어)
+// ==========================================
+
+// 타격된 기존 공의 물리량을 복제하여 반대 방향(dx)으로 튀어나가게 합니다.
+function duplicateBall(p) {
+	balls.push({ x: p.x, y: p.y, dx: -p.dx, dy: p.dy, radius: p.radius });
+}
+
+// 모든 배열의 벽돌 상태(status)가 0인지 검사합니다.
+function checkStageClear() {
+	if (bricks.every((col) => col.every((b) => b.status === 0))) {
+		currentStage++;
+		if (currentStage < stages.length) {
+			updateUI();
+			showStageClearModal(); // 다음 스테이지로 진행
+		} else {
+			showGameOverModal(score, true); // 모든 스테이지 클리어
+		}
+	}
+}
+
+// 최초 로드 시 실행점
+initGame();
+showStartModal();</code></pre>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// 아코디언 토글 함수
+			function toggleAccordion(header) {
+				const item = header.parentElement;
+				item.classList.toggle("active");
+				const arrow = header.querySelector("span");
+				arrow.innerText = item.classList.contains("active") ? "▲" : "▼";
+			}
+
+			// 클립보드 복사 함수
+			function copyCode(btn) {
+				const code = btn.nextElementSibling.innerText;
+				navigator.clipboard.writeText(code).then(() => {
+					const originalText = btn.innerText;
+					btn.innerText = "COPIED!";
+					btn.style.background = "#00e5ff";
+					setTimeout(() => {
+						btn.innerText = originalText;
+						btn.style.background = "#334155";
+					}, 1500);
+				});
+			}
+		</script>
+	</body>
+</html>
