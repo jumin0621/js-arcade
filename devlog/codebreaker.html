@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>코드브레이커(Code Breaker) 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트로 구현한 클래식 아케이드 슈팅 게임 '코드브레이커' 개발일지. 픽셀 아트 렌더링과 파티클 시스템 구현 과정을 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="코드브레이커 개발일지: 레트로 아케이드 슈팅으로 구현한 디버깅 액션"
+		/>
+		<meta
+			property="og:description"
+			content="에러 코드에게 침투 당한 시스템! 픽셀 아트와 파티클 효과로 쏘고 부수는 아케이드 게임을 개발하는 원리를 알아봅니다."
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/codebreaker.html"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "코드브레이커 개발일지: 레트로 아케이드 슈팅으로 구현한 디버깅 액션",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-05-05",
+				"articleSection": "Game Development",
+				"keywords": "Javascript Game, Invader, Retro Arcade, Pixel Art, Particle System"
+			}
+		</script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+
+		<style>
+			/* 스도쿠 일지 스타일 베이스 적용 */
+			body {
+				line-height: 1.7;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #eee;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #2c3e50;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #bb86fc; /* 코드브레이커 테마 컬러: 네온 퍼플 */
+				margin-top: 40px;
+				border-left: 5px solid #bb86fc;
+				padding-left: 15px;
+			}
+			.code-block {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				overflow-x: auto;
+			}
+			pre {
+				background: #2d3436;
+				color: #dfe6e9;
+				padding: 20px;
+				border-radius: 8px;
+				display: block;
+				overflow-x: auto;
+				white-space: pre;
+				word-wrap: normal;
+				-webkit-overflow-scrolling: touch;
+			}
+			pre::-webkit-scrollbar {
+				height: 4px;
+			}
+			pre::-webkit-scrollbar-thumb {
+				background: #666;
+				border-radius: 10px;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+			}
+
+			.article-footer p {
+				color: #aaa;
+				font-size: 1rem;
+				margin-bottom: 25px;
+				letter-spacing: -0.5px;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px;
+				flex-wrap: wrap;
+			}
+
+			/* 네온 테마 버튼 */
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				background: #bb86fc;
+				color: #000;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				box-shadow: 0 10px 20px rgba(187, 134, 252, 0.2);
+				border: 2px solid transparent;
+			}
+
+			.play-btn:hover {
+				background: #9965f4;
+				transform: translateY(-5px) scale(1.05);
+				box-shadow: 0 15px 30px rgba(187, 134, 252, 0.4);
+				border-color: rgba(255, 255, 255, 0.3);
+			}
+
+			.play-btn:active {
+				transform: translateY(0) scale(0.98);
+			}
+
+			.play-btn.primary {
+				background: #bb86fc;
+				color: #000;
+				box-shadow: 0 8px 15px rgba(187, 134, 252, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #9965f4;
+				transform: translateY(-3px);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #aaa;
+				color: #aaa;
+				box-shadow: none;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #2c3e50;
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-3px);
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Arcade Shooter</strong></p>
+			<h1>코드브레이커(Code Breaker) 개발일지</h1>
+			<p>작성일: <time>2026-05-05</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>👾 프로젝트 개요</h2>
+				<p>
+					'코드브레이커'는 오락실에서 즐기던 클래식 스페이스 인베이더의 감성을
+					웹 브라우저로 옮겨온 아케이드 슈팅 게임입니다. 플레이어는 'JS' 마크가
+					새겨진 기체를 조종하여 다가오는 에러 코드(적)들을 격파해야 합니다.
+					외부 이미지 파일 없이 자바스크립트의 2차원 배열과 Canvas API만을
+					이용하여 레트로 픽셀 아트와 타격감을 구현한 것이 핵심입니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 코드 파편 파티클(Particle) 효과</h2>
+				<p>
+					<strong>문제 상황:</strong> 단순히 적이 사라지는 것만으로는 슈팅 게임
+					특유의 '타격감'이 부족했습니다. 타격감을 살리기 위해 폭발 효과가
+					필요했지만, 이미지 스프라이트를 사용하면 렌더링 리소스가 무거워지고
+					코딩 컨셉과도 어울리지 않았습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong>
+					적을 격파할 때마다 사방으로 흩어지는
+					<strong>텍스트 파티클(Particle) 시스템</strong>을 직접 구현했습니다.
+					폭발 파편으로 <code>"&lt;div&gt;"</code>, <code>"err"</code>,
+					<code>"404"</code>, <code>"=&gt;"</code> 같은 자바스크립트 및 웹 코드
+					텍스트들을 랜덤하게 출력하여 디버깅 액션이라는 게임의 컨셉을
+					살렸습니다. 아래는 그 핵심 로직입니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 폭발 시 흩어지는 코드 파편 파티클 클래스
+const codeFragments = ["&lt;div&gt;", "&lt;/span&gt;", ";", "err", "404", "{}", "=&gt;", "let", "const"];
+
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        // 배열에서 랜덤한 코드 텍스트 조각 선택
+        this.text = codeFragments[Math.floor(Math.random() * codeFragments.length)];
+        this.vx = (Math.random() - 0.5) * 4; // X축 무작위 흩어짐
+        this.vy = (Math.random() - 0.5) * 4; // Y축 무작위 흩어짐
+        this.alpha = 1;
+        this.color = color;
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= 0.02; // 서서히 투명해지며 사라짐
+    }
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.font = "10px monospace";
+        ctx.fillText(this.text, this.x, this.y); // Canvas에 텍스트 렌더링
+        ctx.restore();
+    }
+}</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					배열을 이용해 적(Enemy)과 플레이어(Player)의 픽셀 아트를 직접 도트로
+					찍어내고 렌더링하는 과정이 매우 흥미로웠습니다. 특히 5스테이지마다
+					등장하는 거대한 '보스' 몬스터에 HP 시스템과 그림자(Shadow Blur) 효과를
+					적용하니 긴장감이 한층 더 살아났습니다.
+				</p>
+				<p>
+					Firebase와 연동하여 랭킹 시스템(<code>saveGameScore</code>)까지
+					성공적으로 부착했으며, 20스테이지를 모두 클리어하면 'ALL COMPILED'
+					메시지를 띄우는 것으로 디버깅 게임의 세계관을 완성했습니다. 다음에는
+					적들의 다양한 공격 패턴이나 관통형 무기 아이템을 추가해 볼 계획입니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>에러 코드에게 침투당하기 전에 시스템을 구출하세요!</p>
+				<div class="button-group">
+					<a
+						href="../games/js-invader/"
+						target="_blank"
+						class="play-btn primary"
+					>
+						<span>👾 지금 바로 플레이</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>
