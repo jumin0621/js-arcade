@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>픽셀러너(Pixel Runner) 개발일지 | JS-Arcade</title>
+		<meta
+			name="description"
+			content="자바스크립트로 구현한 무한 러닝 게임 '픽셀러너' 개발일지. 프레임 애니메이션과 동적 장애물 생성 시스템 구현 과정을 다룹니다."
+		/>
+
+		<meta property="og:type" content="article" />
+		<meta
+			property="og:title"
+			content="픽셀러너 개발일지: 캔버스 애니메이션으로 구현한 무한 질주 액션"
+		/>
+		<meta
+			property="og:description"
+			content="픽셀 버그를 피하고 시스템을 정화하라! 점진적 난이도 상승과 무적 모드 구현 원리를 알아봅니다."
+		/>
+		<meta
+			property="og:url"
+			content="https://JS-Arcade.com/devlog/pixelrunner.html"
+		/>
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "TechArticle",
+				"headline": "픽셀러너 개발일지: 캔버스 애니메이션으로 구현한 무한 질주 액션",
+				"author": {
+					"@type": "Person",
+					"name": "imgtocode"
+				},
+				"datePublished": "2026-05-10",
+				"articleSection": "Game Development",
+				"keywords": "Javascript Game, Pixel Art, Infinite Runner, Canvas API, Game Physics"
+			}
+		</script>
+
+		<style>
+			/* 코드브레이커 일지 스타일 계승 */
+			body {
+				line-height: 1.7;
+				color: #e0e0e0;
+				background-color: #121212;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 60px 20px;
+			}
+			header {
+				border-bottom: 2px solid #333;
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+			}
+			header p {
+				color: #888;
+				font-size: 0.9rem;
+			}
+			h1 {
+				font-size: 2.2rem;
+				color: #ffffff;
+				line-height: 1.3;
+			}
+			h2 {
+				color: #00e5ff; /* 픽셀러너 테마 컬러: 네온 시안 */
+				margin-top: 40px;
+				border-left: 5px solid #00e5ff;
+				padding-left: 15px;
+			}
+			p {
+				color: #cccccc;
+			}
+			.code-block {
+				background: #1e1e1e;
+				color: #dcdcdc;
+				padding: 20px;
+				border-radius: 8px;
+				border: 1px solid #333;
+				overflow-x: auto;
+			}
+			pre {
+				margin: 0;
+				white-space: pre;
+				word-wrap: normal;
+			}
+			strong {
+				color: #00e5ff;
+			}
+
+			.article-footer {
+				margin-top: 80px;
+				padding: 30px 0;
+				text-align: center;
+				border-top: 1px dashed #444;
+			}
+
+			.button-group {
+				display: flex;
+				justify-content: center;
+				gap: 15px;
+				flex-wrap: wrap;
+			}
+
+			.play-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				padding: 18px 45px;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 1.2rem;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+			}
+
+			.play-btn.primary {
+				background: #00e5ff;
+				color: #000;
+				box-shadow: 0 10px 20px rgba(0, 229, 255, 0.2);
+			}
+
+			.play-btn.primary:hover {
+				background: #00b8cc;
+				transform: translateY(-5px);
+				box-shadow: 0 15px 30px rgba(0, 229, 255, 0.4);
+			}
+
+			.play-btn.secondary {
+				background: transparent;
+				border: 1px solid #555;
+				color: #888;
+			}
+
+			.play-btn.secondary:hover {
+				border-color: #fff;
+				color: #fff;
+				background: rgba(255, 255, 255, 0.05);
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<p>Category: <strong>Action Runner</strong></p>
+			<h1>픽셀러너(Pixel Runner) 개발일지</h1>
+			<p>작성일: <time>2026-05-10</time> | 작성자: imgtocode</p>
+		</header>
+
+		<main>
+			<section>
+				<h2>🏃 프로젝트 개요</h2>
+				<p>
+					'픽셀러너'는 8비트 레트로 감성을 담은 무한 러닝 게임입니다. 끊임없이
+					생성되는 장애물인 '픽셀 버그'를 피해 달리는 것이 목표입니다. 단순히
+					달리는 것을 넘어, 시간에 따라 게임 속도가 빨라지는
+					<strong>점진적 난이도 시스템</strong>과 획득 시 일정 시간 무적이 되는
+					<strong>파워업 아이템</strong> 로직을 자바스크립트로 구현했습니다.
+				</p>
+			</section>
+
+			<section>
+				<h2>⚠️ 핵심 트러블슈팅: 다이나믹 애니메이션과 다리 움직임 구현</h2>
+				<p>
+					<strong>문제 상황:</strong> 캐릭터가 달리는 느낌을 주기 위해 단순한
+					이동이 아닌 역동적인 움직임이 필요했습니다. 하지만 매 프레임마다 모든
+					픽셀을 다시 그리는 방식은 계산 낭비가 심했고, 다리 움직임의 타이밍을
+					맞추는 것이 까다로웠습니다.
+				</p>
+
+				<p>
+					<strong>해결 방법:</strong>
+					전역 변수인 <code>frameCount</code>를 활용하여
+					<strong>모듈로(%) 연산</strong>을 통해 애니메이션 페이즈를 나눴습니다.
+					특히 캐릭터의 다리 픽셀을 그릴 때 특정 프레임 단계에서 특정 픽셀을
+					생략(return)함으로써, 뛰는 듯한 시각적 효과를 가볍게 구현했습니다.
+				</p>
+				<br />
+				<div class="code-block">
+					<pre><code>// 캐릭터의 달리기 애니메이션 구현 핵심 로직
+playerPixel.forEach((row, ri) => {
+    row.forEach((col, ci) => {
+        if (col) {
+            let drawY = player.y + ri * pSize;
+            
+            // 마지막 행(다리 부분) 처리
+            if (ri === 4) {
+                // 프레임 수에 따라 두 다리가 번갈아가며 생략됨
+                const legPhase = Math.floor(player.animFrame / 6) % 2;
+                if (player.grounded && (
+                    (legPhase === 0 && ci === 1) || 
+                    (legPhase === 1 && ci === 3)
+                )) return; // 해당 다리 픽셀을 그리지 않음
+            }
+            ctx.fillRect(player.x + ci * pSize, drawY, pSize, pSize);
+        }
+    });
+});</code></pre>
+				</div>
+			</section>
+
+			<section>
+				<h2>✨ 결과 및 느낀 점</h2>
+				<p>
+					중력 가속도(<code>gravity</code>)와 점프력(<code>jumpForce</code>)을
+					조절하며 가장 쾌적한 조작감을 찾는 과정이 마치 실제 물리 실험을 하는
+					것 같았습니다. 특히 아이템 획득 시
+					<strong
+						>캐릭터의 크기가 커지며 일정 시간 장애물을 무시하는 무적
+						로직</strong
+					>은 게임의 재미 요소를 한층 끌어올렸습니다.
+				</p>
+				<p>
+					Firebase 랭킹 시스템을 통해 유저들 간의 거리 경쟁을 유도했으며, 배경에
+					구름과 나무 같은 오브젝트를
+					<strong>서로 다른 속도로 스크롤(Parallax Scrolling)</strong>하게
+					배치하여 공간감을 더했습니다. 앞으로는 피버 타임 도입과 캐릭터
+					커스터마이징 기능을 추가해 볼 예정입니다.
+				</p>
+			</section>
+
+			<footer class="article-footer">
+				<p>당신의 순발력은 픽셀의 속도를 따라갈 수 있을까요?</p>
+				<div class="button-group">
+					<a
+						href="../games/js-pixelrunner/"
+						target="_blank"
+						class="play-btn primary"
+					>
+						<span>🏃 지금 바로 질주</span>
+					</a>
+
+					<a href="../index.html" class="play-btn secondary">
+						<span>🕹️ 다른 게임 더 보기</span>
+					</a>
+				</div>
+			</footer>
+		</main>
+	</body>
+</html>
