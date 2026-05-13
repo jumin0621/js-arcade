@@ -1,26 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-<url>
-  <loc>https://js-arcade.com/</loc>
-  <lastmod>2026-04-25T03:31:51+00:00</lastmod>
-</url>
-<url>
-  <loc>https://js-arcade.com/notice/</loc>
-  <lastmod>2026-05-01T02:20:50+00:00</lastmod>
-</url>
-<url>
-  <loc>https://js-arcade.com/devlog/</loc>
-  <lastmod>2026-05-10T04:10:50+00:00</lastmod>
-</url>
-<url>
-  <loc>https://js-arcade.com/game-intro/</loc>
-  <lastmod>2026-05-13T02:40:50+00:00</lastmod>
-</url>
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://js-arcade.com/</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/ranking/</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/notice/</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/devlog/</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-vanilla-snake.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-brickmaster.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-bounce-ball.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-brick-stack.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-bugsweeper.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-sudoku.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-codebreaker.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-pixel-runner.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-slide-puzzle.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-jikso-puzzle.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-pixel-eater.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-pixel-match.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-shield-sur.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-dragon-cur.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-pixel-logic.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-pixel-climber.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
+  <url>
+    <loc>https://js-arcade.com/game-intro/intro-retro-racing.html</loc>
+    <lastmod>2026-05-13</lastmod>
+  </url>
 </urlset>
