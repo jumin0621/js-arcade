@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 바닐라스네이크 플레이 방법, 방향 전환·성장·벽·자기충돌 규칙, 100ms 틱, Firestore 랭킹 등록까지 한 페이지에서 정리합니다."
+		/>
+		<meta property="og:title" content="바닐라스네이크 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="방향키·모바일 패드 조작, 먹이 성장 로직, 게임 오버 조건, 랭킹 등록 방법을 설명합니다."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>바닐라스네이크 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #00e5ff;
+				padding-left: 14px;
+			}
+
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #00e5ff;
+			}
+
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+
+			.cta-secondary:hover {
+				border-color: #00e5ff;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+
+			<h1>바닐라스네이크 (Vanilla Snake)</h1>
+			<p class="intro-meta">아케이드 · 캔버스 2D · 순수 JavaScript</p>
+
+			<p>
+				클래식 스네이크를 캔버스와 배열 기반 좌표로 구현한 게임입니다. 먹이를
+				먹을 때마다 몸이 길어지고, 벽이나 자기 몸에 닿으면 게임이 끝납니다.
+				점수는 먹이를 먹은 횟수와 같습니다.
+			</p>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					<strong>키보드:</strong> 방향키(←↑→↓)로 이동 방향을 바꿉니다. 스페이스와
+					방향키의 기본 스크롤 동작은 막혀 있어, 페이지가 움직이지 않도록
+					처리되어 있습니다.
+				</li>
+				<li>
+					<strong>모바일:</strong> 화면에 있는 방향 버튼은 <code>setDir</code>로
+					같은 규칙이 적용됩니다. 즉시 반대 방향으로는 전환되지 않습니다.
+				</li>
+			</ul>
+
+			<h2>게임 흐름과 규칙</h2>
+			<ul>
+				<li>
+					시작 시 모달에서 안내 후 <strong>게임 시작</strong>을 누르면 루프가
+					돌기 시작합니다. 한 프레임(틱)은 <strong>100ms</strong>
+					(<code>setInterval(draw, 100)</code>) 간격입니다.
+				</li>
+				<li>
+					뱀은 <code>{ x, y }</code> 좌표의 배열로 관리되며, 한 칸 크기는
+					<strong>20px</strong>(<code>box = 20</code>)입니다. 머리는 첫
+					번째 요소이며 색이 몸통과 다르게 표시됩니다.
+				</li>
+				<li>
+					먹이는 격자 칸 <strong>1~19</strong> 범위에서 무작위로 한 칸씩
+					생성됩니다. 머리가 먹이와 같은 칸이면 점수가 1 오르고, 꼬리를
+					짜르지 않아 <strong>길이가 1칸 늘어납니다</strong>. 먹이가 없으면
+					이동 후 꼬리 한 칸을 제거해 길이를 유지합니다.
+				</li>
+				<li>
+					방향은 <strong>정반대로 바로 꺾을 수 없습니다</strong>. 예를 들어
+					오른쪽으로 가는 중에는 왼쪽 입력이 무시됩니다.
+				</li>
+				<li>
+					게임 오버는 다음 중 하나입니다. 캔버스 밖으로 나감(
+					<code>snakeX &lt; 0</code>, <code>snakeX &gt;= canvas.width</code> 등),
+					또는 새 머리 위치가 기존 몸과 겹침(<code>collision</code>).
+				</li>
+			</ul>
+
+			<h2>점수와 랭킹</h2>
+			<p>
+				게임 오버 후 모달에서 최종 점수를 확인할 수 있습니다.
+				<strong>랭킹 등록</strong>을 누르면 닉네임(공백 제외
+				<strong>최소 2자</strong>)을 입력해 Firestore에 점수를 보냅니다. 게임 ID는
+				<code>snake</code>이며, 동일 닉네임이 있으면 기존보다 높을 때만 갱신되는
+				로직(<code>saveGameScore</code>)이 적용됩니다. 등록 없이 바로 다시
+				플레이하려면 <strong>다시 시작</strong> 버튼을 사용하면 됩니다.
+			</p>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					틱이 100ms로 고정이므로, 길어질수록 <strong>미리 코너를 계획</strong>하는
+					편이 유리합니다.
+				</li>
+				<li>
+					벽 근처에서는 반대 입력이 막히므로, <strong>U자 회전</strong> 전에
+					여유 칸을 확보하세요.
+				</li>
+				<li>
+					랭킹을 남길 계획이면 게임 중 사용할 닉네임을 미리 정해 두면 입력이
+					수월합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

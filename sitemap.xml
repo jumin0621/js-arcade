@@ -6,11 +6,21 @@
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 <!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
 
-
 <url>
   <loc>https://js-arcade.com/</loc>
   <lastmod>2026-04-25T03:31:51+00:00</lastmod>
 </url>
-
+<url>
+  <loc>https://js-arcade.com/notice/</loc>
+  <lastmod>2026-05-01T02:20:50+00:00</lastmod>
+</url>
+<url>
+  <loc>https://js-arcade.com/devlog/</loc>
+  <lastmod>2026-05-10T04:10:50+00:00</lastmod>
+</url>
+<url>
+  <loc>https://js-arcade.com/game-intro/</loc>
+  <lastmod>2026-05-13T02:40:50+00:00</lastmod>
+</url>
 
 </urlset>
