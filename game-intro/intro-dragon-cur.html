@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 드래곤 커브 플레이 방법, 픽셀 드래곤 조작, 벽 기둥 회피, 적/탄환 전투, 생존 시간 기반 난이도, 랭킹 dragoncurve 등록 흐름을 정리합니다."
+		/>
+		<meta property="og:title" content="드래곤 커브 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="횡스크롤 슈팅+장애물 회피가 결합된 액션 게임. 드래곤 비행, 자동 난이도 상승, HP 시스템과 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+		<title>드래곤 커브 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article { padding: 40px 20px 80px; max-width: 720px; margin: 0 auto; color: #e0e0e0; font-family: "Pretendard", sans-serif; line-height: 1.75; }
+			.intro-article h1 { margin: 0 0 8px 0; font-size: 1.85rem; color: #fff; letter-spacing: -0.5px; border-left: 4px solid #00e5ff; padding-left: 14px; }
+			.intro-meta { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+			.intro-article h2 { margin: 2rem 0 0.75rem 0; font-size: 1.2rem; color: #00e5ff; }
+			.intro-article p { margin: 0 0 1rem 0; color: #ccc; }
+			.intro-article ul { margin: 0 0 1rem 0; padding-left: 1.25rem; color: #ccc; }
+			.intro-article li { margin-bottom: 0.35rem; }
+			.intro-article code { background: #2a2a2a; padding: 0.15em 0.45em; border-radius: 4px; font-size: 0.88em; color: #7ee787; }
+			.nav-back { display: inline-block; margin-bottom: 24px; color: #00e5ff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+			.nav-back:hover { text-decoration: underline; }
+			.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed #444; }
+			.cta-row a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: transform 0.2s, box-shadow 0.2s; }
+			.cta-primary { background: #00e5ff; color: #0f172a !important; }
+			.cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25); }
+			.cta-secondary { background: transparent; border: 2px solid #555; color: #ccc !important; }
+			.cta-secondary:hover { border-color: #00e5ff; color: #fff !important; }
+		</style>
+		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>드래곤 커브 (Dragon Curve)</h1>
+			<p class="intro-meta">슈팅 · 횡스크롤 비행 액션 · 순수 JavaScript</p>
+			<p>드래곤 커브는 픽셀 드래곤을 조종해 적을 격추하면서 장애물 기둥 사이를 통과하는 하이브리드 슈팅 게임입니다. 회피, 조준, HP 관리가 동시에 요구되는 생존형 구조가 핵심입니다.</p>
+
+			<h2>기본 구성</h2>
+			<ul>
+				<li>캔버스 크기: <code>800 x 450</code></li>
+				<li>플레이어는 화면 좌측 절반 영역에서 이동</li>
+				<li>배경 이미지 스크롤(<code>bg_1.jpg</code>)로 무한 비행 연출</li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>키보드: 방향키 이동, 스페이스바 발사</li>
+				<li>모바일: 상하좌우 + 발사 버튼 터치 입력</li>
+				<li>연사 간격은 약 <code>150ms</code></li>
+			</ul>
+
+			<h2>전투와 장애물</h2>
+			<ul>
+				<li>적은 직선형/사인파형으로 등장하며 적 탄환도 발사</li>
+				<li>적 HP는 기본 2, 격추 시 +10점</li>
+				<li>상단/하단/통로형 기둥이 주기적으로 생성</li>
+				<li>지형 간격은 생존 시간에 따라 감소해 난이도 상승</li>
+			</ul>
+
+			<h2>HP/난이도 시스템</h2>
+			<ul>
+				<li>드래곤 HP는 3, HUD 하트(♥)로 표시</li>
+				<li>피격 후 <code>invincibleTimer = 60</code> 프레임 무적</li>
+				<li><code>gameSpeed = 3 + frameCount * 0.0005</code>로 점진적 가속</li>
+			</ul>
+
+			<h2>충돌과 종료</h2>
+			<ul>
+				<li>탄환, 적 본체, 기둥 모두 개별 충돌 판정</li>
+				<li>HP 0이면 GAME OVER 및 최종 점수 표시</li>
+				<li>랭킹 저장: <code>saveGameScore("dragoncurve", nickname, score)</code></li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>좌측 중앙 라인을 유지하면 기둥 회피 여유가 커집니다.</li>
+				<li>사인파 적은 진행 방향 앞쪽으로 선조준이 유리합니다.</li>
+				<li>후반에는 지형 통과 루트를 먼저 확보한 뒤 교전하세요.</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+		<script type="module">
+			import { initHeader, initFooter, initVisitorCounter } from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

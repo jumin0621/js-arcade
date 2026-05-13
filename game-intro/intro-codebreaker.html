@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 코드브레이커 플레이 방법, 스테이지/보스 규칙, 픽셀 적 패턴, 파티클 텍스트 연출, 점수/랭킹(invader) 등록 흐름을 정리합니다."
+		/>
+		<meta property="og:title" content="코드브레이커 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="좌우 이동+연사, 적 탄막 회피, 5스테이지 보스전, 20스테이지 클리어 조건과 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>코드브레이커 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #bb86fc;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #bb86fc;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #bb86fc;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>코드브레이커 (Code Breaker)</h1>
+			<p class="intro-meta">슈팅 · 캔버스 2D · 순수 JavaScript</p>
+
+			<p>
+				코드브레이커는 픽셀 우주선으로 에러 코드 적을 격추하는 아케이드 슈팅 게임입니다.
+				일반 스테이지와 보스 스테이지가 교차하며, 20스테이지 도달 시 ALL COMPILED 클리어로 종료됩니다.
+			</p>
+
+			<h2>기본 구성</h2>
+			<ul>
+				<li>캔버스 크기: <code>360 x 400</code></li>
+				<li>플레이어는 하단 고정 위치에서 좌우 이동 + 연사 공격을 수행합니다.</li>
+				<li>
+					적/플레이어는 픽셀 아트 배열(<code>enemyPixel</code>,
+					<code>playerPixel</code>)로 그려집니다.
+				</li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					<strong>키보드:</strong> 좌/우 이동, 스페이스 발사(연사 간격 제한 포함).
+				</li>
+				<li>
+					<strong>모바일:</strong> 좌/우 터치 버튼 + 발사 버튼으로 동일 입력을
+					대체합니다(<code>leftBtn</code>, <code>rightBtn</code>, <code>fireBtn</code>).
+				</li>
+				<li>
+					발사 간격은 <code>180ms</code>로 제한되어 무한 난사가 아닌 리듬형 연사입니다.
+				</li>
+			</ul>
+
+			<h2>스테이지와 적 패턴</h2>
+			<ul>
+				<li>
+					일반 스테이지는 기본 7열 편대이며, 스테이지가 오를수록 행 수가 증가합니다
+					(<code>rows = 3 + floor(stage / 6)</code>).
+				</li>
+				<li>
+					적은 좌우로 이동하다가 가장자리 도달 시 하강하고 방향을 반전합니다.
+					하강한 적이 플레이어 위치를 넘으면 즉시 게임 오버입니다.
+				</li>
+				<li>
+					매 5스테이지마다 보스가 등장하며, 체력은
+					<code>stage * 4</code>로 증가합니다.
+				</li>
+				<li>
+					적 이동 속도는 스테이지가 올라갈수록 빨라지며,
+					<code>threshold = max(4, 40 - stage * 2)</code>로 제어됩니다.
+				</li>
+			</ul>
+
+			<h2>총알·피격·점수</h2>
+			<ul>
+				<li>
+					플레이어 총알 속도는 고정(-6), 적 총알 속도는
+					<code>2.5 + stage * 0.1</code>로 스테이지에 따라 빨라집니다.
+				</li>
+				<li>
+					적 사격 확률도 <code>0.006 + stage * 0.001</code>로 증가해 후반 탄막이
+					두꺼워집니다.
+				</li>
+				<li>일반 적 처치: +10점, 보스 처치: +500점</li>
+				<li>
+					적 처치 시 코드 조각 텍스트 파티클(<code>&lt;div&gt;</code>,
+					<code>404</code>, <code>const</code> 등)이 분산되는 연출이 들어갑니다.
+				</li>
+			</ul>
+
+			<h2>클리어/실패와 랭킹</h2>
+			<ul>
+				<li>
+					모든 적을 제거하면 다음 스테이지로 넘어가고, 스테이지 20 이상에서
+					승리(<code>gameWin()</code>) 처리됩니다.
+				</li>
+				<li>
+					피격 또는 적 침투 시 실패(<code>gameOver()</code>)하며 모달에서 점수를
+					확인합니다.
+				</li>
+				<li>
+					랭킹 저장은
+					<code>saveGameScore("invader", nickname, finalScore)</code>를
+					사용합니다. (UI명은 코드브레이커지만 gameId는 invader)
+				</li>
+				<li>닉네임은 최소 2자이며, 다시 시작 시 스테이지/점수가 초기화됩니다.</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					후반엔 적 하강 속도보다 총알 회피가 중요하므로 중앙 고정보다 짧은 좌우
+					진동 이동이 안정적입니다.
+				</li>
+				<li>
+					보스전은 체력이 높아 장기전이므로 피격 회피 우선으로 플레이해야 누적 점수가
+					크게 오릅니다.
+				</li>
+				<li>
+					연사 제한(180ms)을 기준으로 발사 리듬을 익히면 불필요한 입력 손실을 줄일 수 있습니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

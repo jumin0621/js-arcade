@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 직소 퍼즐 플레이 방법, 드래그 앤 드롭 조각 맞추기, 난이도 선택, 진행률 계산, 시간 기반 점수, 랭킹 jigsaw 등록 흐름을 정리합니다."
+		/>
+		<meta property="og:title" content="직소 퍼즐 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="이미지 조각을 목표 위치로 드래그해 맞추는 퍼즐 게임. 난이도별 조각 수, 스냅 판정, 진행률, 점수 계산과 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>직소 퍼즐 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #81c784;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #81c784;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #81c784;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>직소 퍼즐 (Jigsaw Puzzle)</h1>
+			<p class="intro-meta">퍼즐 · 드래그 앤 드롭 · 순수 JavaScript</p>
+
+			<p>
+				직소 퍼즐은 흩어진 이미지 조각을 끌어다 정확한 위치에 맞추는 복원형 퍼즐입니다.
+				난이도에 따라 조각 수가 달라지고, 완성 시간과 조각 수를 기반으로 점수가 계산됩니다.
+			</p>
+
+			<h2>게임 시작 흐름</h2>
+			<ul>
+				<li>시작 모달에서 난이도 버튼을 선택합니다(<code>.diff-btn</code>).</li>
+				<li>랜덤 이미지 6종 중 하나를 고른 뒤 로딩 스피너를 표시합니다.</li>
+				<li>이미지 로딩 완료 후 캔버스를 표시하고 게임을 초기화합니다.</li>
+			</ul>
+
+			<h2>보드/조각 구조</h2>
+			<ul>
+				<li>
+					조각 데이터는 원본 영역(<code>sx, sy, sw, sh</code>)과 목표 위치(
+					<code>destX, destY</code>), 현재 위치(<code>x, y</code>)를 함께 가집니다.
+				</li>
+				<li>
+					퍼즐 영역은 캔버스의 약 80%(가로) x 60%(세로)에 맞춰 가운데 정렬됩니다.
+				</li>
+				<li>
+					난이도별 조각 수는 <code>gridSize x gridSize</code>로, UI에
+					<code>pieceDisplay</code>로 표시됩니다.
+				</li>
+			</ul>
+
+			<h2>드래그 조작과 스냅 판정</h2>
+			<ul>
+				<li>마우스/터치 시작 시 가장 위에 있는 미완성 조각부터 선택합니다.</li>
+				<li>
+					드래그 중 조각이 캔버스 밖으로 완전히 나가지 않도록 이동 범위를 제한합니다.
+				</li>
+				<li>
+					놓을 때 목표 위치와 오차가 <code>30px</code> 이내면 자동 스냅되어 고정됩니다.
+				</li>
+				<li>
+					고정된 조각은 <code>isSolved = true</code>가 되어 다시 움직이지 않습니다.
+				</li>
+			</ul>
+
+			<h2>진행률·렌더링·완성</h2>
+			<ul>
+				<li>
+					배경에는 목표 슬롯 가이드 라인을 그려 조각 위치를 유도합니다.
+				</li>
+				<li>
+					조각이 맞춰질 때마다 <code>solvedCount</code>를 올리고,
+					<code>progressDisplay</code>를 퍼센트로 갱신합니다.
+				</li>
+				<li>
+					진행률이 100%(모든 조각 고정)일 때 퍼즐 완성으로 처리합니다.
+				</li>
+			</ul>
+
+			<h2>점수 계산과 랭킹</h2>
+			<ul>
+				<li>플레이 시간은 1초 단위 타이머(<code>timeElapsed</code>)로 측정됩니다.</li>
+				<li>
+					최종 점수 공식:
+					<code>max(10, gridSize * gridSize * 1000 - timeElapsed * 20)</code>
+				</li>
+				<li>
+					클리어 모달에서 랭킹 등록 시
+					<code>saveGameScore("jigsaw", nickname, finalScore)</code>를 사용합니다.
+				</li>
+				<li>닉네임은 최소 2자이며, 등록 성공 또는 「처음으로」 선택 시 시작 모달로 돌아갑니다.</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					외곽(모서리) 조각부터 맞추면 중앙 조각 기준점이 생겨 완성 속도가 빨라집니다.
+				</li>
+				<li>
+					비슷한 색 영역은 목표 슬롯 가이드 위로 가져가 경계선을 먼저 확인하는 것이 효과적입니다.
+				</li>
+				<li>
+					점수는 시간 페널티 기반이므로, 조각을 오래 들고 헤매기보다 빠른 재배치가 유리합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

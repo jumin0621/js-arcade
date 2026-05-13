@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 브릭스택 플레이 방법, 12x20 보드, 7가지 테트로미노, 고스트 블록, 하드드롭, 라인 클리어 점수, 랭킹 brickstack을 정리합니다."
+		/>
+		<meta property="og:title" content="브릭스택 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="회전 보정, 하드드롭, 다음 블록 미리보기, 고스트 토글, 연속 라인 보너스와 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>브릭스택 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article { padding: 40px 20px 80px; max-width: 720px; margin: 0 auto; color: #e0e0e0; font-family: "Pretendard", sans-serif; line-height: 1.75; }
+			.intro-article h1 { margin: 0 0 8px 0; font-size: 1.85rem; color: #fff; letter-spacing: -0.5px; border-left: 4px solid #64b5f6; padding-left: 14px; }
+			.intro-meta { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+			.intro-article h2 { margin: 2rem 0 0.75rem 0; font-size: 1.2rem; color: #90caf9; }
+			.intro-article p { margin: 0 0 1rem 0; color: #ccc; }
+			.intro-article ul { margin: 0 0 1rem 0; padding-left: 1.25rem; color: #ccc; }
+			.intro-article li { margin-bottom: 0.35rem; }
+			.intro-article code { background: #2a2a2a; padding: 0.15em 0.45em; border-radius: 4px; font-size: 0.88em; color: #7ee787; }
+			.nav-back { display: inline-block; margin-bottom: 24px; color: #00e5ff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+			.nav-back:hover { text-decoration: underline; }
+			.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed #444; }
+			.cta-row a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: transform 0.2s, box-shadow 0.2s; }
+			.cta-primary { background: #00e5ff; color: #0f172a !important; }
+			.cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25); }
+			.cta-secondary { background: transparent; border: 2px solid #555; color: #ccc !important; }
+			.cta-secondary:hover { border-color: #64b5f6; color: #fff !important; }
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>브릭스택 (Brick Stack)</h1>
+			<p class="intro-meta">퍼즐 · 캔버스 2D · 순수 JavaScript</p>
+
+			<p>
+				브릭스택은 12x20 보드에서 블록을 쌓아 가로줄을 지우는 퍼즐 게임입니다.
+				다음 블록 미리보기와 고스트 블록 표시를 활용해 낙하 위치를 계산하는 것이 핵심입니다.
+			</p>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li><strong>키보드:</strong> 좌/우 이동, 아래 소프트 드롭, 위 회전, 스페이스 하드드롭.</li>
+				<li><strong>모바일:</strong> 좌/우/아래 버튼은 길게 누르면 120ms 간격으로 연속 입력됩니다.</li>
+				<li>방향키·스페이스 기본 스크롤은 <code>preventDefault</code>로 막혀 플레이 중 화면이 움직이지 않습니다.</li>
+			</ul>
+
+			<h2>블록과 보드 구조</h2>
+			<ul>
+				<li>보드는 <code>createMatrix(12, 20)</code>로 생성됩니다.</li>
+				<li>블록은 <code>I, L, J, O, Z, S, T</code> 7종이며 색상이 각각 고정되어 있습니다.</li>
+				<li>현재 블록은 <code>player.matrix</code>, 다음 블록은 <code>nextPiece</code>로 관리하고, 우측 미리보기 캔버스에 표시합니다.</li>
+			</ul>
+
+			<h2>핵심 로직</h2>
+			<ul>
+				<li>자동 낙하는 <code>dropInterval = 1000ms</code> 기준으로 동작하며, 프레임 루프는 <code>requestAnimationFrame(update)</code>입니다.</li>
+				<li>회전은 전치+뒤집기 방식이며, 벽에 걸리면 좌우 오프셋을 바꿔가며 보정(벽 킥)합니다.</li>
+				<li>하드드롭은 충돌 직전까지 즉시 내린 뒤 고정합니다.</li>
+				<li>고스트 토글이 켜지면 현재 블록의 착지 예상 위치를 반투명으로 그립니다.</li>
+			</ul>
+
+			<h2>점수와 게임 오버</h2>
+			<ul>
+				<li>가득 찬 줄을 지울 때 <code>rowCount * 10</code> 점수로 누적되고, 연속 줄 클리어는 배수 보너스가 적용됩니다.</li>
+				<li>새 블록 스폰 직후 충돌하면 즉시 게임 오버 모달이 뜹니다(조용한 리셋 없음).</li>
+				<li>랭킹 등록은 <code>saveGameScore("brickstack", nickname, finalScore)</code>로 저장되며 닉네임 최소 2자입니다.</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>고스트 블록을 켜고 하드드롭을 쓰면 실수를 크게 줄일 수 있습니다.</li>
+				<li>너비 12 보드는 중앙 정렬보다 양쪽 빈칸 관리가 중요합니다.</li>
+				<li>연속 라인 보너스를 노릴 때는 소프트 드롭보다 하드드롭 타이밍을 먼저 잡는 편이 유리합니다.</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import { initHeader, initFooter, initVisitorCounter } from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

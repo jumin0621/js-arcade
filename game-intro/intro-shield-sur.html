@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 실드 서바이버 플레이 방법, 자동 사격, 마우스/터치 조준, 적 타입별 패턴, 실드 체력 감소 규칙, 랭킹 shieldsurvivor 등록 흐름을 정리합니다."
+		/>
+		<meta property="og:title" content="실드 서바이버 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="중앙 코어를 지키는 서바이벌 슈팅. 자동 발사와 조준 이동, 슬라임·유령·폭탄 적 패턴, 실드 관리와 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>실드 서바이버 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #aeea00;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #aeea00;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #aeea00;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>실드 서바이버 (Shield Survivor)</h1>
+			<p class="intro-meta">슈팅 · 디펜스 서바이벌 · 순수 JavaScript</p>
+
+			<p>
+				실드 서바이버는 화면 중앙의 코어를 지키며 사방에서 몰려오는 적을 격추하는 생존형 슈팅 게임입니다.
+				플레이어는 직접 이동하지 않고 조준 방향만 바꿔 자동 발사하며, 실드 체력이 0이 되면 게임이 종료됩니다.
+			</p>
+
+			<h2>기본 구성</h2>
+			<ul>
+				<li>캔버스 크기: <code>360 x 400</code></li>
+				<li>플레이어 코어는 화면 중앙 고정, 시작 실드 체력은 100%</li>
+				<li>점수는 적 처치 시 누적되며 실드 잔량은 별도 HUD로 표시됩니다.</li>
+			</ul>
+
+			<h2>조준과 공격</h2>
+			<ul>
+				<li>
+					마우스 이동/터치 이동으로 목표 좌표(<code>targetX, targetY</code>)를 업데이트합니다.
+				</li>
+				<li>
+					코어는 타겟 방향으로 조준선을 그리며, 별도 입력 없이 자동 사격합니다.
+				</li>
+				<li>
+					연사 간격은 약 <code>150ms</code>이며 총알은 타겟 방향으로 직선 이동합니다.
+				</li>
+			</ul>
+
+			<h2>적 종류와 패턴</h2>
+			<ul>
+				<li>
+					<strong>슬라임(약 60%)</strong>: 느림, HP 1, 처치 +10점
+				</li>
+				<li>
+					<strong>유령(약 30%)</strong>: 지그재그 이동, HP 2, 처치 +20점
+				</li>
+				<li>
+					<strong>폭탄(약 10%)</strong>: 빠름, HP 1, 처치 +30점
+				</li>
+				<li>
+					적은 사방 가장자리에서 랜덤 스폰 후 중앙 코어를 향해 접근합니다.
+				</li>
+			</ul>
+
+			<h2>난이도 상승 요소</h2>
+			<ul>
+				<li>초기 스폰 주기 <code>spawnRate = 90</code> 프레임</li>
+				<li>
+					시간이 지날수록 스폰 주기가 계속 감소(<code>spawnRate--</code>, 최소 20 근처)해 밀도가 증가합니다.
+				</li>
+				<li>
+					적 이동 속도에도 <code>score * 0.005</code> 보정이 붙어 장기전일수록 압박이 커집니다.
+				</li>
+			</ul>
+
+			<h2>충돌과 실드 시스템</h2>
+			<ul>
+				<li>
+					총알과 적은 거리 기반 충돌(<code>hypot</code>)으로 판정합니다.
+				</li>
+				<li>
+					적이 코어 실드 반경(<code>distToPlayer &lt; 35</code>)에 닿으면 체력이 감소합니다.
+				</li>
+				<li>
+					일반/유령 충돌은 -10, 폭탄 충돌은 -20 체력 피해를 줍니다.
+				</li>
+				<li>
+					실드 색상은 체력에 따라 초록 → 노랑 → 빨강으로 변경되어 위험도를 표시합니다.
+				</li>
+			</ul>
+
+			<h2>연출 요소</h2>
+			<ul>
+				<li>피격 및 처치 시 픽셀 파티클이 생성되어 타격감을 강화합니다.</li>
+				<li>적 피격 시 짧은 흰색 파티클, 처치 시 적 색상 기반 대량 파티클이 발생합니다.</li>
+				<li>코어 피격 시 미세 화면 흔들림 효과가 적용됩니다.</li>
+			</ul>
+
+			<h2>게임 종료와 랭킹</h2>
+			<ul>
+				<li>
+					실드 체력이 0이 되면 <code>SHIELD BROKEN</code> 모달과 함께 게임 종료됩니다.
+				</li>
+				<li>
+					랭킹 저장은
+					<code>saveGameScore("shieldsurvivor", nickname, score)</code>를 사용합니다.
+				</li>
+				<li>
+					닉네임은 최소 2자이며, 재시작 시 점수와 실드 상태가 초기화됩니다.
+				</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					코어를 중심으로 작은 원을 그리듯 조준을 회전시키면 사방 접근 적을 고르게 처리할 수 있습니다.
+				</li>
+				<li>
+					유령은 지그재그 때문에 근접 전 탄이 빗나가기 쉬우니 중거리에서 먼저 정리하는 편이 좋습니다.
+				</li>
+				<li>
+					폭탄은 실드 피해가 크므로 다수 상황에서도 우선 제거 대상으로 잡는 것이 생존에 유리합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

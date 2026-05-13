@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 픽셀 이터 플레이 방법, 랜덤 미로 생성, 점수 픽셀 수집, 추적 버그 AI, 스테이지별 난이도, 랭킹 pixeleater 등록 흐름을 정리합니다."
+		/>
+		<meta property="og:title" content="픽셀 이터 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="미로를 돌며 픽셀을 모두 먹는 아케이드 게임. 버그 추적 패턴, 스테이지 진행, 점수 규칙과 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>픽셀 이터 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #ffc107;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #ffc107;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #ffc107;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>픽셀 이터 (Pixel Eater)</h1>
+			<p class="intro-meta">아케이드 · 미로 추적 · 순수 JavaScript</p>
+
+			<p>
+				픽셀 이터는 랜덤 미로에서 점수 픽셀을 모두 먹고 스테이지를 돌파하는 액션 게임입니다.
+				플레이어를 추적하는 버그(적)와 충돌하지 않고 맵의 모든 목표 픽셀을 수집하면
+				다음 단계로 넘어갑니다.
+			</p>
+
+			<h2>맵과 타일 구조</h2>
+			<ul>
+				<li>타일 크기: <code>20px</code>, 맵 크기: <code>19 x 19</code></li>
+				<li>
+					타일 의미: <code>1</code> 벽, <code>2</code> 먹을 픽셀,
+					<code>3</code> 빈 길
+				</li>
+				<li>
+					맵은 DFS 기반 통로 생성(<code>carvePath</code>) 후 랜덤하게 픽셀 타일을 뿌려 매 판 구조가 달라집니다.
+				</li>
+				<li>
+					중앙(8~10행/열)과 시작 지점 근처 일부는 안전 구역처럼 초기화되어 플레이 시작 안정성을 확보합니다.
+				</li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					<strong>키보드:</strong> 방향키 입력으로 이동 예약 방향(<code>nextDir</code>)을 설정합니다.
+				</li>
+				<li>
+					<strong>모바일:</strong> 패드 버튼(<code>padUp/down/left/right</code>)으로 동일하게 방향을 지정합니다.
+				</li>
+				<li>
+					플레이어가 그리드 정렬 위치에 도달했을 때 다음 방향이 유효하면 그 방향으로 전환됩니다(코너 회전 방식).
+				</li>
+			</ul>
+
+			<h2>플레이어와 점수</h2>
+			<ul>
+				<li>
+					플레이어가 타일 <code>2</code> 위에 올라가면 해당 칸이 <code>3</code>으로 바뀌고 점수 +10을 얻습니다.
+				</li>
+				<li>
+					맵에서 타일 <code>2</code>가 모두 사라지면 해당 스테이지 클리어입니다.
+				</li>
+				<li>
+					입 모양은 <code>frameCount</code> 기반으로 열림/닫힘을 반복해 이동 애니메이션을 만듭니다.
+				</li>
+			</ul>
+
+			<h2>버그(적) AI와 난이도</h2>
+			<ul>
+				<li>
+					버그는 그리드 기준 이동 가능 방향 중 플레이어와 가까워지는 방향을 우선 선택합니다
+					(약 70% 확률로 최단 방향, 나머지는 랜덤).
+				</li>
+				<li>
+					스테이지에 따라 버그 수/속도가 증가합니다.
+					예: 초반 2마리, 6스테이지부터 3마리, 10스테이지부터 4마리.
+				</li>
+				<li>
+					버그와 플레이어 거리가 <code>TILE_SIZE * 0.7</code> 미만이면 충돌(게임 오버) 처리됩니다.
+				</li>
+			</ul>
+
+			<h2>스테이지 진행과 종료</h2>
+			<ul>
+				<li>
+					클리어 시 10스테이지 이전에는 다음 스테이지 모달이 표시됩니다.
+				</li>
+				<li>
+					10스테이지를 클리어하면 <strong>ALL CLEAR</strong>로 최종 점수 모달이 열립니다.
+				</li>
+				<li>
+					충돌 시 <code>statusDisplay = "CRASHED"</code>로 바뀌고 게임 오버 모달이 나타납니다.
+				</li>
+			</ul>
+
+			<h2>랭킹 등록</h2>
+			<ul>
+				<li>
+					랭킹 저장은
+					<code>saveGameScore("pixeleater", nickname, finalScore)</code>를 사용합니다.
+				</li>
+				<li>닉네임은 최소 2자이며, 등록 후 시작 모달로 돌아갑니다.</li>
+				<li>다시 시작은 항상 1스테이지부터 새 맵으로 시작됩니다.</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					버그가 추적 우선 로직을 쓰므로 긴 직선 통로보다 교차로가 많은 구간에서 방향 전환 여유를 확보하는 것이 좋습니다.
+				</li>
+				<li>
+					점수 픽셀을 모서리에 남기면 후반 동선이 길어지므로, 지나가는 길에 외곽 픽셀부터 정리하면 안정적입니다.
+				</li>
+				<li>
+					스테이지가 높아질수록 버그 수가 늘어나므로, 한 번에 크게 이동하기보다 코너 단위로 리듬 있게 회피하는 것이 유리합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

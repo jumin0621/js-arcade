@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 픽셀러너 플레이 방법, 점프 기반 회피, 장애물 추적 패턴, 무적 아이템, 속도 증가 규칙, 랭킹 pixelrunner를 정리합니다."
+		/>
+		<meta property="og:title" content="픽셀 러너 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="스페이스/점프 버튼으로 장애물을 피하며 달리는 런닝 액션. 거리 점수, 난이도 상승, 무적 버프와 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>픽셀 러너 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #00e5ff;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #00e5ff;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #00e5ff;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>픽셀 러너 (Pixel Runner)</h1>
+			<p class="intro-meta">레이싱 · 런닝 액션 · 순수 JavaScript</p>
+
+			<p>
+				픽셀 러너는 자동으로 전진하는 캐릭터를 점프로 제어해 지상/공중 장애물을 회피하는
+				서바이벌 러닝 게임입니다. 시간이 지날수록 속도와 장애물 압박이 증가하며, 기록은
+				이동 거리(점수)로 계산됩니다.
+			</p>
+
+			<h2>기본 구성</h2>
+			<ul>
+				<li>캔버스 크기: <code>480 x 270</code></li>
+				<li>초기 속도: <code>gameSpeed = 5</code></li>
+				<li>점수는 60프레임마다 +1씩 오르며 거리(m) 형태로 표시됩니다.</li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					<strong>키보드:</strong> <code>Space</code> 또는 <code>ArrowUp</code>
+					입력으로 점프 플래그를 켭니다.
+				</li>
+				<li>
+					<strong>모바일:</strong> <code>btnJump</code>를 누르고 있는 동안 점프 입력이 유지됩니다.
+				</li>
+				<li>
+					플레이어는 지면(<code>canvas.height - 20</code>)에 닿아야 다시 점프할 수 있습니다.
+				</li>
+			</ul>
+
+			<h2>플레이어 물리</h2>
+			<ul>
+				<li>
+					점프 힘 <code>-12</code>, 중력 <code>0.6</code>이 적용되어 포물선 점프를 만듭니다.
+				</li>
+				<li>
+					지면 접촉 시 <code>grounded = true</code>로 전환되어 연속 점프 입력을 다시 받을 수 있습니다.
+				</li>
+				<li>
+					달리기 애니메이션은 <code>animFrame</code> 기반으로 다리 픽셀 일부를 교차 생략해 표현됩니다.
+				</li>
+			</ul>
+
+			<h2>장애물과 난이도 상승</h2>
+			<ul>
+				<li>
+					장애물은 지상형(<code>ground</code>)과 공중형(<code>air</code>) 두 종류입니다.
+				</li>
+				<li>
+					지상형은 단순 직진, 공중형은 특정 시점(<code>x &lt; 300</code>)에 플레이어를 향해
+					유도 탄도처럼 추적합니다.
+				</li>
+				<li>
+					장애물 생성 간격은 <code>nextSpawnFrame</code>으로 랜덤화되며, 속도 증가에 따라 체감 간격이 짧아집니다.
+				</li>
+				<li>
+					속도는 300프레임마다 <code>+0.2</code>씩 증가해 장기 생존 난이도가 점점 높아집니다.
+				</li>
+			</ul>
+
+			<h2>아이템(무적) 시스템</h2>
+			<ul>
+				<li>
+					약 1500프레임마다 무적 아이템이 생성됩니다.
+				</li>
+				<li>
+					획득 시 <code>isInvincible = true</code>, 지속 시간은 <code>350</code>프레임입니다.
+				</li>
+				<li>
+					무적 중에는 플레이어 크기가 <code>1.5배</code>로 커지고, 반짝임(알파 깜빡임) 연출이 적용됩니다.
+				</li>
+			</ul>
+
+			<h2>충돌과 종료 흐름</h2>
+			<ul>
+				<li>
+					무적이 아닐 때 플레이어와 장애물 AABB 충돌이 발생하면 즉시 게임 오버입니다.
+				</li>
+				<li>
+					게임 오버 시 상태는 <code>CRASHED</code>로 바뀌고, 모달에서 이동 거리(점수)를 보여줍니다.
+				</li>
+				<li>
+					랭킹 저장은
+					<code>saveGameScore("pixelrunner", nickname, finalScore)</code>를 사용합니다.
+				</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					공중 추적형 장애물은 너무 늦게 뛰면 회피각이 줄어드니, 화면 중간 전에 점프 타이밍을 잡는 것이 안전합니다.
+				</li>
+				<li>
+					무적 아이템은 후반 난이도 상승 구간에서 생존 시간을 크게 늘려주므로, 리스크가 있더라도 가능하면 챙기는 편이 유리합니다.
+				</li>
+				<li>
+					연속 점프 입력보다 지면 착지 타이밍을 먼저 읽으면 공중형+지상형 복합 패턴 대응이 쉬워집니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

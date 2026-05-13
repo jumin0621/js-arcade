@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 레트로레이싱 게임 소개. 3차선 회피 주행, 점진적 속도 상승, 보라색 돌진 차량 패턴, 추월 점수 규칙, retroracing 랭킹 저장 방식을 안내합니다."
+		/>
+		<meta property="og:title" content="레트로레이싱 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="레트로 감성 픽셀카로 고속도로를 질주하는 아케이드 레이싱. 차선 이동 타이밍과 돌진 차량 대응으로 최고 점수를 노려보세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>레트로레이싱 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article { padding: 40px 20px 80px; max-width: 720px; margin: 0 auto; color: #e0e0e0; font-family: "Pretendard", sans-serif; line-height: 1.75; }
+			.intro-article h1 { margin: 0 0 8px 0; font-size: 1.85rem; color: #fff; letter-spacing: -0.5px; border-left: 4px solid #ffeb3b; padding-left: 14px; }
+			.intro-meta { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+			.intro-article h2 { margin: 2rem 0 0.75rem 0; font-size: 1.2rem; color: #ffeb3b; }
+			.intro-article p { margin: 0 0 1rem 0; color: #ccc; }
+			.intro-article ul { margin: 0 0 1rem 0; padding-left: 1.25rem; color: #ccc; }
+			.intro-article li { margin-bottom: 0.35rem; }
+			.intro-article code { background: #2a2a2a; padding: 0.15em 0.45em; border-radius: 4px; font-size: 0.88em; color: #7ee787; }
+			.nav-back { display: inline-block; margin-bottom: 24px; color: #00e5ff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+			.nav-back:hover { text-decoration: underline; }
+			.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed #444; }
+			.cta-row a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: transform 0.2s, box-shadow 0.2s; }
+			.cta-primary { background: #ffeb3b; color: #1f2937 !important; }
+			.cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 235, 59, 0.25); }
+			.cta-secondary { background: transparent; border: 2px solid #555; color: #ccc !important; }
+			.cta-secondary:hover { border-color: #ffeb3b; color: #fff !important; }
+		</style>
+		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>레트로레이싱 (Retro Racing)</h1>
+			<p class="intro-meta">레이싱 · 차선 회피 아케이드 · 순수 JavaScript</p>
+
+			<p>
+				레트로레이싱은 3차선 도로에서 앞차를 피하며 최대한 오래 생존하는 픽셀 아케이드 레이싱 게임입니다.
+				시간이 지날수록 속도가 빨라지고 차량 스폰 간격이 줄어들어, 차선 변경 타이밍이 핵심이 됩니다.
+			</p>
+
+			<h2>핵심 플레이 구조</h2>
+			<ul>
+				<li>플레이어는 좌/우 이동만으로 차선을 바꿔 충돌을 회피합니다.</li>
+				<li>도로는 중앙 3레인 구조이며, 추월에 성공할 때마다 점수가 누적됩니다.</li>
+				<li>한 번 충돌하면 폭발 연출 후 게임 종료됩니다.</li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>키보드: 좌/우 방향키로 차량 이동</li>
+				<li>모바일: 좌/우 버튼(<code>btnLeft</code>, <code>btnRight</code>) 터치 입력</li>
+				<li>관성(<code>vx</code>)이 적용되어 급조향보다 미리 움직이는 운영이 중요합니다.</li>
+			</ul>
+
+			<h2>점수와 속도</h2>
+			<ul>
+				<li>적 차량 한 대를 안전하게 추월하면 +10점</li>
+				<li>기본 속도 <code>5</code>에서 시작해 최대 약 <code>11</code>까지 점진 상승</li>
+				<li>HUD에 속도가 <code>km/h</code> 형식으로 표시되어 긴장감이 유지됩니다.</li>
+			</ul>
+
+			<h2>적 차량 패턴</h2>
+			<ul>
+				<li>일반 차량(파랑/노랑) 외에 보라색 돌진 차량이 등장합니다.</li>
+				<li>
+					돌진 차량(<code>isDasher</code>)은 플레이어 근처 구간에서 가로로 끼어드는 보정 이동을 수행합니다.
+				</li>
+				<li>스폰 주기는 속도와 함께 감소해 후반 밀도가 크게 증가합니다.</li>
+			</ul>
+
+			<h2>배경/연출 요소</h2>
+			<ul>
+				<li>도로 점선은 <code>setLineDash</code>와 오프셋으로 고속 주행감을 구현</li>
+				<li>도로 양옆 픽셀 트리 스크롤로 속도감을 보강</li>
+				<li>충돌 시 폭발 파티클(색상 랜덤)과 비네팅 마스크로 임팩트 강화</li>
+			</ul>
+
+			<h2>게임 오버와 랭킹</h2>
+			<ul>
+				<li>충돌 시 <code>WASTED!</code> 모달과 최종 점수 표시</li>
+				<li>랭킹 저장 호출: <code>saveGameScore("retroracing", nickname, score)</code></li>
+				<li>닉네임 2자 이상 입력 후 등록 가능</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>차량 관성 때문에 즉각 회피가 어려워, 항상 한 차선 여유를 두고 주행하세요.</li>
+				<li>보라색 차량이 보이면 정면 라인을 고수하지 말고 빠르게 빈 레인으로 이탈하세요.</li>
+				<li>고속 구간에서는 연속 입력보다 짧고 정확한 보정 조작이 안정적입니다.</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import { initHeader, initFooter, initVisitorCounter } from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

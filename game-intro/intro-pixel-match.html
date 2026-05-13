@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 픽셀 매치 플레이 방법, 3매칭 스택 퍼즐 규칙, 90초 제한 타이머, 스테이지별 세트 증가, 시간 페널티 점수, 랭킹 pixelmatch를 정리합니다."
+		/>
+		<meta property="og:title" content="픽셀 매치 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="보드의 타일을 선택해 하단 스택에서 같은 아이콘 3개를 제거하는 퍼즐 게임. 스택 제한, 타임어택, 랭킹 등록 방법을 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>픽셀 매치 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #64b5f6;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #64b5f6;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #64b5f6;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>픽셀 매치 (Pixel Match)</h1>
+			<p class="intro-meta">퍼즐 · 3매칭 스택 · 순수 JavaScript</p>
+
+			<p>
+				픽셀 매치는 보드 위의 아이콘 타일을 선택해 하단 스택에 모으고, 같은 타일 3개를 맞춰
+				소거하는 퍼즐 게임입니다. 제한 시간과 스택 한도를 동시에 관리해야 하며, 스테이지가
+				올라갈수록 타일 수가 빠르게 증가합니다.
+			</p>
+
+			<h2>기본 규칙</h2>
+			<ul>
+				<li>보드에서 타일을 클릭하면 하단 스택으로 이동합니다.</li>
+				<li>
+					스택 내부는 타입 기준 정렬(<code>localeCompare</code>)되고, 같은 아이콘 3개가 모이면 자동 제거됩니다.
+				</li>
+				<li>3매칭 성공 시 +300점이 즉시 반영됩니다.</li>
+			</ul>
+
+			<h2>스택/타이머 제한</h2>
+			<ul>
+				<li>최대 스택 크기: <code>MAX_STACK = 7</code></li>
+				<li>스택이 가득 차면 게임 오버입니다.</li>
+				<li>스테이지 제한 시간: 항상 <code>90초</code></li>
+				<li>
+					타이머가 0이 되면 <code>시간 초과!</code> 사유로 즉시 게임 오버 처리됩니다.
+				</li>
+			</ul>
+
+			<h2>스테이지 증가 구조</h2>
+			<ul>
+				<li>타일 종류는 8개 이모지(<code>TILE_TYPES</code>)를 사용합니다.</li>
+				<li>
+					각 스테이지에서 타입당 생성량은
+					<code>(stage + 1) * 3</code>개로 증가합니다.
+				</li>
+				<li>
+					즉 1단계는 타입당 6개, 2단계는 9개... 식으로 늘어나며 전체 밀도가 빠르게 높아집니다.
+				</li>
+			</ul>
+
+			<h2>렌더링/선택 판정</h2>
+			<ul>
+				<li>게임 영역 크기에 맞춰 캔버스를 동적으로 리사이즈합니다.</li>
+				<li>타일은 <code>layer</code> 랜덤값으로 깊이 정렬되어 겹친 상태로 배치됩니다.</li>
+				<li>클릭 판정은 뒤에서 앞으로 순회해 “가장 위 타일”부터 선택되도록 처리합니다.</li>
+				<li>하단 스택 영역은 고정 박스로 표시되고 중앙 정렬로 타일이 채워집니다.</li>
+			</ul>
+
+			<h2>점수 계산과 클리어</h2>
+			<ul>
+				<li>
+					보드 타일이 전부 사라지고 스택이 비어 있으면 스테이지 클리어입니다.
+				</li>
+				<li>
+					클리어 시 시간 페널티를 적용합니다:
+					<code>penalty = (TIME_LIMIT - timeLeft) * 10</code>
+				</li>
+				<li>최종 점수는 <code>max(0, score - penalty)</code>로 보정됩니다.</li>
+				<li>
+					클리어 모달에서 랭킹 등록 후 종료하거나, 다음 단계로 계속 진행할 수 있습니다.
+				</li>
+			</ul>
+
+			<h2>랭킹 등록</h2>
+			<ul>
+				<li>
+					클리어/게임오버 모두
+					<code>saveGameScore("pixelmatch", nickname, score)</code>를 사용합니다.
+				</li>
+				<li>닉네임은 최소 2자입니다.</li>
+				<li>
+					게임 오버에서 “처음부터” 선택 시 1단계로 재시작하고 점수도 초기화됩니다.
+				</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					스택 한도 7이 핵심 리스크이므로, 같은 타일 2개가 모였을 때는 3번째를 우선 탐색하는 운영이 안정적입니다.
+				</li>
+				<li>
+					초반에 점수를 많이 확보해 두면 후반 시간 페널티를 받아도 누적 점수를 방어하기 쉽습니다.
+				</li>
+				<li>
+					겹친 타일은 상단 레이어부터 제거되므로, 막힌 조합을 풀기 위해 주변 상층 타일부터 정리하는 것이 좋습니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

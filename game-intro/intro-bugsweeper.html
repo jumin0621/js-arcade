@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 버그스위퍼 플레이 방법, 5단계 난이도(6x6~14x14), 플러드필, 롱프레스 깃발, 레벨 점수/타임 보너스, 랭킹 bugsweeper를 정리합니다."
+		/>
+		<meta property="og:title" content="버그스위퍼 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="지뢰찾기 방식의 디버깅 퍼즐. 빈칸 자동 오픈, 모바일 롱프레스 깃발, 5레벨 올클리어 보너스와 랭킹 등록 방법을 안내합니다."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>버그스위퍼 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #2ecc71;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #2ecc71;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #2ecc71;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>버그스위퍼 (Bug Sweeper)</h1>
+			<p class="intro-meta">퍼즐 · 그리드 로직 · 순수 JavaScript</p>
+
+			<p>
+				버그스위퍼는 지뢰찾기 방식으로 숨어 있는 버그를 피해 안전한 칸을 모두
+				열어야 하는 디버깅 퍼즐 게임입니다. 단계가 올라갈수록 보드가 커지고
+				버그 수가 늘어나며, 마지막 5단계를 클리어하면 타임 보너스가 더해집니다.
+			</p>
+
+			<h2>난이도(레벨) 구조</h2>
+			<ul>
+				<li>
+					총 <strong>5단계</strong>이며 코드상
+					<code>levels</code>로 정의됩니다.
+				</li>
+				<li>1레벨: <code>6x6</code>, 버그 <code>3</code></li>
+				<li>2레벨: <code>8x8</code>, 버그 <code>6</code></li>
+				<li>3레벨: <code>10x10</code>, 버그 <code>15</code></li>
+				<li>4레벨: <code>12x12</code>, 버그 <code>30</code></li>
+				<li>5레벨: <code>14x14</code>, 버그 <code>55</code></li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					<strong>PC:</strong> 좌클릭은 칸 열기, 우클릭은 깃발(의심 표시) 토글.
+				</li>
+				<li>
+					<strong>모바일:</strong> 짧게 터치하면 열기,
+					<strong>500ms 롱프레스</strong>면 깃발 토글.
+				</li>
+				<li>
+					롱프레스 성공 시 진동(<code>navigator.vibrate(50)</code>)이 실행되어
+					피드백을 줍니다.
+				</li>
+			</ul>
+
+			<h2>핵심 로직</h2>
+			<ul>
+				<li>
+					초기화 시 보드 배열에서 무작위로 버그를 배치하고, 각 셀의 주변 8칸
+					버그 수를 계산합니다.
+				</li>
+				<li>
+					숫자가 0인 칸을 열면 인접 셀을 재귀로 열어가는 플러드필 형태(
+					<code>revealCell</code>)가 적용됩니다.
+				</li>
+				<li>
+					이미 열린 칸/깃발 칸은 클릭 무시, 게임 종료 후에는 모든 입력을
+					막습니다.
+				</li>
+			</ul>
+
+			<h2>점수 계산과 클리어</h2>
+			<ul>
+				<li>
+					기본 점수는
+					<code>(currentLevel - 1) * 1000 + (안전 셀 오픈 수 * 10)</code>입니다.
+				</li>
+				<li>버그를 밟으면 즉시 게임 오버, 버그 칸이 공개됩니다.</li>
+				<li>
+					안전 셀을 모두 열면 레벨 클리어 모달이 뜨고 다음 단계로 진행합니다.
+				</li>
+				<li>
+					5레벨 올클리어 시
+					<code>max(0, 1000 - timeElapsed)</code> 타임 보너스를 추가해 최종
+					점수를 계산합니다.
+				</li>
+			</ul>
+
+			<h2>랭킹 등록</h2>
+			<ul>
+				<li>
+					게임 오버/올클리어 모두 랭킹 모달에서 등록 가능하며,
+					<code>saveGameScore("bugsweeper", nickname, finalScore)</code>를
+					사용합니다.
+				</li>
+				<li>닉네임은 공백 제외 최소 2자입니다.</li>
+				<li>
+					「다시 시작」은 항상 1레벨부터 재시작하도록
+					<code>currentLevel = 1</code>로 초기화됩니다.
+				</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					초반에는 숫자 1, 2가 겹치는 모서리부터 풀면 안전 셀 확장이 빠릅니다.
+				</li>
+				<li>
+					모바일은 오탭 방지를 위해 위험 칸 추정 시 롱프레스 깃발을 먼저 쓰는
+					편이 안정적입니다.
+				</li>
+				<li>
+					올클리어 보너스가 크므로 5레벨에서는 무리한 추측보다 타이머 손실을
+					줄이는 안정 플레이가 유리합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

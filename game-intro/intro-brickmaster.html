@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 브릭마스터 플레이 방법, 3스테이지 벽돌 배치, 공·패들 AABB 충돌, 다중 공 분열, 올 클리어·랭킹 등록까지 정리합니다."
+		/>
+		<meta property="og:title" content="브릭마스터 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="좌우 이동으로 패들 조작, 벽돌 제거 시 10점, 스테이지 클리어 후 난이도 상승, Firestore 랭킹 brickmaster."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>브릭마스터 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #bb86fc;
+				padding-left: 14px;
+			}
+
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #bb86fc;
+			}
+
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+
+			.cta-secondary:hover {
+				border-color: #bb86fc;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+
+			<h1>브릭마스터 (Brick Master)</h1>
+			<p class="intro-meta">아케이드 · 캔버스 2D · 순수 JavaScript</p>
+
+			<p>
+				벽돌 깨기 스타일의 게임입니다. 패들로 공을 튕겨 모든 벽돌의
+				<code>status</code>를 0으로 만들면 스테이지 클리어이며, 스테이지는
+				총 <strong>3단계</strong>입니다. 마지막 스테이지까지 벽돌을 모두 없애면
+				<strong>올 클리어</strong>로 처리됩니다. 공이 바닥으로 다 빠져 나가면
+				게임 오버입니다.
+			</p>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					<strong>키보드:</strong> <code>ArrowLeft</code> /
+					<code>ArrowRight</code>(또는 Left/Right 키)를 누르는 동안 패들이
+					좌우로 이동합니다. 키를 떼면 멈춥니다.
+				</li>
+				<li>
+					<strong>모바일:</strong> 화면의 좌·우 버튼은
+					<code>pointerdown</code> / <code>pointerup</code> /
+					<code>pointerleave</code>로 같은 플래그(<code>leftPressed</code>,
+					<code>rightPressed</code>)를 켜고 끕니다.
+				</li>
+			</ul>
+
+			<h2>스테이지와 벽돌</h2>
+			<ul>
+				<li>
+					스테이지 배열 <code>stages</code>는 단계마다
+					<strong>행·열 개수와 벽돌 색</strong>이 다릅니다. 1단계
+					<code>rows: 3, cols: 6</code> (#00e5ff), 2단계
+					<code>4 × 7</code> (#bb86fc), 3단계 <code>5 × 8</code> (#ff007b).
+				</li>
+				<li>
+					벽돌 한 칸의 높이는 <strong>20px</strong>, 가로는
+					<code>canvas.width / cols - 10</code>에 맞춰 계산되고, 칸 사이
+					간격은 코드상 <strong>10px</strong> 패딩으로 배치됩니다. 모서리는
+					<code>roundRect</code>로 둥글게 그려집니다.
+				</li>
+				<li>
+					공이 벽돌 영역 안에 들어오면 해당 벽돌은 <code>status: 0</code>이
+					되고, 점수는 <strong>벽돌당 +10</strong>입니다.
+				</li>
+			</ul>
+
+			<h2>공·패들·충돌</h2>
+			<ul>
+				<li>
+					메인 루프는 <code>requestAnimationFrame(draw)</code>로 돌아갑니다.
+					시작 시 공 하나는 대략 하단 중앙에서 위로 향하며
+					<code>dx: 3, dy: -3, radius: 7</code>입니다.
+				</li>
+				<li>
+					좌·우 벽과 <strong>상단</strong>에 닿으면 속도 성분이 반전됩니다.
+					하단은 패들이 받아줍니다.
+				</li>
+				<li>
+					패들은 높이 <strong>10px</strong>, 기본 너비 <strong>90px</strong>,
+					한 프레임당 최대 <strong>7px</strong>씩 이동합니다. 캔버스 밖으로
+					나가지 않도록 경계가 잘려 있습니다.
+				</li>
+				<li>
+					패들에 맞을 때 <code>dy</code>가 반전되고, <strong>10% 확률</strong>(
+					<code>Math.random() &lt; 0.1</code>)로 <code>duplicateBall</code>이
+					호출될 수 있습니다. 이때 <code>dx</code>만 반대인 복제 공이 추가되며,
+					화면 위 공은 <strong>최대 3개</strong>(<code>balls.length &lt; 3</code>)까지
+					입니다.
+				</li>
+				<li>
+					벽돌과의 충돌 판정은 공 중심이 벽돌의 직사각형 안에 들어왔는지로
+					처리되며, 맞으면 <code>dy</code>만 반전됩니다.
+				</li>
+				<li>
+					패들을 놓쳐 공이 아래로 빠지면 해당 공은 배열에서 제거됩니다.
+					<strong>공이 0개가 되는 순간</strong> 게임 오버 모달이 뜹니다.
+				</li>
+			</ul>
+
+			<h2>클리어 흐름과 랭킹</h2>
+			<ul>
+				<li>
+					현재 스테이지 벽돌이 전부 파괴되면(<code>every</code>로
+					<code>status === 0</code> 확인) <code>currentStage</code>가
+					1 올라갑니다. 아직 남은 스테이지가 있으면
+					<strong>스테이지 클리어</strong> 모달이 뜨고, 「다음 단계로」를 누르면
+					다음 배치로 이어집니다.
+				</li>
+				<li>
+					마지막(3단계)까지 모두 깨면 <strong>ALL CLEAR!</strong> 모달과 함께
+					최종 점수가 표시됩니다. 게임 오버·올 클리어 모두에서
+					<strong>랭킹 등록</strong>이 가능하며, 닉네임은 공백 제외
+					<strong>최소 2자</strong>입니다.
+				</li>
+				<li>
+					Firestore 전송 시 게임 ID는 <code>brickmaster</code>이며,
+					<code>saveGameScore</code> 규칙(동일 닉네임일 때 최고 점수만 갱신 등)이
+					그대로 적용됩니다. <strong>다시 시작</strong>은 점수·스테이지를
+					초기화한 뒤 바로 플레이를 재개합니다.
+				</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					공이 여러 개가 되면 패들 위치를 <strong>가장 위험한 공</strong> 쪽으로
+					먼저 맞추는 편이 안전합니다.
+				</li>
+				<li>
+					스테이지가 올라갈수록 행·열이 늘어나 벽돌이 많아지므로, 초반보다
+					<strong>모서리·측면</strong>을 먼저 줄이면 공이 아래로 떨어질 여지가
+					줄어듭니다.
+				</li>
+				<li>
+					랭킹을 남길 계획이면 올 클리어 직전에도 닉네임 입력이 필요하므로,
+					미리 쓸 이름을 정해 두면 편합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

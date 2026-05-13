@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 스도쿠 플레이 방법, 4x4~9x9 10레벨 난이도, 백트래킹 생성, 키보드/넘버패드 입력, 누적 점수와 랭킹 sudoku를 정리합니다."
+		/>
+		<meta property="og:title" content="스도쿠 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="레벨별 퍼즐 밀도(reveal), 오답 표시, 클리어 타임 보너스, 랭킹 등록/다음 단계 진행 흐름을 한 페이지에서 확인하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>스도쿠 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article {
+				padding: 40px 20px 80px;
+				max-width: 720px;
+				margin: 0 auto;
+				color: #e0e0e0;
+				font-family: "Pretendard", sans-serif;
+				line-height: 1.75;
+			}
+			.intro-article h1 {
+				margin: 0 0 8px 0;
+				font-size: 1.85rem;
+				color: #fff;
+				letter-spacing: -0.5px;
+				border-left: 4px solid #ffd54f;
+				padding-left: 14px;
+			}
+			.intro-meta {
+				color: #888;
+				font-size: 0.9rem;
+				margin-bottom: 28px;
+			}
+			.intro-article h2 {
+				margin: 2rem 0 0.75rem 0;
+				font-size: 1.2rem;
+				color: #ffd54f;
+			}
+			.intro-article p {
+				margin: 0 0 1rem 0;
+				color: #ccc;
+			}
+			.intro-article ul {
+				margin: 0 0 1rem 0;
+				padding-left: 1.25rem;
+				color: #ccc;
+			}
+			.intro-article li {
+				margin-bottom: 0.35rem;
+			}
+			.intro-article code {
+				background: #2a2a2a;
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				font-size: 0.88em;
+				color: #7ee787;
+			}
+			.nav-back {
+				display: inline-block;
+				margin-bottom: 24px;
+				color: #00e5ff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 0.95rem;
+			}
+			.nav-back:hover {
+				text-decoration: underline;
+			}
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+				border-top: 1px dashed #444;
+			}
+			.cta-row a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 12px 22px;
+				border-radius: 999px;
+				font-weight: 700;
+				text-decoration: none;
+				font-size: 0.95rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+			}
+			.cta-primary {
+				background: #00e5ff;
+				color: #0f172a !important;
+			}
+			.cta-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+			}
+			.cta-secondary {
+				background: transparent;
+				border: 2px solid #555;
+				color: #ccc !important;
+			}
+			.cta-secondary:hover {
+				border-color: #ffd54f;
+				color: #fff !important;
+			}
+		</style>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>스도쿠 (Sudoku)</h1>
+			<p class="intro-meta">퍼즐 · 논리 검증 · 순수 JavaScript</p>
+
+			<p>
+				스도쿠는 레벨이 올라갈수록 단서가 줄어드는 방식으로 설계된 숫자 퍼즐입니다.
+				4x4 입문형부터 9x9 고난도까지 순차 진행하며, 각 레벨 클리어 점수가
+				누적되어 최종 랭킹 점수가 됩니다.
+			</p>
+
+			<h2>난이도(레벨) 구성</h2>
+			<ul>
+				<li>총 <strong>10레벨</strong>이며 <code>levels</code>로 정의됩니다.</li>
+				<li>레벨 1: <code>4x4</code> (박스 2x2, reveal 0.7)</li>
+				<li>레벨 2: <code>6x6</code> (박스 2x3, reveal 0.6)</li>
+				<li>
+					레벨 3~10: <code>9x9</code> (박스 3x3), reveal 값이 0.6 → 0.2로 감소
+				</li>
+				<li>
+					reveal이 낮을수록 빈칸이 늘어나 난이도가 올라갑니다
+					(<code>holes = total * (1 - reveal)</code>).
+				</li>
+			</ul>
+
+			<h2>퍼즐 생성과 판정</h2>
+			<ul>
+				<li>
+					정답판(<code>solution</code>)은 백트래킹
+					(<code>solve()</code>)으로 생성됩니다.
+				</li>
+				<li>
+					숫자 배치 가능 여부는 행/열/박스 중복 검사
+					(<code>check()</code>)로 판정합니다.
+				</li>
+				<li>
+					정답판을 복제해 문제판(<code>board</code>)을 만들고, 무작위 칸을 0으로
+					비워 퍼즐을 구성합니다.
+				</li>
+				<li>
+					처음부터 채워진 칸은 <code>fixed</code>로 잠겨 수정할 수 없습니다.
+				</li>
+			</ul>
+
+			<h2>조작 방법</h2>
+			<ul>
+				<li>
+					셀 클릭으로 선택 후 입력합니다. 고정 셀은 선택되지 않습니다.
+				</li>
+				<li>
+					키보드 숫자(0~9), <code>Backspace</code>,
+					<code>Delete</code>를 지원합니다.
+				</li>
+				<li>
+					방향키(상하좌우)로 선택 셀 이동이 가능합니다.
+				</li>
+				<li>
+					하단 넘버패드에서 숫자 또는 <code>CLR</code>(0) 입력도 지원합니다.
+				</li>
+			</ul>
+
+			<h2>오답 표시와 클리어</h2>
+			<ul>
+				<li>
+					입력값이 정답과 다르면 해당 셀에 <code>error</code> 클래스를 부여해
+					시각적으로 표시합니다.
+				</li>
+				<li>
+					전체 보드가 정답판과 일치하면 클리어이며 타이머를 멈춥니다.
+				</li>
+				<li>
+					10레벨 전에는 레벨 클리어 모달이 뜨고, 랭킹 등록 후 종료하거나
+					다음 단계로 계속 진행할 수 있습니다.
+				</li>
+				<li>
+					10레벨 클리어 시 <strong>MASTER CLEAR</strong> 모달이 뜹니다.
+				</li>
+			</ul>
+
+			<h2>점수 계산과 랭킹</h2>
+			<ul>
+				<li>
+					레벨 점수:
+					<code>baseScore = currentLevel * 1000</code>
+				</li>
+				<li>
+					시간 보너스:
+					<code>timeBonus = max(0, currentLevel * 300 - timeElapsed * 10)</code>
+				</li>
+				<li>
+					레벨 클리어 시 <code>totalScore += baseScore + timeBonus</code>로 누적됩니다.
+				</li>
+				<li>
+					랭킹 저장은
+					<code>saveGameScore("sudoku", nickname, totalScore)</code>를 사용하며
+					닉네임은 최소 2자입니다.
+				</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>
+					초중반(4x4, 6x6)은 후보 숫자 좁히는 연습 구간으로 활용하면 9x9가
+					수월해집니다.
+				</li>
+				<li>
+					오답 표시가 뜬 칸은 바로 수정해 충돌 누적을 줄이는 편이 좋습니다.
+				</li>
+				<li>
+					시간 보너스 비중이 커서, 막히는 구간에서는 무작위 입력보다 확정 가능한
+					행/열부터 푸는 것이 유리합니다.
+				</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import {
+				initHeader,
+				initFooter,
+				initVisitorCounter,
+			} from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>

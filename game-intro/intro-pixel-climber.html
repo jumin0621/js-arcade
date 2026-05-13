@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="JS-Arcade 픽셀클라이머 게임 소개. 2버튼 계단 오르기 규칙, turn/climb 판정, 콤보·게이지·피버 시스템, 낙하 게임오버, 랭킹 pixelclimber 저장 방식을 안내합니다."
+		/>
+		<meta property="og:title" content="픽셀클라이머 게임 소개 | JS-Arcade" />
+		<meta
+			property="og:description"
+			content="버튼 두 개만으로 방향을 읽고 무한 계단을 오르는 리듬 액션. 빠른 연속 성공으로 피버를 활성화하고 최고 기록에 도전하세요."
+		/>
+		<meta property="og:type" content="article" />
+
+		<title>픽셀클라이머 게임 소개 | JS-Arcade</title>
+		<style>
+			.intro-article { padding: 40px 20px 80px; max-width: 720px; margin: 0 auto; color: #e0e0e0; font-family: "Pretendard", sans-serif; line-height: 1.75; }
+			.intro-article h1 { margin: 0 0 8px 0; font-size: 1.85rem; color: #fff; letter-spacing: -0.5px; border-left: 4px solid #00e5ff; padding-left: 14px; }
+			.intro-meta { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+			.intro-article h2 { margin: 2rem 0 0.75rem 0; font-size: 1.2rem; color: #00e5ff; }
+			.intro-article p { margin: 0 0 1rem 0; color: #ccc; }
+			.intro-article ul { margin: 0 0 1rem 0; padding-left: 1.25rem; color: #ccc; }
+			.intro-article li { margin-bottom: 0.35rem; }
+			.intro-article code { background: #2a2a2a; padding: 0.15em 0.45em; border-radius: 4px; font-size: 0.88em; color: #7ee787; }
+			.nav-back { display: inline-block; margin-bottom: 24px; color: #00e5ff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+			.nav-back:hover { text-decoration: underline; }
+			.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed #444; }
+			.cta-row a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: transform 0.2s, box-shadow 0.2s; }
+			.cta-primary { background: #00e5ff; color: #0f172a !important; }
+			.cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25); }
+			.cta-secondary { background: transparent; border: 2px solid #555; color: #ccc !important; }
+			.cta-secondary:hover { border-color: #00e5ff; color: #fff !important; }
+		</style>
+		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4968703219632060" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<main class="intro-article">
+			<a class="nav-back" href="./index.html">← 게임 소개 목록</a>
+			<h1>픽셀클라이머 (Pixel Climber)</h1>
+			<p class="intro-meta">리듬 액션 · 무한 계단 등반 · 순수 JavaScript</p>
+
+			<p>
+				픽셀클라이머는 단 두 개의 행동 버튼으로 다음 계단 방향을 읽어 올라가는 반응형 아케이드 게임입니다.
+				판정은 단순하지만 속도와 게이지 압박이 점점 강해져 집중력과 패턴 감각이 중요합니다.
+			</p>
+
+			<h2>핵심 규칙</h2>
+			<ul>
+				<li>행동 버튼: <code>turn</code> / <code>climb</code></li>
+				<li>다음 계단 방향과 선택한 진행 방향이 일치하면 성공, 아니면 낙하</li>
+				<li>성공 시 다음 계단으로 이동하며 점수와 콤보가 상승</li>
+			</ul>
+
+			<h2>조작 방식</h2>
+			<ul>
+				<li>모바일 UI 버튼(<code>btnTurn</code>, <code>btnClimb</code>) 터치 지원</li>
+				<li>키보드 단축: 좌/Z = turn, 우/X = climb</li>
+				<li>우클릭 메뉴는 비활성화되어 입력 방해를 줄입니다.</li>
+			</ul>
+
+			<h2>스코어 · 콤보 · 게이지</h2>
+			<ul>
+				<li>기본 점수는 성공 계단 1칸당 +1 (피버 중 +2)</li>
+				<li>빠른 연속 성공으로 콤보가 누적되고 시각 효과가 강화됩니다.</li>
+				<li>게이지는 시간 경과에 따라 감소하며, 행동 성공 시 회복됩니다.</li>
+			</ul>
+
+			<h2>피버 타임</h2>
+			<ul>
+				<li><code>combo % 50 === 0</code> 달성 시 피버 ON</li>
+				<li>피버 지속 프레임: <code>feverTimer = 300</code></li>
+				<li>피버 중 점수 효율 상승, 게이지 연출/파티클 효과 강화</li>
+			</ul>
+
+			<h2>게임 오버 조건</h2>
+			<ul>
+				<li>잘못된 방향 선택 시 낙하 애니메이션 후 종료</li>
+				<li>게이지가 0이 되면 자동 낙하로 게임 종료</li>
+				<li>최종 기록은 오른 계단 수(<code>score</code>)로 집계됩니다.</li>
+			</ul>
+
+			<h2>연출 요소</h2>
+			<ul>
+				<li>좌우 방향별 캐릭터 픽셀 아트 스프라이트</li>
+				<li>무한 스크롤 구름과 카메라 추적으로 상승감 강화</li>
+				<li>발판 성공/피버 발동 시 파티클로 타격감 제공</li>
+			</ul>
+
+			<h2>랭킹 시스템</h2>
+			<ul>
+				<li>랭킹 저장 호출: <code>saveGameScore("pixelclimber", nickname, score)</code></li>
+				<li>닉네임 2자 이상 입력 후 등록 가능</li>
+				<li>재시작 시 점수/콤보/게이지/피버 상태 모두 초기화</li>
+			</ul>
+
+			<h2>플레이 팁</h2>
+			<ul>
+				<li>다음 발판 방향을 먼저 보고 입력하면 실수율이 크게 줄어듭니다.</li>
+				<li>게이지가 낮을수록 안전 입력을 우선해 생존을 확보하세요.</li>
+				<li>피버 직전 구간은 속도보다 정확도 위주로 운영하는 편이 효율적입니다.</li>
+			</ul>
+
+			<div class="cta-row">
+				<a class="cta-primary" href="../index.html">메인에서 게임하기</a>
+				<a class="cta-secondary" href="../ranking/">랭킹 보기</a>
+			</div>
+		</main>
+
+		<script type="module">
+			import { initHeader, initFooter, initVisitorCounter } from "../common/layout.js";
+			initHeader();
+			initFooter();
+			initVisitorCounter();
+		</script>
+	</body>
+</html>
