@@ -34,6 +34,9 @@ const injectStyles = () => {
     nav ul { display: flex; list-style: none; gap: 12px; }
     nav ul li { color: #b0b0b0; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: color 0.2s; }
     nav ul li:hover, nav ul li a.active { color: #00e5ff; }
+    @media (max-width: 768px) {
+      .logo-text { display: none; }
+    }
 
     /* --- 푸터 --- */
     .site-footer { background-color: #1a1a1a; color: #666; padding: 60px 20px 40px; text-align: center; border-top: 1px solid #333; margin-top: 50px; }
@@ -81,6 +84,7 @@ export const initHeader = () => {
         <ul>
           <li><a href="${basePath}/" id="menu-home">홈</a></li>
           <li><a href="${basePath}/ranking/" id="menu-ranking">랭킹</a></li>
+          <li><a href="${basePath}/game-intro/" id="menu-game-intro">게임소개</a></li>
           <li><a href="${basePath}/notice/" id="menu-notice">공지사항</a></li>
           <li><a href="${basePath}/devlog/" id="menu-devlog">개발일지</a></li>
         </ul>
@@ -92,6 +96,7 @@ export const initHeader = () => {
   const setActive = (id) =>
     document.getElementById(id)?.classList.add("active");
   if (currentPath.includes("/ranking")) setActive("menu-ranking");
+  else if (currentPath.includes("/game-intro")) setActive("menu-game-intro");
   else if (currentPath.includes("/notice")) setActive("menu-notice");
   else if (currentPath.includes("/devlog")) setActive("menu-devlog");
   else if (currentPath === basePath + "/" || currentPath.endsWith("index.html"))
