@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Source Code | 바닐라 스네이크</title>
+		<style>
+			:root {
+				--bg-color: #0f172a;
+				--card-bg: #1e293b;
+				--accent-color: #00e5ff;
+				--text-main: #f8fafc;
+				--code-bg: #000000;
+			}
+
+			body {
+				background-color: var(--bg-color);
+				color: var(--text-main);
+				font-family: "Pretendard", sans-serif;
+				margin: 0;
+				padding: 40px 20px;
+			}
+
+			.container {
+				max-width: 900px;
+				margin: 0 auto;
+			}
+
+			.back-link {
+				text-decoration: none;
+				color: var(--accent-color);
+				font-weight: bold;
+				display: inline-block;
+				margin-bottom: 20px;
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 30px;
+			}
+
+			/* 아코디언 스타일 */
+			.accordion-item {
+				background: var(--card-bg);
+				border-radius: 12px;
+				margin-bottom: 15px;
+				border: 1px solid #334155;
+				overflow: hidden;
+			}
+
+			.accordion-header {
+				padding: 18px 24px;
+				cursor: pointer;
+				font-weight: bold;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				user-select: none;
+			}
+
+			.accordion-header:hover {
+				background: #243147;
+			}
+
+			.accordion-content {
+				display: none;
+				background: var(--code-bg);
+				padding: 0;
+				border-top: 1px solid #334155;
+				position: relative;
+			}
+
+			/* 코드 복사 버튼 */
+			.copy-btn {
+				position: absolute;
+				top: 10px;
+				right: 15px;
+				background: #334155;
+				color: #fff;
+				border: none;
+				padding: 5px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 0.8rem;
+			}
+			.copy-btn:hover {
+				background: var(--accent-color);
+				color: #000;
+			}
+
+			pre {
+				margin: 0;
+				padding: 30px 20px 20px;
+				overflow-x: auto;
+				color: #d1d5db;
+				font-family: "Consolas", "Monaco", monospace;
+				line-height: 1.5;
+				font-size: 0.95rem;
+			}
+
+			/* 활성화 상태 */
+			.accordion-item.active .accordion-content {
+				display: block;
+			}
+			.accordion-item.active .accordion-header {
+				border-bottom: 1px solid var(--accent-color);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<a href="index.html" class="back-link">← 라운지 메인으로 돌아가기</a>
+			<h1>🎮 바닐라 스네이크 (Source Code)</h1>
+
+			<!-- ============================== HTML 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					📄 index.html <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>&lt;!doctype html&gt;
+&lt;html lang="ko"&gt;
+	&lt;head&gt;
+		&lt;meta charset="UTF-8" /&gt;
+		&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+		&lt;title&gt;JS-Arcade | 바닐라 스네이크&lt;/title&gt;
+		&lt;link rel="stylesheet" href="style.css" /&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;div class="game-wrapper"&gt;
+			&lt;div class="game-header"&gt;
+				&lt;div class="score-container"&gt;SCORE: &lt;span id="score"&gt;0&lt;/span&gt;&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;canvas id="snakeGame" width="400" height="400"&gt;&lt;/canvas&gt;
+
+			&lt;div class="mobile-controls" id="joystick"&gt;
+				&lt;div class="control-row"&gt;
+					&lt;button class="btn-up" onclick="setDir('UP')"&gt;▲&lt;/button&gt;
+				&lt;/div&gt;
+				&lt;div class="control-row"&gt;
+					&lt;button class="btn-left" onclick="setDir('LEFT')"&gt;◀&lt;/button&gt;
+					&lt;button class="btn-down" onclick="setDir('DOWN')"&gt;▼&lt;/button&gt;
+					&lt;button class="btn-right" onclick="setDir('RIGHT')"&gt;▶&lt;/button&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;div class="controls-guide"&gt;
+				&lt;p&gt;방향키(↑ ↓ ← →)로 조작하세요&lt;/p&gt;
+			&lt;/div&gt;
+
+			&lt;div id="gameModal" class="modal-overlay"&gt;
+				&lt;div class="modal-content"&gt;
+					&lt;h2 id="modalTitle"&gt;VANILLA SNAKE&lt;/h2&gt;
+					&lt;p id="modalDesc"&gt;방향키를 이용해 길게 살아남으세요!&lt;/p&gt;
+
+					&lt;div id="rankInputArea" class="rank-input-area"&gt;
+						&lt;input
+							type="text"
+							id="nicknameInput"
+							class="nickname-input"
+							placeholder="닉네임 (3~8자)"
+							maxlength="8"
+						/&gt;
+					&lt;/div&gt;
+
+					&lt;div class="modal-buttons"&gt;
+						&lt;button id="startBtn" class="primary-btn"&gt;게임 시작&lt;/button&gt;
+						&lt;button id="restartBtn" class="secondary-btn" style="display: none"&gt;
+							다시 시작
+						&lt;/button&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;script type="module" src="js-snake.js"&gt;&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+				</div>
+			</div>
+
+			<!-- ============================== CSS 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					🎨 style.css <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>body {
+	background-color: #121212;
+	color: #fff;
+	font-family: "Pretendard", sans-serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	margin: 0;
+}
+
+.game-wrapper {
+	text-align: center;
+}
+
+.game-header {
+	display: flex;
+	justify-content: flex-end; /* 모든 요소를 오른쪽으로 정렬 */
+	align-items: center;
+	width: 100%;
+	max-width: 400px; /* 캔버스 너비와 맞춤 */
+	margin: 0 auto 10px; /* 중앙 정렬 유지 */
+	padding: 0 5px;
+}
+
+.back-btn {
+	text-decoration: none;
+	color: #00e5ff;
+	font-weight: bold;
+	font-size: 0.8rem;
+}
+
+.score-container {
+	font-size: 1.1rem;
+	font-weight: bold;
+	color: #bb86fc;
+	text-shadow: 0 0 5px rgba(187, 134, 252, 0.5);
+}
+
+/* 캔버스 스타일: 네온 느낌의 테두리 */
+canvas {
+	background-color: #1e1e1e;
+	border: 3px solid #333;
+	border-radius: 8px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.controls-guide {
+	margin-top: 15px;
+	color: #666;
+	font-size: 0.9rem;
+}
+
+/* 기본적으로 조이스틱 숨김 (PC) */
+.mobile-controls {
+	display: none;
+	margin-top: 20px;
+	user-select: none;
+}
+
+/* 모바일 화면 (768px 이하) 대응 */
+@media (max-width: 768px) {
+	.game-header {
+		width: 90vw;
+	}
+	.mobile-controls {
+		display: block;
+	}
+	.controls-guide {
+		display: none;
+	} /* 키보드 안내 숨김 */
+	canvas {
+		width: 90vw;
+		height: 90vw;
+	} /* 캔버스 크기 조절 */
+}
+
+.control-row {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin: 5px 0;
+}
+.mobile-controls button {
+	width: 60px;
+	height: 60px;
+	background: #2c2c2c;
+	border: 2px solid #00e5ff;
+	border-radius: 10px;
+	color: #00e5ff;
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+.mobile-controls button:active {
+	background: #00e5ff;
+	color: #121212;
+}
+
+/* --- 랭킹 닉네임 입력 영역 --- */
+.rank-input-area {
+	display: none; /* JS에서 block/none으로 제어합니다 */
+	margin: 15px 0;
+}
+
+.nickname-input {
+	padding: 10px;
+	width: 80%;
+	border-radius: 5px;
+	border: 1px solid #444;
+	background: #222;
+	color: #fff;
+	text-align: center;
+	font-size: 1rem;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.nickname-input:focus {
+	border-color: #00e5ff; /* 포커스 시 청록색 네온 효과 */
+	box-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+}
+
+/* 모달 전체 배경 (어둡게) */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85); /* 배경을 85% 어둡게 */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+/* 모달 박스 디자인 */
+.modal-content {
+	background: #252525;
+	padding: 40px;
+	border-radius: 20px;
+	text-align: center;
+	border: 2px solid #00e5ff; /* 로고와 같은 청록색 테두리 */
+	box-shadow: 0 0 30px rgba(0, 229, 255, 0.3); /* 은은한 네온 효과 */
+	min-width: 280px;
+}
+
+/* 모달 제목 */
+.modal-content h2 {
+	color: #00e5ff;
+	margin-top: 0;
+	font-size: 1.8rem;
+	letter-spacing: 1px;
+}
+
+/* 모달 설명 텍스트 */
+.modal-content p {
+	color: #bbb;
+	margin: 20px 0 30px;
+	line-height: 1.5;
+}
+
+/* 게임 시작 / 재시작 버튼 */
+primary-btn,
+.secondary-btn {
+	flex: 1;
+	/* 패딩 조절: 위아래(10px)를 줄여서 뚱뚱함을 해결하고 좌우(0)는 flex로 맞춤 */
+	padding: 10px 0;
+	font-size: 0.95rem; /* 폰트도 살짝 줄여서 더 세련되게 */
+	font-weight: 700;
+	border-radius: 6px; /* 살짝 더 각진 느낌으로 세련미 추가 */
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	line-height: 1.4; /* 줄간격을 조절해서 텍스트가 중앙에 예쁘게 오도록 함 */
+}
+
+.primary-btn {
+	background: #00e5ff;
+	color: #121212;
+	border: none;
+	padding: 14px 40px;
+	font-size: 1.1rem;
+	font-weight: bold;
+	border-radius: 10px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+	transform: scale(1.05);
+	background: #00b2cc;
+	box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+}
+
+.primary-btn:active {
+	transform: scale(0.98);
+}
+
+/* 버튼 배치용 컨테이너 */
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 20px;
+}
+
+/* '다시 시작' 버튼 (어두운 톤) */
+.secondary-btn {
+	padding: 12px 24px;
+	background: #333;
+	color: #fff;
+	border: 1px solid #444;
+	border-radius: 8px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 1rem;
+}
+
+.secondary-btn:hover {
+	background: #444;
+	border-color: #666;
+}</code></pre>
+				</div>
+			</div>
+
+			<!-- ============================== JS 영역 ============================== -->
+			<div class="accordion-item">
+				<div class="accordion-header" onclick="toggleAccordion(this)">
+					⚡ js-snake.js <span>▼</span>
+				</div>
+				<div class="accordion-content">
+					<button class="copy-btn" onclick="copyCode(this)">COPY</button>
+					<pre><code>// ✅ 중요: 파이어베이스 임포트 시 확장자(.js) 필수
+import { saveGameScore } from "../../common/firebase-config.js";
+
+window.addEventListener(
+	"keydown",
+	function (e) {
+		if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+			e.preventDefault();
+		}
+	},
+	false,
+);
+
+const canvas = document.getElementById("snakeGame");
+const ctx = canvas.getContext("2d");
+const box = 20;
+
+let snake = [];
+let food = {};
+let d;
+let score = 0;
+let gameInterval;
+
+const modal = document.getElementById("gameModal");
+const startBtn = document.getElementById("startBtn");
+const rankInputArea = document.getElementById("rankInputArea");
+const nicknameInput = document.getElementById("nicknameInput");
+const restartBtn = document.getElementById("restartBtn");
+
+// 초기 세팅
+function initGame() {
+	snake = [{ x: 9 * box, y: 10 * box }];
+	food = {
+		x: Math.floor(Math.random() * 19 + 1) * box,
+		y: Math.floor(Math.random() * 19 + 1) * box,
+	};
+	d = undefined;
+	score = 0;
+	document.getElementById("score").innerText = score;
+}
+
+// [상태 1] 게임 시작 모달 설정
+function showStartModal() {
+	clearInterval(gameInterval); // 모달이 뜰 때는 무조건 게임 정지
+	document.getElementById("modalTitle").innerText = "VANILLA SNAKE";
+	document.getElementById("modalDesc").innerText =
+		"방향키를 이용해 길게 살아남으세요!";
+	rankInputArea.style.display = "none"; // 닉네임 입력칸 숨김
+	restartBtn.style.display = "none";
+	startBtn.innerText = "게임 시작";
+	startBtn.disabled = false;
+
+	startBtn.onclick = function () {
+		modal.style.display = "none";
+		initGame();
+		if (gameInterval) clearInterval(gameInterval);
+		gameInterval = setInterval(draw, 100);
+	};
+	modal.style.display = "flex";
+}
+
+// [상태 2] 게임 오버 모달 설정
+function showGameOverModal(finalScore) {
+	clearInterval(gameInterval); // 뱀 움직임 정지
+	document.getElementById("modalTitle").innerText = "GAME OVER";
+	document.getElementById("modalDesc").innerText = `최종 점수: ${finalScore}점`;
+
+	rankInputArea.style.display = "block"; // 닉네임 입력칸 보이기
+	restartBtn.style.display = "block";
+	nicknameInput.value = ""; // 입력된 글자 초기화
+	startBtn.innerText = "랭킹 등록";
+	startBtn.disabled = false;
+
+	// 랭킹 등록
+	startBtn.onclick = async function () {
+		const nickname = nicknameInput.value.trim();
+		// 간단한 유효성 검사
+		if (!nickname || nickname.length < 2) {
+			alert("닉네임(최소 2자)을 입력해주세요!");
+			return;
+		}
+
+		startBtn.disabled = true;
+		startBtn.innerText = "등록 중...";
+
+		// 파이어베이스 DB 전송
+		const result = await saveGameScore("snake", nickname, finalScore);
+
+		alert(result.msg);
+
+		if (result.status !== "error") {
+			showStartModal(); // 에러가 아니면 시작 모달로 복귀
+		} else {
+			startBtn.disabled = false;
+			startBtn.innerText = "랭킹 등록";
+		}
+	};
+	// 랭킹등록 없이 다시 시작
+	restartBtn.onclick = function () {
+		modal.style.display = "none";
+		initGame();
+		if (gameInterval) clearInterval(gameInterval);
+		gameInterval = setInterval(draw, 100); // 랭킹 없이 바로 게임 재개
+	};
+
+	modal.style.display = "flex";
+}
+
+// 방향 제어
+document.addEventListener("keydown", direction);
+function direction(event) {
+	if (event.keyCode == 37 && d != "RIGHT") d = "LEFT";
+	else if (event.keyCode == 38 && d != "DOWN") d = "UP";
+	else if (event.keyCode == 39 && d != "LEFT") d = "RIGHT";
+	else if (event.keyCode == 40 && d != "UP") d = "DOWN";
+}
+
+// HTML onclick에서 실행되도록 전역 객체(window)에 할당
+window.setDir = function (newDir) {
+	if (newDir == "LEFT" && d != "RIGHT") d = "LEFT";
+	else if (newDir == "UP" && d != "DOWN") d = "UP";
+	else if (newDir == "RIGHT" && d != "LEFT") d = "RIGHT";
+	else if (newDir == "DOWN" && d != "UP") d = "DOWN";
+};
+
+function draw() {
+	ctx.fillStyle = "#1e1e1e";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	for (let i = 0; i < snake.length; i++) {
+		ctx.fillStyle = i == 0 ? "#00e5ff" : "#00bcd4";
+		ctx.fillRect(snake[i].x, snake[i].y, box, box);
+		ctx.strokeStyle = "#1e1e1e";
+		ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+	}
+
+	ctx.fillStyle = "#ff007b";
+	ctx.fillRect(food.x, food.y, box, box);
+
+	let snakeX = snake[0].x;
+	let snakeY = snake[0].y;
+
+	if (d == "LEFT") snakeX -= box;
+	if (d == "UP") snakeY -= box;
+	if (d == "RIGHT") snakeX += box;
+	if (d == "DOWN") snakeY += box;
+
+	if (snakeX == food.x && snakeY == food.y) {
+		score++;
+		document.getElementById("score").innerText = score;
+		food = {
+			x: Math.floor(Math.random() * 19 + 1) * box,
+			y: Math.floor(Math.random() * 19 + 1) * box,
+		};
+	} else {
+		snake.pop();
+	}
+
+	let newHead = { x: snakeX, y: snakeY };
+
+	// 게임 오버 조건
+	if (
+		snakeX < 0 ||
+		snakeX >= canvas.width ||
+		snakeY < 0 ||
+		snakeY >= canvas.height ||
+		collision(newHead, snake)
+	) {
+		// 죽었을 때 게임 오버 모달 호출!
+		showGameOverModal(score);
+		return;
+	}
+
+	snake.unshift(newHead);
+}
+
+function collision(head, array) {
+	for (let i = 0; i < array.length; i++) {
+		if (head.x == array[i].x && head.y == array[i].y) return true;
+	}
+	return false;
+}
+
+// 최초 화면 진입 시 모달 띄우기
+showStartModal();</code></pre>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// 아코디언 토글 함수
+			function toggleAccordion(header) {
+				const item = header.parentElement;
+				item.classList.toggle("active");
+				const arrow = header.querySelector("span");
+				arrow.innerText = item.classList.contains("active") ? "▲" : "▼";
+			}
+
+			// 클립보드 복사 함수
+			function copyCode(btn) {
+				const code = btn.nextElementSibling.innerText;
+				navigator.clipboard.writeText(code).then(() => {
+					const originalText = btn.innerText;
+					btn.innerText = "COPIED!";
+					btn.style.background = "#00e5ff";
+					setTimeout(() => {
+						btn.innerText = originalText;
+						btn.style.background = "#334155";
+					}, 1500);
+				});
+			}
+		</script>
+	</body>
+</html>

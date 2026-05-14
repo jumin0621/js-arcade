@@ -2,38 +2,40 @@
 <html lang="ko">
 	<head>
 		<meta charset="UTF-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-		/>
-		<title>JS-Arcade | 브릭 마스터</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JS-Arcade | 바닐라 스네이크 (디렉터 모드)</title>
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
 		<div class="game-wrapper">
 			<div class="game-header">
-				<div class="stage-info">STAGE <span id="stage">1</span></div>
 				<div class="score-container">SCORE: <span id="score">0</span></div>
 			</div>
 
-			<canvas id="brickGame" width="480" height="400"></canvas>
+			<canvas id="snakeGame" width="400" height="400"></canvas>
 
-			<!-- [디렉터 모드] 코드 오버레이 팝업 -->
+			<!-- [디렉터 모드] 코드 오버레이 -->
 			<div id="codeOverlay" class="code-overlay"></div>
 
-			<div class="mobile-controls">
-				<button id="leftBtn">◀</button>
-				<button id="rightBtn">▶</button>
+			<div class="mobile-controls" id="joystick">
+				<div class="control-row">
+					<button class="btn-up" onclick="setDir('UP')">▲</button>
+				</div>
+				<div class="control-row">
+					<button class="btn-left" onclick="setDir('LEFT')">◀</button>
+					<button class="btn-down" onclick="setDir('DOWN')">▼</button>
+					<button class="btn-right" onclick="setDir('RIGHT')">▶</button>
+				</div>
 			</div>
 
 			<div class="controls-guide">
-				<p>방향키(← →)로 조작하세요</p>
+				<p>방향키(↑ ↓ ← →)로 조작 · 숫자 1~9 디렉터 모드 · 0 정상 속도</p>
 			</div>
 
 			<div id="gameModal" class="modal-overlay">
 				<div class="modal-content">
-					<h2 id="modalTitle">BRICK MASTER</h2>
-					<p id="modalDesc">좌우 방향키를 이용해 모든 벽돌을 제거하세요!</p>
+					<h2 id="modalTitle">VANILLA SNAKE</h2>
+					<p id="modalDesc">방향키를 이용해 길게 살아남으세요!</p>
 
 					<div id="rankInputArea" class="rank-input-area">
 						<input
@@ -54,6 +56,6 @@
 				</div>
 			</div>
 		</div>
-		<script type="module" src="js-brickmaster.js"></script>
+		<script type="module" src="js-snake.js"></script>
 	</body>
 </html>
