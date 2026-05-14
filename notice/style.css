@@ -262,20 +262,6 @@
 
 /* 모바일 대응 */
 @media (max-width: 600px) {
-	header {
-		padding: 0.8rem 1rem; /* 좌우 여백 축소 */
-	}
-	.logo-group {
-		gap: 6px;
-	}
-	.logo-symbol {
-		height: 24px; /* 로고 아이콘 크기 축소 */
-	}
-	nav ul li a {
-		font-size: 0.85rem; /* 모바일 대응을 위해 폰트 크기 축소 */
-		white-space: nowrap;
-	}
-
 	.notice-item {
 		flex-direction: column;
 		align-items: flex-start;
