@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ��ŷ (leaderboards) ? common/firebase-config.js, ranking/ranking.js
+    match /leaderboards/{docId} {
+      allow read: if true;
+
+      allow create: if
+        request.resource.data.keys().hasAll(['gameId', 'nickname', 'score', 'createdAt'])
+        && request.resource.data.gameId is string
+        && request.resource.data.gameId.size() > 0
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 1
+        && request.resource.data.nickname.size() <= 20
+        && request.resource.data.score is number
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 999999999;
+
+      // ���� �г����� �ְ� ������ ���� (score, updatedAt �� ����)
+      allow update: if
+        request.resource.data.gameId == resource.data.gameId
+        && request.resource.data.nickname == resource.data.nickname
+        && request.resource.data.score is number
+        && request.resource.data.score > resource.data.score
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['score', 'updatedAt']);
+
+      allow delete: if false;
+    }
+
+    // ��� (comments) ? common/comments.js
+    match /comments/{docId} {
+      allow read: if true;
+
+      allow create: if
+        request.resource.data.keys().hasAll(['gameId', 'nickname', 'password', 'content', 'createdAt'])
+        && request.resource.data.gameId is string
+        && request.resource.data.gameId.size() > 0
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 1
+        && request.resource.data.nickname.size() <= 20
+        && request.resource.data.password is string
+        && request.resource.data.password.size() >= 1
+        && request.resource.data.password.size() <= 32
+        && request.resource.data.content is string
+        && request.resource.data.content.size() >= 1
+        && request.resource.data.content.size() <= 100;
+
+      // ���� deleteDoc ���� ������ (��й�ȣ ������ �� �ڵ忡�� ó��)
+      allow delete: if true;
+
+      allow update: if false;
+    }
+
+    // ���Ӻ� ��ȸ�� (game_stats) ? main.js
+    match /game_stats/{gameId} {
+      allow read: if true;
+
+      allow create: if
+        request.resource.data.keys().hasOnly(['views'])
+        && request.resource.data.views is number
+        && request.resource.data.views >= 1;
+
+      allow update: if
+        request.resource.data.keys().hasOnly(['views'])
+        && request.resource.data.views is number
+        && request.resource.data.views >= resource.data.views;
+
+      allow delete: if false;
+    }
+
+    // ����Ʈ �湮 ��� (site_stats) ? common/layout.js
+    match /site_stats/{docId} {
+      allow read: if true;
+      allow create, update: if docId == 'total_visits';
+      allow delete: if false;
+    }
+  }
+}

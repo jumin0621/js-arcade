@@ -5,10 +5,10 @@
  */
 
 import {
-  doc,
-  setDoc,
-  getDoc,
-  increment,
+	doc,
+	setDoc,
+	getDoc,
+	increment,
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const hostname = window.location.hostname;
@@ -18,8 +18,8 @@ const basePath = isLocal ? "/web-game/js-arcade" : "";
 
 // 1. 스타일 주입 (제공해주신 CSS + 카운터 CSS)
 const injectStyles = () => {
-  const style = document.createElement("style");
-  style.textContent = `
+	const style = document.createElement("style");
+	style.textContent = `
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: "Pretendard", sans-serif; background-color: #121212; color: #e0e0e0; }
     a { text-decoration: none; color: inherit; }
@@ -68,13 +68,13 @@ const injectStyles = () => {
       .visitor-counter { bottom: 15px; right: 50%; transform: translateX(50%); padding: 10px 25px; width: max-content; }
     }
   `;
-  document.head.appendChild(style);
+	document.head.appendChild(style);
 };
 
 // 2. 헤더 동적 생성
 export const initHeader = () => {
-  const currentPath = window.location.pathname;
-  const headerHTML = `
+	const currentPath = window.location.pathname;
+	const headerHTML = `
     <header>
       <a href="${basePath}/" class="logo-group" aria-label="JS-Arcade 홈으로 이동">
         <img src="https://i.ibb.co/21Jb6jD1/image.png" alt="JS-Arcade 로고 심볼" class="logo-symbol" />
@@ -91,21 +91,21 @@ export const initHeader = () => {
       </nav>
     </header>
   `;
-  document.body.insertAdjacentHTML("afterbegin", headerHTML);
+	document.body.insertAdjacentHTML("afterbegin", headerHTML);
 
-  const setActive = (id) =>
-    document.getElementById(id)?.classList.add("active");
-  if (currentPath.includes("/ranking")) setActive("menu-ranking");
-  else if (currentPath.includes("/game-intro")) setActive("menu-game-intro");
-  else if (currentPath.includes("/notice")) setActive("menu-notice");
-  else if (currentPath.includes("/devlog")) setActive("menu-devlog");
-  else if (currentPath === basePath + "/" || currentPath.endsWith("index.html"))
-    setActive("menu-home");
+	const setActive = (id) =>
+		document.getElementById(id)?.classList.add("active");
+	if (currentPath.includes("/ranking")) setActive("menu-ranking");
+	else if (currentPath.includes("/game-intro")) setActive("menu-game-intro");
+	else if (currentPath.includes("/notice")) setActive("menu-notice");
+	else if (currentPath.includes("/devlog")) setActive("menu-devlog");
+	else if (currentPath === basePath + "/" || currentPath.endsWith("index.html"))
+		setActive("menu-home");
 };
 
 // 3. 푸터 동적 생성
 export const initFooter = () => {
-  const footerHTML = `
+	const footerHTML = `
     <footer class="site-footer">
       <div class="footer-content">
         <a href="${basePath}/" class="footer-logo">
@@ -116,20 +116,20 @@ export const initFooter = () => {
         <nav class="footer-links">
           <a href="https://github.com/jumin0621" target="_blank">GitHub</a>
           <a href="https://imgtocode.tistory.com" target="_blank">Tistory</a>
-					<a href="privacy.html" style="color: #bb86fc;">개인정보처리방침</a>
+					<a href="${basePath}/privacy.html" style="color: #bb86fc;">개인정보처리방침</a>
 					<a href="https://open.kakao.com/o/sSTaIFpi" target="_blank" rel="noopener noreferrer">문의하기</a>
         </nav>
         <p class="copyright">&copy; 2026 <strong>imgtocode</strong>. All rights reserved.</p>
       </div>
     </footer>
   `;
-  document.body.insertAdjacentHTML("beforeend", footerHTML);
+	document.body.insertAdjacentHTML("beforeend", footerHTML);
 };
 
 // 4. 공통 방문자 카운터 동적 생성 및 로직
 export const initVisitorCounter = async () => {
-  // 위젯 HTML 주입
-  const counterHTML = `
+	// 위젯 HTML 주입
+	const counterHTML = `
       <div class="visitor-counter">
 			 <div class="visitor-stat">
           <span class="v-label">TODAY</span>
@@ -143,64 +143,64 @@ export const initVisitorCounter = async () => {
        
       </div>
     `;
-  document.body.insertAdjacentHTML("beforeend", counterHTML);
+	document.body.insertAdjacentHTML("beforeend", counterHTML);
 
-  try {
-    // 경로 꼬임 방지를 위해 firebase-config 동적 임포트 (basePath 활용)
-    const { db } = await import(`${basePath}/common/firebase-config.js`);
-    const statsRef = doc(db, "site_stats", "total_visits");
-    const todayStr = new Date().toLocaleDateString("ko-KR", {
-      timeZone: "Asia/Seoul",
-    });
-    const lastVisitDate = localStorage.getItem("last_visit_date");
+	try {
+		// 경로 꼬임 방지를 위해 firebase-config 동적 임포트 (basePath 활용)
+		const { db } = await import(`${basePath}/common/firebase-config.js`);
+		const statsRef = doc(db, "site_stats", "total_visits");
+		const todayStr = new Date().toLocaleDateString("ko-KR", {
+			timeZone: "Asia/Seoul",
+		});
+		const lastVisitDate = localStorage.getItem("last_visit_date");
 
-    const docSnap = await getDoc(statsRef);
-    let currentTotal = 0;
-    let currentToday = 0;
-    let lastDateInDB = "";
+		const docSnap = await getDoc(statsRef);
+		let currentTotal = 0;
+		let currentToday = 0;
+		let lastDateInDB = "";
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      currentTotal = data.total || data.count || 0;
-      currentToday = data.today || 0;
-      lastDateInDB = data.lastDate;
-    }
+		if (docSnap.exists()) {
+			const data = docSnap.data();
+			currentTotal = data.total || data.count || 0;
+			currentToday = data.today || 0;
+			lastDateInDB = data.lastDate;
+		}
 
-    // DB 갱신 로직 (하루 한 번만 +1)
-    if (lastVisitDate !== todayStr) {
-      if (lastDateInDB !== todayStr) {
-        await setDoc(
-          statsRef,
-          { total: increment(1), today: 1, lastDate: todayStr },
-          { merge: true },
-        );
-        document.getElementById("totalVisits").innerText = currentTotal + 1;
-        document.getElementById("todayVisits").innerText = 1;
-      } else {
-        await setDoc(
-          statsRef,
-          { total: increment(1), today: increment(1) },
-          { merge: true },
-        );
-        document.getElementById("totalVisits").innerText = currentTotal + 1;
-        document.getElementById("todayVisits").innerText = currentToday + 1;
-      }
-      localStorage.setItem("last_visit_date", todayStr); // 도장 쾅!
-    } else {
-      // 이미 방문했으면 읽어오기만 (새로고침 방어)
-      if (lastDateInDB !== todayStr) {
-        document.getElementById("totalVisits").innerText = currentTotal;
-        document.getElementById("todayVisits").innerText = 0;
-      } else {
-        document.getElementById("totalVisits").innerText = currentTotal;
-        document.getElementById("todayVisits").innerText = currentToday;
-      }
-    }
-  } catch (error) {
-    console.error("방문자 카운터 에러:", error);
-    document.getElementById("totalVisits").innerText = "-";
-    document.getElementById("todayVisits").innerText = "-";
-  }
+		// DB 갱신 로직 (하루 한 번만 +1)
+		if (lastVisitDate !== todayStr) {
+			if (lastDateInDB !== todayStr) {
+				await setDoc(
+					statsRef,
+					{ total: increment(1), today: 1, lastDate: todayStr },
+					{ merge: true },
+				);
+				document.getElementById("totalVisits").innerText = currentTotal + 1;
+				document.getElementById("todayVisits").innerText = 1;
+			} else {
+				await setDoc(
+					statsRef,
+					{ total: increment(1), today: increment(1) },
+					{ merge: true },
+				);
+				document.getElementById("totalVisits").innerText = currentTotal + 1;
+				document.getElementById("todayVisits").innerText = currentToday + 1;
+			}
+			localStorage.setItem("last_visit_date", todayStr); // 도장 쾅!
+		} else {
+			// 이미 방문했으면 읽어오기만 (새로고침 방어)
+			if (lastDateInDB !== todayStr) {
+				document.getElementById("totalVisits").innerText = currentTotal;
+				document.getElementById("todayVisits").innerText = 0;
+			} else {
+				document.getElementById("totalVisits").innerText = currentTotal;
+				document.getElementById("todayVisits").innerText = currentToday;
+			}
+		}
+	} catch (error) {
+		console.error("방문자 카운터 에러:", error);
+		document.getElementById("totalVisits").innerText = "-";
+		document.getElementById("todayVisits").innerText = "-";
+	}
 };
 
 // 스크립트 실행 시 스타일 즉시 주입
