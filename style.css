@@ -17,26 +17,368 @@ main {
 	clip: rect(0 0 0 0);
 	overflow: hidden;
 }
+/* --- 로비 히어로 (홈 상단) --- */
+.lobby-hero,
 .search-area {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
 	text-align: center;
+	max-width: 720px;
+	margin: 0 auto;
+	padding: 0;
 }
+
+.lobby-hero h1,
 .search-area h1 {
 	color: #ffffff;
+	font-size: clamp(1.6rem, 4vw, 2.2rem);
+	line-height: 1.35;
+	margin: 0;
 }
+
+.hero-eyebrow {
+	display: block;
+	font-size: 0.45em;
+	color: #00e5ff;
+	margin-bottom: 12px;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	font-weight: 700;
+}
+
+.sub-text {
+	margin: 12px 0 0;
+	color: #9a9a9a;
+	font-size: 0.95rem;
+	line-height: 1.6;
+}
+
+.search-toolbar {
+	width: 100%;
+	margin-top: 20px;
+}
+
+.search-toolbar input,
 .search-area input {
-	width: 80%;
-	max-width: 600px;
-	background-color: #2c2c2c;
-	padding: 12px 20px;
-	border: 1px solid #444;
-	border-radius: 30px;
+	width: 100%;
+	background-color: #1e1e1e;
+	padding: 12px 16px;
+	border: 1px solid #333;
+	border-radius: 8px;
 	outline: none;
+	font-size: 1rem;
+	font-family: inherit;
 }
+
+.search-toolbar input::placeholder,
 .search-area input::placeholder {
 	color: #888;
+}
+
+#game-search {
+	width: 100%;
+	max-width: none;
+	margin-top: 0;
+	caret-color: #00e5ff;
+	color: #ffffff;
+}
+
+#game-search:focus {
+	outline: none;
+	border-color: #555;
+	box-shadow: none;
+	transition: border-color 0.2s ease;
+}
+
+/* --- 후원 카드 --- */
+.donate-block {
+	width: 100%;
+	margin-top: 20px;
+}
+
+.donate-row {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	width: 100%;
+}
+
+.donate-account-bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin: 10px 0 0;
+	padding: 0 2px;
+	flex-wrap: wrap;
+}
+
+.donate-account-bar__text {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px 8px;
+	margin: 0;
+	color: #777;
+	font-size: 0.78rem;
+	line-height: 1.4;
+}
+
+.donate-account-bar__label {
+	color: #666;
+}
+
+.donate-account-bar__label::after {
+	content: "·";
+	margin-left: 6px;
+	color: #555;
+}
+
+.donate-account-bar__num {
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.donate-account-bar__hint {
+	color: #555;
+	font-size: 0.72rem;
+}
+
+.donate-account-bar__hint::before {
+	content: "·";
+	margin-right: 4px;
+}
+
+.donate-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	min-width: 0;
+	padding: 14px 16px;
+	border: 1px solid #333;
+	border-radius: 10px;
+	background: transparent;
+}
+
+.donate-card--usage {
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.donate-card__heading {
+	margin: 0 0 10px;
+	color: #bb86fc;
+	font-size: 0.92rem;
+	font-weight: 700;
+}
+
+.donate-usage-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.donate-card__link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+	color: inherit;
+	text-decoration: none;
+}
+
+.donate-card__info {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.donate-card__account {
+	padding-left: calc(1.25rem + 12px);
+}
+
+.donate-card__account small {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px 8px;
+	color: #777;
+	font-size: 0.78rem;
+	line-height: 1.3;
+}
+
+.donate-card__account-num {
+	color: inherit;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.donate-card__copy-btn {
+	padding: 2px 8px;
+	border: 1px solid #444;
+	border-radius: 6px;
+	background: #252525;
+	color: #00e5ff;
+	font-size: 0.78rem;
+	font-family: inherit;
+	font-weight: 600;
+	line-height: 1.3;
+	cursor: pointer;
+	vertical-align: middle;
+	transition:
+		color 0.2s ease,
+		border-color 0.2s ease,
+		background-color 0.2s ease;
+}
+
+.donate-card__copy-btn:hover {
+	border-color: #00e5ff;
+	background: rgba(0, 229, 255, 0.08);
+}
+
+.donate-card__copy-btn.is-copied {
+	color: #2ecc71;
+	border-color: #2ecc71;
+}
+
+.donate-card__link:hover .donate-card__text strong {
+	color: #bb86fc;
+}
+
+.donate-card__icon {
+	font-size: 1.25rem;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.donate-card__text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2px;
+	min-width: 0;
+}
+
+.donate-card__text strong {
+	color: #f0f0f0;
+	font-size: 0.95rem;
+	font-weight: 700;
+	transition: color 0.2s ease;
+}
+
+.donate-card__text small {
+	color: #777;
+	font-size: 0.78rem;
+	line-height: 1.3;
+}
+
+.donate-card--action {
+	overflow: visible;
+}
+
+.donate-card__qr-wrap {
+	flex-shrink: 0;
+	position: relative;
+	z-index: 1;
+	line-height: 0;
+	color: inherit;
+	text-decoration: none;
+}
+
+.donate-card__qr {
+	flex-shrink: 0;
+	width: 72px;
+	height: 72px;
+	border-radius: 8px;
+	border: 1px solid #333;
+	background: #fff;
+	object-fit: contain;
+	transition:
+		transform 0.25s ease,
+		box-shadow 0.25s ease,
+		border-color 0.25s ease;
+	transform-origin: right center;
+}
+
+/* PC: QR 호버 시 확대 (스캔용) */
+@media (hover: hover) and (pointer: fine) {
+	.donate-card__qr-wrap:hover {
+		z-index: 200;
+	}
+
+	.donate-card__qr-wrap:hover .donate-card__qr {
+		transform: scale(2.5);
+		border-color: #bb86fc;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+	}
+}
+
+/* --- 게임 목록 영역 --- */
+.games-section {
+	margin-top: 28px;
+	padding-top: 0;
+	border-top: none;
+}
+
+/* --- 제휴 배너 (게임 목록 ↔ 푸터) --- */
+.partner-banner {
+	margin-top: 48px;
+}
+
+.partner-banner__link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	width: 100%;
+	padding: 22px 28px;
+	border: 2px dashed #444;
+	border-radius: 12px;
+	background: #1a1a1a;
+	color: inherit;
+	text-decoration: none;
+	transition:
+		border-color 0.2s ease,
+		background-color 0.2s ease;
+}
+
+.partner-banner__link:hover {
+	border-color: #00e5ff;
+	border-style: solid;
+	background: #222;
+}
+
+.partner-banner__label {
+	color: #00e5ff;
+	font-size: 1.05rem;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.partner-banner__desc {
+	flex: 1;
+	min-width: 200px;
+	color: #888;
+	font-size: 0.88rem;
+	line-height: 1.5;
+}
+
+.partner-banner__cta {
+	color: #bb86fc;
+	font-size: 0.9rem;
+	font-weight: 600;
+	white-space: nowrap;
 }
 
 /* 카드 리스트 레이아웃 */
@@ -44,9 +386,8 @@ main {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 	gap: 30px;
-	margin-top: 40px;
-	margin: 40px auto 0; /* 위쪽 40px, 좌우는 중앙 정렬 */
-	max-width: 1200px; /* 전체 사이트 폭과 맞춤 */
+	margin-top: 24px;
+	max-width: 1200px;
 	width: 100%;
 }
 
@@ -64,19 +405,6 @@ main {
 	transform: translateY(-5px);
 	border-color: #bb86fc; /* 호버 시 포인트 컬러 */
 	box-shadow: 0 8px 25px rgba(187, 134, 252, 0.2);
-}
-#game-search {
-	width: 100%;
-	max-width: 600px;
-	margin-top: 20px;
-	caret-color: #00e5ff;
-	color: #ffffff;
-}
-#game-search:focus {
-	outline: none;
-	border-color: #bb86fc;
-	box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
-	transition: all 0.3s ease;
 }
 .thumbnail {
 	width: 100%;
@@ -211,8 +539,8 @@ main {
 	display: flex;
 	justify-content: center;
 	gap: 10px;
-
 	flex-wrap: wrap;
+	padding: 4px 0 0;
 }
 
 .filter-btn {
@@ -264,6 +592,9 @@ main {
 [data-category="escape"]:hover {
 	background: rgba(0, 229, 255, 0.4);
 }
+[data-category="racing"]:hover {
+	background: rgba(0, 229, 255, 0.4);
+}
 [data-category="arcade"].active {
 	background: rgba(255, 46, 99, 0.4);
 }
@@ -275,6 +606,9 @@ main {
 }
 [data-category="escape"].active {
 	background: rgba(0, 229, 255, 0.4);
+}
+[data-category="racing"].active {
+	background: rgba(255, 193, 7, 0.35);
 }
 
 /* --- 댓글창 좌우 분할 레이아웃 --- */
@@ -379,14 +713,17 @@ main {
 .platform-notice {
 	display: inline-flex;
 	align-items: center;
-	gap: 12px;
-	background: rgba(255, 255, 255, 0.05); /* 은은한 배경 */
-	border: 1px solid rgba(0, 229, 255, 0.3); /* 네온 블루 테두리 */
-	padding: 10px 20px;
-	border-radius: 50px;
-	margin: 20px 0 40px 0;
-	font-size: 0.8rem;
-	color: #ccc;
+	justify-content: center;
+	gap: 10px;
+	max-width: 100%;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(0, 229, 255, 0.22);
+	padding: 10px 18px;
+	border-radius: 999px;
+	margin: 18px 0 0;
+	font-size: 0.82rem;
+	color: #aaa;
+	line-height: 1.5;
 }
 
 .platform-notice strong {
@@ -400,10 +737,49 @@ main {
 }
 
 /* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
+@media (max-width: 768px) {
+	.donate-row {
+		grid-template-columns: 1fr;
+	}
+
+	.donate-account-bar {
+		justify-content: center;
+	}
+
+	.partner-banner__link {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 20px;
+	}
+
+	.partner-banner__desc {
+		min-width: 0;
+	}
+}
+
 @media (max-width: 480px) {
+	.lobby-hero h1,
 	.search-area h1 {
 		font-size: 1.5rem;
 	}
+
+	.search-toolbar {
+		margin-top: 16px;
+	}
+
+	.donate-card {
+		padding: 10px 12px;
+	}
+
+	.donate-card__account {
+		padding-left: 0;
+	}
+
+	.donate-card__qr {
+		width: 64px;
+		height: 64px;
+	}
+
 	.comment-layout {
 		flex-direction: column;
 	}
@@ -412,14 +788,5 @@ main {
 	}
 	#commentPassword {
 		flex: 0.8;
-	}
-	.platform-notice {
-		font-size: 0.6rem;
-		padding: 8px 15px;
-		flex-direction: column;
-		gap: 5px;
-	}
-	.device-icon {
-		display: none;
 	}
 }

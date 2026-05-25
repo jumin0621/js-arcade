@@ -19,6 +19,33 @@ const gameData = [
 		category: "racing",
 	},
 	{
+		id: "pixelclimber",
+		title: "무한의 픽셀 계단",
+		description:
+			"타이밍 입력으로 방향을 맞춰 끝없이 계단을 오르는 리듬형 반응 속도 게임",
+		emoji: "🧗‍♀️",
+		path: "games/js-pixelclimber/index.html",
+		category: "arcade",
+	},
+	{
+		id: "shieldsurvivor",
+		title: "실드 서바이버",
+		description:
+			"실드를 유지하며 사방에서 몰려오는 적을 처리하는 생존형 디펜스 슈팅 게임",
+		emoji: "🛡️",
+		path: "games/js-shieldsurvivor/index.html",
+		category: "shooting",
+	},
+	{
+		id: "bounce",
+		title: "바운스볼",
+		description:
+			"중력과 탄성을 이용해 공을 조작하며 함정 지형을 통과하는 물리 퍼즐형 게임",
+		emoji: "☄️",
+		path: "games/js-bounce/index.html",
+		category: "arcade",
+	},
+	{
 		id: "snake",
 		title: "바닐라 스네이크",
 		description:
@@ -36,24 +63,16 @@ const gameData = [
 		path: "games/js-brickmaster/index.html",
 		category: "arcade",
 	},
-	{
-		id: "bounce",
-		title: "바운스볼",
-		description:
-			"중력과 탄성을 이용해 공을 조작하며 함정 지형을 통과하는 물리 퍼즐형 게임",
-		emoji: "☄️",
-		path: "games/js-bounce/index.html",
-		category: "arcade",
-	},
-	{
-		id: "brickstack",
-		title: "브릭 스택",
-		description:
-			"블록을 정확히 쌓고 라인을 정리해 점수를 높이는 템포형 스택 퍼즐 게임",
-		emoji: "🟦",
-		path: "games/js-brickstack/index.html",
-		category: "arcade",
-	},
+
+	// {
+	// 	id: "brickstack",
+	// 	title: "브릭 스택",
+	// 	description:
+	// 		"블록을 정확히 쌓고 라인을 정리해 점수를 높이는 템포형 스택 퍼즐 게임",
+	// 	emoji: "🟦",
+	// 	path: "games/js-brickStack/index.html",
+	// 	category: "arcade",
+	// },
 	{
 		id: "bugsweeper",
 		title: "버그 스위퍼",
@@ -126,15 +145,7 @@ const gameData = [
 		path: "games/js-pixelmatch/index.html",
 		category: "puzzle",
 	},
-	{
-		id: "shieldsurvivor",
-		title: "실드 서바이버",
-		description:
-			"실드를 유지하며 사방에서 몰려오는 적을 처리하는 생존형 디펜스 슈팅 게임",
-		emoji: "🛡️",
-		path: "games/js-shieldsurvivor/index.html",
-		category: "shooting",
-	},
+
 	{
 		id: "dragoncurve",
 		title: "드래곤 커브",
@@ -152,15 +163,6 @@ const gameData = [
 		emoji: "❤️",
 		path: "games/js-pixellogic/index.html",
 		category: "puzzle",
-	},
-	{
-		id: "pixelclimber",
-		title: "픽셀 클라이머",
-		description:
-			"타이밍 입력으로 방향을 맞춰 끝없이 계단을 오르는 리듬형 반응 속도 게임",
-		emoji: "🧗‍♀️",
-		path: "games/js-pixelclimber/index.html",
-		category: "arcade",
 	},
 ];
 
