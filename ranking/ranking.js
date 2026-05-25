@@ -12,7 +12,7 @@ const games = [
 	{ id: "snake", title: "🐍 바닐라스네이크" },
 	{ id: "brickmaster", title: "🧱 브릭마스터" },
 	{ id: "bounce", title: "☄️ 바운스볼" },
-	{ id: "brickstack", title: "🟦 브릭스택" },
+	// { id: "brickstack", title: "🟦 브릭스택" },
 	{ id: "bugsweeper", title: "👿 버그스위퍼" },
 	{ id: "sudoku", title: "✏️ 스도쿠" },
 	{ id: "invader", title: "👾 코드브레이커" },
