@@ -25,7 +25,7 @@ main {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	max-width: 720px;
+	max-width: 728px;
 	margin: 0 auto;
 	padding: 0;
 }
@@ -92,235 +92,20 @@ main {
 	transition: border-color 0.2s ease;
 }
 
-/* --- 후원 카드 --- */
+/* --- 카카오애드핏 배너 --- */
 .donate-block {
-	width: 100%;
+	width: min(728px, 100%);
 	margin-top: 20px;
+	container-type: inline-size;
+	overflow: hidden;
+	height: calc(90px * min(1, 100cqi / 728px));
 }
 
-.donate-row {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 12px;
-	width: 100%;
-}
-
-.donate-account-bar {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 12px;
-	margin: 10px 0 0;
-	padding: 0 2px;
-	flex-wrap: wrap;
-}
-
-.donate-account-bar__text {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 6px 8px;
-	margin: 0;
-	color: #777;
-	font-size: 0.78rem;
-	line-height: 1.4;
-}
-
-.donate-account-bar__label {
-	color: #666;
-}
-
-.donate-account-bar__label::after {
-	content: "·";
-	margin-left: 6px;
-	color: #555;
-}
-
-.donate-account-bar__num {
-	font-variant-numeric: tabular-nums;
-	letter-spacing: 0.02em;
-}
-
-.donate-account-bar__hint {
-	color: #555;
-	font-size: 0.72rem;
-}
-
-.donate-account-bar__hint::before {
-	content: "·";
-	margin-right: 4px;
-}
-
-.donate-card {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	min-width: 0;
-	padding: 14px 16px;
-	border: 1px solid #333;
-	border-radius: 10px;
-	background: transparent;
-}
-
-.donate-card--usage {
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-}
-
-.donate-card__heading {
-	margin: 0 0 10px;
-	color: #bb86fc;
-	font-size: 0.92rem;
-	font-weight: 700;
-}
-
-.donate-usage-list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-}
-
-.donate-card__link {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	min-width: 0;
-	color: inherit;
-	text-decoration: none;
-}
-
-.donate-card__info {
-	flex: 1;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-
-.donate-card__account {
-	padding-left: calc(1.25rem + 12px);
-}
-
-.donate-card__account small {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 6px 8px;
-	color: #777;
-	font-size: 0.78rem;
-	line-height: 1.3;
-}
-
-.donate-card__account-num {
-	color: inherit;
-	font-variant-numeric: tabular-nums;
-	letter-spacing: 0.02em;
-}
-
-.donate-card__copy-btn {
-	padding: 2px 8px;
-	border: 1px solid #444;
-	border-radius: 6px;
-	background: #252525;
-	color: #00e5ff;
-	font-size: 0.78rem;
-	font-family: inherit;
-	font-weight: 600;
-	line-height: 1.3;
-	cursor: pointer;
-	vertical-align: middle;
-	transition:
-		color 0.2s ease,
-		border-color 0.2s ease,
-		background-color 0.2s ease;
-}
-
-.donate-card__copy-btn:hover {
-	border-color: #00e5ff;
-	background: rgba(0, 229, 255, 0.08);
-}
-
-.donate-card__copy-btn.is-copied {
-	color: #2ecc71;
-	border-color: #2ecc71;
-}
-
-.donate-card__link:hover .donate-card__text strong {
-	color: #bb86fc;
-}
-
-.donate-card__icon {
-	font-size: 1.25rem;
-	line-height: 1;
-	flex-shrink: 0;
-}
-
-.donate-card__text {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 2px;
-	min-width: 0;
-}
-
-.donate-card__text strong {
-	color: #f0f0f0;
-	font-size: 0.95rem;
-	font-weight: 700;
-	transition: color 0.2s ease;
-}
-
-.donate-card__text small {
-	color: #777;
-	font-size: 0.78rem;
-	line-height: 1.3;
-}
-
-.donate-card--action {
-	overflow: visible;
-}
-
-.donate-card__qr-wrap {
-	flex-shrink: 0;
-	position: relative;
-	z-index: 1;
-	line-height: 0;
-	color: inherit;
-	text-decoration: none;
-}
-
-.donate-card__qr {
-	flex-shrink: 0;
-	width: 72px;
-	height: 72px;
-	border-radius: 8px;
-	border: 1px solid #333;
-	background: #fff;
-	object-fit: contain;
-	transition:
-		transform 0.25s ease,
-		box-shadow 0.25s ease,
-		border-color 0.25s ease;
-	transform-origin: right center;
-}
-
-/* PC: QR 호버 시 확대 (스캔용) */
-@media (hover: hover) and (pointer: fine) {
-	.donate-card__qr-wrap:hover {
-		z-index: 200;
-	}
-
-	.donate-card__qr-wrap:hover .donate-card__qr {
-		transform: scale(2.5);
-		border-color: #bb86fc;
-		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
-	}
+.kakao-ad-inner {
+	width: 728px;
+	height: 90px;
+	transform-origin: top left;
+	transform: scale(min(1, calc(100cqi / 728px)));
 }
 
 /* --- 게임 목록 영역 --- */
@@ -738,14 +523,6 @@ main {
 
 /* 모바일 전용 미디어 쿼리 (필요 시 추가 조절) */
 @media (max-width: 768px) {
-	.donate-row {
-		grid-template-columns: 1fr;
-	}
-
-	.donate-account-bar {
-		justify-content: center;
-	}
-
 	.partner-banner__link {
 		flex-direction: column;
 		align-items: flex-start;
@@ -765,19 +542,6 @@ main {
 
 	.search-toolbar {
 		margin-top: 16px;
-	}
-
-	.donate-card {
-		padding: 10px 12px;
-	}
-
-	.donate-card__account {
-		padding-left: 0;
-	}
-
-	.donate-card__qr {
-		width: 64px;
-		height: 64px;
 	}
 
 	.comment-layout {
