@@ -6,7 +6,7 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		/>
-		<title>JS-Arcade | 레이싱 디렉터 연출 모드</title>
+		<title>JS-Arcade | 픽셀 이터 디렉터 연출 모드</title>
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
@@ -16,9 +16,9 @@
 					<div class="hud-label">SCORE</div>
 					<div id="scoreDisplay" class="hud-value">0</div>
 				</div>
-				<div class="hud-box speed-box">
-					<div class="hud-label">SPEED</div>
-					<div id="speedDisplay" class="hud-value">0 km/h</div>
+				<div class="hud-box stage-box">
+					<div class="hud-label">STAGE</div>
+					<div id="stageDisplay" class="hud-value">1</div>
 				</div>
 			</div>
 
@@ -27,7 +27,7 @@
 
 		<div id="gameModal" class="modal-overlay">
 			<div class="modal-content">
-				<h2 id="modalTitle">RETRO RACING</h2>
+				<h2 id="modalTitle">PIXEL EATER</h2>
 				<p id="modalDesc"></p>
 
 				<div id="rankInputArea" class="rank-input-area" style="display: none">
@@ -41,7 +41,7 @@
 				</div>
 
 				<div class="modal-buttons">
-					<button id="startBtn" class="primary-btn">START ENGINE</button>
+					<button id="startBtn" class="primary-btn">GAME START</button>
 					<button id="restartBtn" class="secondary-btn" style="display: none">
 						처음으로
 					</button>
@@ -49,6 +49,6 @@
 			</div>
 		</div>
 
-		<script type="module" src="js-retroracing.js"></script>
+		<script type="module" src="js-pixeleater.js"></script>
 	</body>
 </html>

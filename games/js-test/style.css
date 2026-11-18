@@ -33,21 +33,23 @@ body {
 }
 .hud-box {
 	background: rgba(0, 0, 0, 0.85);
-	border: 2px solid #ffeb3b;
+	border: 2px solid #ffc107;
 	padding: 8px 16px;
 	border-radius: 8px;
 	text-align: center;
+	min-width: 88px;
 }
 .hud-label {
 	font-size: 0.75rem;
 	font-weight: bold;
-	color: #ffeb3b;
+	color: #ffc107;
 	margin-bottom: 2px;
 	letter-spacing: 1px;
 }
 .hud-value {
 	font-size: 1.3rem;
 	font-weight: 900;
+	color: #00e5ff;
 }
 
 #gameCanvas {
@@ -70,7 +72,7 @@ body {
 }
 .modal-content {
 	background: #1c1d22;
-	border: 2px solid #fff;
+	border: 2px solid #bb86fc;
 	padding: 30px 24px;
 	border-radius: 12px;
 	text-align: center;
@@ -81,7 +83,7 @@ body {
 .modal-content h2 {
 	font-size: 1.8rem;
 	margin-top: 0;
-	color: #fff;
+	color: #ffc107;
 }
 .modal-content p {
 	font-size: 0.95rem;
@@ -106,10 +108,10 @@ body {
 	width: 100%;
 }
 .primary-btn {
-	background: #ffeb3b;
+	background: #ffc107;
 	color: #000;
 	font-weight: 900;
-	box-shadow: 0 4px 0 #bcaa00;
+	box-shadow: 0 4px 0 #c79100;
 }
 .primary-btn:active {
 	transform: translateY(4px);
@@ -123,7 +125,7 @@ body {
 .secondary-btn:hover {
 	background: #3a3a3a;
 	color: #fff;
-	border-color: #ffeb3b;
+	border-color: #ffc107;
 }
 
 .rank-input-area {
