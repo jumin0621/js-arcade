@@ -111,6 +111,193 @@ const directorScripts = {
 	},
 };
 
+// 🎬 자동 촬영 시퀀스 — 페이지를 연 순간부터 자막 타임라인과 동기화
+const DEMO_FAST = new URLSearchParams(location.search).has("fast");
+const DEMO_CLOCK = DEMO_FAST ? 10 : 1;
+const DEMO = {
+	t0: performance.now(),
+	started: false,
+	ended: false,
+	segments: [
+		{ at: 0, until: 12000, key: null },
+		{ at: 12000, until: 28000, key: null },
+		{ at: 28000, until: 55000, key: "1" },
+		{ at: 55000, until: 82000, key: "2" },
+		{ at: 82000, until: 115000, key: "3" },
+		{ at: 115000, until: 160000, key: "4" },
+		{ at: 160000, until: 192000, key: "5" },
+		{ at: 192000, until: 220000, key: null },
+	],
+};
+
+function demoElapsed() {
+	return (performance.now() - DEMO.t0) * DEMO_CLOCK;
+}
+
+function demoKeyAt(t) {
+	for (const seg of DEMO.segments) {
+		if (t >= seg.at && t < seg.until) return seg.key;
+	}
+	return null;
+}
+
+function walkableTile(r, c) {
+	return r >= 0 && r < ROWS && c >= 0 && c < COLS && MAP[r]?.[c] !== 1;
+}
+
+function firstStepToward(sr, sc, pred) {
+	const q = [[sr, sc]];
+	const prev = { [`${sr},${sc}`]: null };
+	const dirs = [
+		[0, 1],
+		[0, -1],
+		[1, 0],
+		[-1, 0],
+	];
+	let head = 0;
+	while (head < q.length) {
+		const [r, c] = q[head++];
+		if ((r !== sr || c !== sc) && pred(r, c)) {
+			let cr = r,
+				cc = c;
+			while (prev[`${cr},${cc}`]) {
+				const [pr, pc] = prev[`${cr},${cc}`];
+				if (pr === sr && pc === sc) return { x: cc - sc, y: cr - sr };
+				cr = pr;
+				cc = pc;
+			}
+		}
+		for (const [dr, dc] of dirs) {
+			const nr = r + dr,
+				nc = c + dc;
+			const k = `${nr},${nc}`;
+			if (walkableTile(nr, nc) && !(k in prev)) {
+				prev[k] = [r, c];
+				q.push([nr, nc]);
+			}
+		}
+	}
+	return null;
+}
+
+function refillPixels() {
+	let added = 0;
+	for (let r = 1; r < ROWS - 1; r++) {
+		for (let c = 1; c < COLS - 1; c++) {
+			if (MAP[r][c] !== 1 && MAP[r][c] !== 2 && Math.random() > 0.72) {
+				MAP[r][c] = 2;
+				added++;
+			}
+		}
+	}
+	if (added === 0) {
+		for (let r = 1; r < ROWS - 1 && added === 0; r++) {
+			for (let c = 1; c < COLS - 1 && added === 0; c++) {
+				if (MAP[r][c] !== 1) {
+					MAP[r][c] = 2;
+					added++;
+				}
+			}
+		}
+	}
+}
+
+function autoPilot(seekBug) {
+	const sr = snapGrid(player.y) / TILE_SIZE;
+	const sc = snapGrid(player.x) / TILE_SIZE;
+	let step = null;
+	if (seekBug && bugs.length) {
+		const b = bugs[0];
+		const br = Math.round(b.y / TILE_SIZE);
+		const bc = Math.round(b.x / TILE_SIZE);
+		step = firstStepToward(sr, sc, (r, c) => r === br && c === bc);
+	}
+	if (!step) step = firstStepToward(sr, sc, (r, c) => MAP[r][c] === 2);
+	if (!seekBug) {
+		let closest = null,
+			cd = Infinity;
+		for (const b of bugs) {
+			const d = Math.hypot(player.x - b.x, player.y - b.y);
+			if (d < cd) {
+				cd = d;
+				closest = b;
+			}
+		}
+		if (closest && cd < TILE_SIZE * 3.2) {
+			const dirs = [
+				{ x: 1, y: 0 },
+				{ x: -1, y: 0 },
+				{ x: 0, y: 1 },
+				{ x: 0, y: -1 },
+			].filter(
+				(d) =>
+					!isWall(player.x + d.x * TILE_SIZE, player.y + d.y * TILE_SIZE),
+			);
+			dirs.sort((a, b) => {
+				const da = Math.hypot(
+					player.x + a.x * TILE_SIZE - closest.x,
+					player.y + a.y * TILE_SIZE - closest.y,
+				);
+				const db = Math.hypot(
+					player.x + b.x * TILE_SIZE - closest.x,
+					player.y + b.y * TILE_SIZE - closest.y,
+				);
+				return db - da;
+			});
+			if (dirs[0]) step = dirs[0];
+		}
+	}
+	if (step) player.nextDir = step;
+}
+
+function showDemoCta() {
+	gameActive = false;
+	activeDirectorKey = null;
+	if (animationId) cancelAnimationFrame(animationId);
+	drawWorld();
+	modalTitle.innerText = "픽셀 이터";
+	modalTitle.style.color = "#ffc107";
+	modalDesc.innerHTML =
+		`다운로드 없이 바로 즐기는 추억의 픽셀 이터.<br>` +
+		`고정 댓글 링크에서 지금 바로 리마스터된 게임을 즐겨 보세요.`;
+	rankInputArea.style.display = "none";
+	restartBtn.style.display = "none";
+	startBtn.style.display = "none";
+	modal.style.display = "flex";
+}
+
+function restartDemoLoop() {
+	DEMO.t0 = performance.now();
+	DEMO.started = false;
+	DEMO.ended = false;
+	if (animationId) cancelAnimationFrame(animationId);
+	gameActive = false;
+	activeDirectorKey = null;
+	showStartModal();
+}
+
+function syncDirectorTimeline() {
+	const t = demoElapsed();
+	if (t >= 220000) {
+		restartDemoLoop();
+		return;
+	}
+	if (t >= 12000 && !DEMO.started) {
+		DEMO.started = true;
+		modal.style.display = "none";
+		startBtn.style.display = "";
+		initGame(false);
+	}
+	if (t >= 192000 && DEMO.started && !DEMO.ended) {
+		DEMO.ended = true;
+		showDemoCta();
+		return;
+	}
+	if (DEMO.started && !DEMO.ended) {
+		activeDirectorKey = demoKeyAt(t);
+	}
+}
+
 function generateRandomMap() {
 	let newMap = Array.from({ length: ROWS }, () => Array(COLS).fill(1));
 	function carvePath(r, c) {
@@ -267,26 +454,27 @@ function initGame(next = false) {
 
 function update() {
 	if (!gameActive) return;
+	syncDirectorTimeline();
+	if (!gameActive) return;
 	frameCount++;
 	player.isOpen = Math.floor(frameCount / 10) % 2 === 0;
 
-	// 🎬 디렉터 키(1~5)가 눌려있으면 0.15배속 초슬로우 모션 발동
+	const t = demoElapsed();
 	const timeScale = activeDirectorKey ? 0.15 : 1.0;
 	const step = player.speed * timeScale;
+	const seekBug = t >= 184000 && t < 192000;
 
 	if (nearGrid(player.x, step) && nearGrid(player.y, step)) {
 		player.x = snapGrid(player.x);
 		player.y = snapGrid(player.y);
+		autoPilot(seekBug);
 		const r = player.y / TILE_SIZE;
 		const c = player.x / TILE_SIZE;
 		if (MAP[r] && MAP[r][c] === 2) {
 			MAP[r][c] = 3;
 			score += 10;
 			scoreEl.innerText = score;
-			if (!MAP.flat().includes(2)) {
-				gameWin();
-				return;
-			}
+			if (!MAP.flat().includes(2)) refillPixels();
 		}
 		if (player.nextDir.x !== 0 || player.nextDir.y !== 0) {
 			if (
@@ -311,10 +499,6 @@ function update() {
 
 	for (const bug of bugs) {
 		bug.update(timeScale);
-		if (Math.hypot(player.x - bug.x, player.y - bug.y) < TILE_SIZE * 0.7) {
-			gameOver();
-			return;
-		}
 	}
 
 	drawWorld();
@@ -450,15 +634,13 @@ function drawDirectorOverlay(script) {
 function showStartModal() {
 	modalTitle.innerText = "픽셀 이터";
 	modalTitle.style.color = "#ffc107";
-	modalDesc.innerHTML = `모든 픽셀을 먹어치우세요!<br><br><span style='color:#00e5ff; font-weight:bold;'>[디렉터 치트키 · 촬영 전용]</span><br>플레이 중 키보드 <strong style='color:#ffeb3b;'>숫자키 1 ~ 5</strong>를 누르고 있으면<br>한글 설명과 코드창, 슬로우 모션이 함께 뜹니다!`;
+	modalDesc.innerHTML =
+		`페이지를 연 순간부터 자동 촬영이 시작됩니다.<br>` +
+		`<span style='color:#00e5ff; font-weight:bold;'>지금 화면 녹화를 켜 주세요.</span><br>` +
+		`키를 누르지 않아도 플레이 · 슬로우 · 코드창이 자막 타이밍에 맞춰 돌아갑니다.`;
 	rankInputArea.style.display = "none";
 	restartBtn.style.display = "none";
-	startBtn.innerText = "게임 시작";
-	startBtn.disabled = false;
-	startBtn.onclick = () => {
-		modal.style.display = "none";
-		initGame(false);
-	};
+	startBtn.style.display = "none";
 	modal.style.display = "flex";
 }
 
@@ -557,3 +739,21 @@ window.addEventListener("keyup", (e) => {
 
 showStartModal();
 resizeCanvas();
+
+function demoClockLoop() {
+	syncDirectorTimeline();
+	if (!DEMO.started) {
+		const remain = Math.max(0, 12 - demoElapsed() / 1000);
+		if (modal.style.display !== "none") {
+			const sec = Math.ceil(remain);
+			modalDesc.innerHTML =
+				`페이지를 연 순간부터 자동 촬영이 시작됩니다.<br>` +
+				`<span style='color:#00e5ff; font-weight:bold;'>지금 화면 녹화를 켜 주세요.</span><br>` +
+				(sec > 0
+					? `<strong style='color:#ffeb3b;'>${sec}초 후 자동 시작</strong>`
+					: `시작합니다.`);
+		}
+	}
+	requestAnimationFrame(demoClockLoop);
+}
+demoClockLoop();
