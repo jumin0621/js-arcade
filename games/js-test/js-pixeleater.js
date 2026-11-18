@@ -327,9 +327,18 @@ function update() {
 		bug.update(timeScale);
 	}
 
+	const hitBug = bugs.some(
+		(bug) => Math.hypot(player.x - bug.x, player.y - bug.y) < TILE_SIZE * 0.7,
+	);
+
 	drawWorld();
 	if (activeDirectorKey && directorScripts[activeDirectorKey]) {
 		drawDirectorOverlay(directorScripts[activeDirectorKey]);
+	}
+
+	if (hitBug) {
+		gameOver();
+		return;
 	}
 
 	animationId = requestAnimationFrame(update);
