@@ -50,13 +50,30 @@ function resizeCanvas() {
 }
 window.addEventListener("resize", resizeCanvas);
 
-function nearGrid(v, speed) {
-	const m = ((v % TILE_SIZE) + TILE_SIZE) % TILE_SIZE;
-	return m < speed + 0.001 || TILE_SIZE - m < speed + 0.001;
+function tileRemainder(v) {
+	return ((v % TILE_SIZE) + TILE_SIZE) % TILE_SIZE;
+}
+
+function atTileCenter(v) {
+	const m = tileRemainder(v);
+	return m < 1e-6 || TILE_SIZE - m < 1e-6;
 }
 
 function snapGrid(v) {
 	return Math.round(v / TILE_SIZE) * TILE_SIZE;
+}
+
+function moveOnAxis(v, dir, step) {
+	if (!dir) return v;
+	const start = tileRemainder(v);
+	if (dir > 0) {
+		const toGrid = start < 1e-6 ? TILE_SIZE : TILE_SIZE - start;
+		if (step >= toGrid - 1e-6) return v + toGrid;
+	} else {
+		const toGrid = start < 1e-6 ? TILE_SIZE : start;
+		if (step >= toGrid - 1e-6) return v - toGrid;
+	}
+	return v + dir * step;
 }
 
 // 🎬 [디렉터 제어 시스템] 상황별 실제 코드 매핑 데이터
@@ -161,8 +178,7 @@ class Bug {
 	}
 	update(timeScale) {
 		const step = this.speed * timeScale;
-		const onGrid = nearGrid(this.x, step) && nearGrid(this.y, step);
-		if (onGrid) {
+		if (atTileCenter(this.x) && atTileCenter(this.y)) {
 			this.x = snapGrid(this.x);
 			this.y = snapGrid(this.y);
 			const possibleDirs = [
@@ -191,9 +207,11 @@ class Bug {
 						: possibleDirs[Math.floor(Math.random() * possibleDirs.length)];
 			}
 		}
-		if (!isWall(this.x + this.dir.x * step, this.y + this.dir.y * step)) {
-			this.x += this.dir.x * step;
-			this.y += this.dir.y * step;
+		const nx = moveOnAxis(this.x, this.dir.x, step);
+		const ny = moveOnAxis(this.y, this.dir.y, step);
+		if (!isWall(nx, ny)) {
+			this.x = nx;
+			this.y = ny;
 		} else {
 			this.x = snapGrid(this.x);
 			this.y = snapGrid(this.y);
@@ -257,6 +275,7 @@ function initGame(next = false) {
 
 	activeDirectorKey = null;
 	gameActive = true;
+	canvas.focus();
 
 	if (animationId) cancelAnimationFrame(animationId);
 	update();
@@ -270,11 +289,11 @@ function update() {
 	const timeScale = activeDirectorKey ? 0.15 : 1.0;
 	const step = player.speed * timeScale;
 
-	if (nearGrid(player.x, step) && nearGrid(player.y, step)) {
+	if (atTileCenter(player.x) && atTileCenter(player.y)) {
 		player.x = snapGrid(player.x);
 		player.y = snapGrid(player.y);
-		const r = player.y / TILE_SIZE;
-		const c = player.x / TILE_SIZE;
+		const r = Math.round(player.y / TILE_SIZE);
+		const c = Math.round(player.x / TILE_SIZE);
 		if (MAP[r] && MAP[r][c] === 2) {
 			MAP[r][c] = 3;
 			score += 10;
@@ -301,15 +320,11 @@ function update() {
 		)
 			player.dir = { x: 0, y: 0 };
 	}
-	player.x += player.dir.x * step;
-	player.y += player.dir.y * step;
+	player.x = moveOnAxis(player.x, player.dir.x, step);
+	player.y = moveOnAxis(player.y, player.dir.y, step);
 
 	for (const bug of bugs) {
 		bug.update(timeScale);
-		if (Math.hypot(player.x - bug.x, player.y - bug.y) < TILE_SIZE * 0.7) {
-			gameOver();
-			return;
-		}
 	}
 
 	drawWorld();
@@ -446,8 +461,8 @@ function showStartModal() {
 	modalDesc.innerHTML =
 		`방향키로 직접 움직이며 촬영하세요.<br><br>` +
 		`<span style='color:#00e5ff; font-weight:bold;'>[디렉터 치트키]</span><br>` +
-		`플레이 중 <strong style='color:#ffeb3b;'>숫자키 1 ~ 5</strong>를 누르고 있으면<br>` +
-		`상단 코드창과 슬로우 모션이 켜집니다.`;
+		`플레이 중 <strong style='color:#ffeb3b;'>숫자키 1 ~ 5</strong>를 누르면<br>` +
+		`상단 코드창과 슬로우 모션이 켜집니다. 같은 키를 다시 누르면 꺼집니다.`;
 	rankInputArea.style.display = "none";
 	restartBtn.style.display = "none";
 	startBtn.style.display = "";
@@ -531,27 +546,49 @@ function setDir(x, y) {
 	if (gameActive) player.nextDir = { x, y };
 }
 
-window.addEventListener("keydown", (e) => {
-	if (!gameActive) return;
-	if (e.key === "ArrowUp") setDir(0, -1);
-	if (e.key === "ArrowDown") setDir(0, 1);
-	if (e.key === "ArrowLeft") setDir(-1, 0);
-	if (e.key === "ArrowRight") setDir(1, 0);
-	if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key))
-		e.preventDefault();
-	if (["1", "2", "3", "4", "5"].includes(e.key)) {
-		activeDirectorKey = e.key;
-	}
-});
+function directorDigit(e) {
+	if (["1", "2", "3", "4", "5"].includes(e.key)) return e.key;
+	if (/^Digit[1-5]$/.test(e.code)) return e.code.slice(-1);
+	if (/^Numpad[1-5]$/.test(e.code)) return e.code.slice(-1);
+	return null;
+}
 
-window.addEventListener("keyup", (e) => {
-	if (
-		["1", "2", "3", "4", "5"].includes(e.key) &&
-		activeDirectorKey === e.key
-	) {
-		activeDirectorKey = null;
-	}
-});
+window.addEventListener(
+	"keydown",
+	(e) => {
+		if (!gameActive) return;
+		if (e.repeat) return;
+		if (e.code === "ArrowUp" || e.code === "KeyW" || e.key === "ArrowUp")
+			setDir(0, -1);
+		if (e.code === "ArrowDown" || e.code === "KeyS" || e.key === "ArrowDown")
+			setDir(0, 1);
+		if (e.code === "ArrowLeft" || e.code === "KeyA" || e.key === "ArrowLeft")
+			setDir(-1, 0);
+		if (e.code === "ArrowRight" || e.code === "KeyD" || e.key === "ArrowRight")
+			setDir(1, 0);
+		if (
+			["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key) ||
+			[
+				"ArrowUp",
+				"ArrowDown",
+				"ArrowLeft",
+				"ArrowRight",
+				"KeyW",
+				"KeyA",
+				"KeyS",
+				"KeyD",
+			].includes(e.code)
+		) {
+			e.preventDefault();
+		}
+		const digit = directorDigit(e);
+		if (digit) {
+			activeDirectorKey = activeDirectorKey === digit ? null : digit;
+			e.preventDefault();
+		}
+	},
+	true,
+);
 
 showStartModal();
 resizeCanvas();
