@@ -64,7 +64,8 @@ function snapGrid(v) {
 let activeDirectorKey = null;
 const directorScripts = {
 	1: {
-		title: "🌀 RANDOM MAZE DFS CODE",
+		title: "🌀 랜덤 미로 깎기",
+		caption: "벽을 채운 뒤, 두 칸씩 길을 팝니다",
 		code: [
 			"newMap[r][c] = 0;",
 			"newMap[r + dr / 2][c + dc / 2] = 0;",
@@ -72,7 +73,8 @@ const directorScripts = {
 		],
 	},
 	2: {
-		title: "🕹️ GRID SNAP TURN CODE",
+		title: "🕹️ 격자 위에서만 회전",
+		caption: "칸 한가운데 도착해야 코너를 돕니다",
 		code: [
 			"if (nearGrid(player.x) && nearGrid(player.y)) {",
 			"  player.dir = { ...player.nextDir };",
@@ -80,7 +82,8 @@ const directorScripts = {
 		],
 	},
 	3: {
-		title: "🟡 PIXEL EAT & CLEAR CODE",
+		title: "🟡 픽셀 먹기 · 클리어",
+		caption: "점 하나당 +10점, 다 먹으면 다음 스테이지",
 		code: [
 			"if (MAP[r][c] === 2) {",
 			"  MAP[r][c] = 3; score += 10;",
@@ -89,7 +92,8 @@ const directorScripts = {
 		],
 	},
 	4: {
-		title: "👻 BUG CHASE AI 70/30 CODE",
+		title: "👻 버그 추적 AI 70/30",
+		caption: "70%는 최단 추격, 30%는 아무 길",
 		code: [
 			"possibleDirs.sort(byDistToPlayer);",
 			"this.dir = Math.random() < 0.7",
@@ -98,7 +102,8 @@ const directorScripts = {
 		],
 	},
 	5: {
-		title: "💥 COLLISION GAME OVER CODE",
+		title: "💥 충돌하면 게임 오버",
+		caption: "거리가 타일 크기의 0.7배면 사망",
 		code: [
 			"d = Math.hypot(px - bx, py - by);",
 			"if (d < TILE_SIZE * 0.7) gameOver();",
@@ -412,8 +417,9 @@ function drawDirectorOverlay(script) {
 
 	drawDirectorGizmos();
 
-	const boxH = 45 + script.code.length * 24;
-	const boxY = canvas.height - boxH - 24;
+	const captionH = script.caption ? 22 : 0;
+	const boxH = 42 + captionH + script.code.length * 24;
+	const boxY = canvas.height - boxH - 20;
 
 	ctx.fillStyle = "rgba(20, 22, 30, 0.95)";
 	ctx.strokeStyle = "#00e5ff";
@@ -421,26 +427,33 @@ function drawDirectorOverlay(script) {
 	ctx.fillRect(20, boxY, canvas.width - 40, boxH);
 	ctx.strokeRect(20, boxY, canvas.width - 40, boxH);
 
-	ctx.font = "bold 15px 'Courier New', monospace";
+	ctx.font = "bold 16px Pretendard, sans-serif";
 	ctx.fillStyle = "#ffeb3b";
 	ctx.textAlign = "left";
-	ctx.fillText(script.title, 35, boxY + 28);
+	ctx.fillText(script.title, 35, boxY + 26);
+
+	if (script.caption) {
+		ctx.font = "13px Pretendard, sans-serif";
+		ctx.fillStyle = "#cfd8dc";
+		ctx.fillText(script.caption, 35, boxY + 48);
+	}
 
 	ctx.font = "14px 'Courier New', monospace";
 	ctx.fillStyle = "#00ffcc";
+	const codeTop = boxY + 48 + captionH;
 	for (let i = 0; i < script.code.length; i++) {
-		ctx.fillText(script.code[i], 35, boxY + 60 + i * 24);
+		ctx.fillText(script.code[i], 35, codeTop + 22 + i * 24);
 	}
 	ctx.restore();
 }
 
 function showStartModal() {
-	modalTitle.innerText = "PIXEL EATER";
+	modalTitle.innerText = "픽셀 이터";
 	modalTitle.style.color = "#ffc107";
-	modalDesc.innerHTML = `모든 픽셀을 먹어치우세요!<br><br><span style='color:#00e5ff; font-weight:bold;'>[디렉터 치트키 전용 촬영 모드]</span><br>플레이 중 키보드 <strong style='color:#ffeb3b;'>숫자키 1 ~ 5</strong>를 누르고 있으면<br>해당 공식 코드창과 함께 슬로우 모션이 터집니다!`;
+	modalDesc.innerHTML = `모든 픽셀을 먹어치우세요!<br><br><span style='color:#00e5ff; font-weight:bold;'>[디렉터 치트키 · 촬영 전용]</span><br>플레이 중 키보드 <strong style='color:#ffeb3b;'>숫자키 1 ~ 5</strong>를 누르고 있으면<br>한글 설명과 코드창, 슬로우 모션이 함께 뜹니다!`;
 	rankInputArea.style.display = "none";
 	restartBtn.style.display = "none";
-	startBtn.innerText = "GAME START";
+	startBtn.innerText = "게임 시작";
 	startBtn.disabled = false;
 	startBtn.onclick = () => {
 		modal.style.display = "none";
