@@ -4,8 +4,6 @@ window.addEventListener("contextmenu", (e) => e.preventDefault());
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const scoreEl = document.getElementById("scoreDisplay");
-const stageEl = document.getElementById("stageDisplay");
 const modal = document.getElementById("gameModal");
 const modalTitle = document.getElementById("modalTitle");
 const modalDesc = document.getElementById("modalDesc");
@@ -41,10 +39,11 @@ let bugs = [];
 function resizeCanvas() {
 	canvas.width = canvas.parentElement.clientWidth;
 	canvas.height = canvas.parentElement.clientHeight;
-	const padTop = 88;
-	const padSide = 16;
+	const padTop = Math.round(canvas.height * 0.28);
+	const padBottom = Math.round(canvas.height * 0.14);
+	const padSide = 28;
 	const availW = Math.max(120, canvas.width - padSide * 2);
-	const availH = Math.max(120, canvas.height - padTop - 24);
+	const availH = Math.max(120, canvas.height - padTop - padBottom);
 	boardOrigin.scale = Math.min(availW / BOARD, availH / BOARD);
 	boardOrigin.x = (canvas.width - BOARD * boardOrigin.scale) / 2;
 	boardOrigin.y = padTop + (availH - BOARD * boardOrigin.scale) / 2;
@@ -443,8 +442,6 @@ function initGame(next = false) {
 	player.dir = { x: 0, y: 0 };
 	player.nextDir = { x: 0, y: 0 };
 
-	scoreEl.innerText = score;
-	stageEl.innerText = stage;
 	activeDirectorKey = null;
 	gameActive = true;
 
@@ -473,7 +470,6 @@ function update() {
 		if (MAP[r] && MAP[r][c] === 2) {
 			MAP[r][c] = 3;
 			score += 10;
-			scoreEl.innerText = score;
 			if (!MAP.flat().includes(2)) refillPixels();
 		}
 		if (player.nextDir.x !== 0 || player.nextDir.y !== 0) {
@@ -592,41 +588,36 @@ function drawDirectorGizmos() {
 
 function drawDirectorOverlay(script) {
 	ctx.save();
-	ctx.fillStyle = "rgba(10, 10, 15, 0.35)";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-	ctx.strokeStyle = "rgba(0, 229, 255, 0.5)";
-	ctx.lineWidth = 4;
-	ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
-
 	drawDirectorGizmos();
 
-	const captionH = script.caption ? 22 : 0;
-	const boxH = 42 + captionH + script.code.length * 24;
-	const boxY = canvas.height - boxH - 20;
+	const captionH = script.caption ? 20 : 0;
+	const boxH = 40 + captionH + script.code.length * 22;
+	const boxW = Math.min(canvas.width - 48, 760);
+	const boxX = (canvas.width - boxW) / 2;
+	const boxY = 14;
 
-	ctx.fillStyle = "rgba(20, 22, 30, 0.95)";
+	ctx.fillStyle = "rgba(20, 22, 30, 0.92)";
 	ctx.strokeStyle = "#00e5ff";
 	ctx.lineWidth = 2;
-	ctx.fillRect(20, boxY, canvas.width - 40, boxH);
-	ctx.strokeRect(20, boxY, canvas.width - 40, boxH);
+	ctx.fillRect(boxX, boxY, boxW, boxH);
+	ctx.strokeRect(boxX, boxY, boxW, boxH);
 
 	ctx.font = "bold 16px Pretendard, sans-serif";
 	ctx.fillStyle = "#ffeb3b";
 	ctx.textAlign = "left";
-	ctx.fillText(script.title, 35, boxY + 26);
+	ctx.fillText(script.title, boxX + 16, boxY + 24);
 
 	if (script.caption) {
 		ctx.font = "13px Pretendard, sans-serif";
 		ctx.fillStyle = "#cfd8dc";
-		ctx.fillText(script.caption, 35, boxY + 48);
+		ctx.fillText(script.caption, boxX + 16, boxY + 46);
 	}
 
 	ctx.font = "14px 'Courier New', monospace";
 	ctx.fillStyle = "#00ffcc";
-	const codeTop = boxY + 48 + captionH;
+	const codeTop = boxY + 46 + captionH;
 	for (let i = 0; i < script.code.length; i++) {
-		ctx.fillText(script.code[i], 35, codeTop + 22 + i * 24);
+		ctx.fillText(script.code[i], boxX + 16, codeTop + 20 + i * 22);
 	}
 	ctx.restore();
 }
